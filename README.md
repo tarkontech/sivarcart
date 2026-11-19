@@ -385,6 +385,11 @@ app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela
 El driver de un método de pago sale de `payment_methods.driver`; cuando no dice nada,
 se usa `config('sivarcart-core.wompi.driver')`.
 
+No hay un contrato para el IVA: la tasa sale de la categoría fiscal del producto y, si
+no tiene, del IVA por defecto de la tienda. Un módulo que necesite otra cosa (precios
+sin IVA por producto, retenciones, impuestos por departamento) lo resuelve con sus
+propias categorías fiscales, no reemplazando el cálculo del núcleo.
+
 ### La facade
 
 La facade solo es azúcar: agrupa los servicios para llegar a ellos desde una plantilla o
