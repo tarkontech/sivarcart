@@ -4,8 +4,21 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
+use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
+use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
+use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
+use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\CouponService;
+use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\OrderService;
+use SivarcartCore\SivarcartCore\Services\PaymentService;
+use SivarcartCore\SivarcartCore\Services\PricingService;
+use SivarcartCore\SivarcartCore\Services\SequenceService;
+use SivarcartCore\SivarcartCore\Services\ShippingMethodRateCalculator;
+use SivarcartCore\SivarcartCore\Services\StoreService;
 
 class SivarcartCoreServiceProvider extends ServiceProvider
 {
@@ -17,6 +30,45 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/sivarcart-core.php', 'sivarcart-core');
 
         $this->app->singleton(SivarcartCore::class);
+
+        $this->registerServices();
+        $this->registerContracts();
+    }
+
+    /**
+     * Register the services of the domain.
+     */
+    private function registerServices(): void
+    {
+        foreach ([
+            StoreService::class,
+            SequenceService::class,
+            PricingService::class,
+            CouponService::class,
+            InventoryService::class,
+            CartService::class,
+            OrderService::class,
+            PaymentService::class,
+            PaymentGatewayManager::class,
+        ] as $service) {
+            $this->app->singleton($service);
+        }
+    }
+
+    /**
+     * Register the points of extension a module can replace.
+     */
+    private function registerContracts(): void
+    {
+        $this->app->bind(
+            ShippingRateCalculator::class,
+            ShippingMethodRateCalculator::class,
+        );
+
+        $this->app->bind(
+            PaymentGateway::class,
+            fn (Application $app): PaymentGateway => $app->make(PaymentGatewayManager::class)->driver(),
+        );
     }
 
     /**

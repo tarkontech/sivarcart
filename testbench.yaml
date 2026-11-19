@@ -2,7 +2,16 @@ laravel: '@testbench'
 
 providers:
   - SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider
+  - Rmirandasv\Wompi\WompiServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
+
+# The credentials of the workbench are fake ones: they only let the webhook of
+# Wompi be signed and verified while developing. The workbench never talks to
+# the real Wompi API.
+env:
+  - WOMPI_CLIENT_ID=workbench-client-id
+  - WOMPI_CLIENT_SECRET=workbench-client-secret
+  - WOMPI_TOKEN_CACHE_STORE=array
 
 migrations:
   - workbench/database/migrations

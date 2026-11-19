@@ -200,11 +200,215 @@ $order->statusHistories;        // la transición queda registrada
 Las transiciones que no están permitidas lanzan `InvalidOrderStatusTransition`.
 `cancelled` y `refunded` son estados finales.
 
+## Capa de dominio
+
+El paquete no es solo un esquema: es el comportamiento de la tienda. Los servicios viven
+en `SivarcartCore\SivarcartCore\Services` y son la espina dorsal del dominio. Las
+acciones (`SivarcartCore\SivarcartCore\Actions`) orquestan los servicios y emiten los
+eventos; los modelos no llevan reglas de negocio.
+
+### El flujo de una compra
+
+```php
+use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
+use SivarcartCore\SivarcartCore\Data\CheckoutData;
+use SivarcartCore\SivarcartCore\Services\CartService;
+
+$cart = app(CartService::class)->findOrCreate($customer?->getKey(), $sessionId);
+
+$cart = app(CartService::class)->addItem($cart, $variant, 2);
+$cart = app(CartService::class)->applyCoupon($cart, 'BIENVENIDA');
+
+$order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
+    customerName: 'Ana Guzmán',
+    customerEmail: 'ana@example.com',
+    shippingAddress: ['municipality' => 'San Salvador', 'department' => 'San Salvador'],
+    shippingMethodCode: 'estandar',
+    paymentMethodCode: 'wompi',
+));
+```
+
+Colocar la orden reserva el stock, congela lo comprado en la orden y cierra el carrito,
+todo en una sola transacción: si algo falla, no queda nada escrito. El carrito no se
+puede convertir dos veces; el segundo intento lanza `InvalidCartState`.
+
+### Los servicios
+
+| Servicio | Qué hace |
+|---|---|
+| `CartService` | El carrito del comprador: sus líneas, sus totales y sus cupones. Los totales son una caché de lo que valen las líneas: se recalculan desde los productos, nunca se confían solos. |
+| `PricingService` | Cuánto cuesta cada línea y cuánto cuesta el total. Redondea a dos decimales y siempre arma el total desde las partes ya redondeadas. |
+| `CouponService` | Valida los códigos de descuento y calcula lo que valen. El valor de un cupón porcentual **es** el porcentaje: 15 significa 15 %. |
+| `InventoryService` | Mueve el stock y escribe el libro mayorista de cada movimiento. |
+| `OrderService` | Coloca, paga, cancela y reembolsa las órdenes. |
+| `PaymentService` | Los pagos y las transacciones que reporta la pasarela. |
+| `SequenceService` | Numera los documentos: `SIV-2026-00001`, `PAY-2026-00001`. |
+| `StoreService` | Los ajustes de la tienda única de la instalación. |
+| `ShippingMethodRateCalculator` | Cuánto cuesta el envío según el método elegido. |
+
+### El stock
+
+El stock tiene tres momentos y el libro mayorista (`sivarcart_inventory_movements`)
+explica cada uno:
+
+| Momento | Stock | Reservado | Movimiento |
+|---|---|---|---|
+| Se coloca la orden | igual | + unidades | `reservation` |
+| Se cobra la orden | − unidades | − unidades | `sale` |
+| Se cancela la orden | igual | − unidades | `release` |
+| Se reembolsa la orden | + unidades | igual | `return` |
+
+El stock disponible nunca cuenta dos veces una unidad reservada, así que la última
+unidad de un producto no se vende dos veces. Al cobrar, la reserva se convierte en
+venta: **el stock disponible no cambia** al pagar.
+
+### Los precios y el IVA
+
+Con `prices_include_tax` en la tienda (el caso de El Salvador), el precio del catálogo
+ya incluye el IVA:
+
+```
+subtotal  = Σ (precio × unidades)
+total     = subtotal − descuento + envío
+```
+
+El `tax_total` es informativo: es la parte del total que pertenece al Estado. Cuando la
+tienda no incluye el IVA en los precios, el total lo suma:
+
+```
+total     = subtotal − descuento + IVA + envío
+```
+
+El descuento se reparte entre las líneas con el método del mayor resto, en centavos
+enteros: nunca se pierde ni se inventa un centavo. Un cupón de envío gratis deja el
+envío cotizado intacto y mete el ahorro en el descuento, para que la fórmula del total
+siga siendo la misma.
+
+### Cobrar con Wompi
+
+```php
+use SivarcartCore\SivarcartCore\Actions\StartPayment;
+
+$link = app(StartPayment::class)->execute($order);
+
+$link->url;        // https://checkout.wompi.sv/l/...
+$link->reference;  // el identificador del enlace en Wompi
+```
+
+La llamada a la pasarela **nunca** ocurre dentro de una transacción: si Wompi falla, la
+orden y su reserva sobreviven y el comprador puede pagar después. Cada intento queda
+contado en `payments.attempt_count`, y el enlace se guarda en `payments.meta` para que
+reintentar no cree un enlace nuevo.
+
+El paquete registra la ruta del webhook y la application **no** tiene que publicarla:
+
+```
+POST {config('sivarcart-core.wompi.webhook_path')}   →  sivarcart-core.wompi.webhook
+```
+
+El middleware `wompi.webhook` del paquete [`rmirandasv/laravel-wompi`](https://github.com/rmirandasv/laravel-wompi)
+valida la firma HMAC antes de que corra el controlador. El controlador **siempre**
+responde 200: un webhook que no se puede aplicar se registra en el log, pero responder
+con un error haría que Wompi entregara el mismo webhook una y otra vez.
+
+La orden solo se marca pagada si la transacción fue aprobada **y** fue un cobro real
+(`EsAprobada && EsProductiva`). Una transacción de prueba deja el pago fallido, la orden
+sin pagar y su reserva intacta.
+
+El webhook es idempotente: la segunda entrega del mismo pago no vuelve a cobrar ni a
+mover el stock, porque `payment_transactions.idempotency_key` tiene un índice único.
+
+### Los eventos
+
+Las acciones emiten eventos **después** del commit, así que ningún listener ve un estado
+que todavía puede revertirse:
+
+| Evento | Cuándo |
+|---|---|
+| `OrderPlaced` | Se colocó la orden. |
+| `OrderPaid` | Se pagó la orden. |
+| `OrderCancelled` | Se canceló la orden. |
+| `OrderRefunded` | Se registró un reembolso. |
+| `PaymentFailed` | Un pago no pasó. |
+
+```php
+use SivarcartCore\SivarcartCore\Events\OrderPaid;
+
+Event::listen(function (OrderPaid $event): void {
+    $event->order;      // la orden que se pagó
+    $event->payment;    // el pago, cuando lo hubo
+});
+```
+
+### Cancelar y reembolsar
+
+```php
+use SivarcartCore\SivarcartCore\Actions\CancelOrder;
+use SivarcartCore\SivarcartCore\Actions\MarkOrderAsPaid;
+use SivarcartCore\SivarcartCore\Actions\RefundOrder;
+
+app(CancelOrder::class)->execute($order, 'El comprador se arrepintió');
+app(MarkOrderAsPaid::class)->execute($order);          // el pago se cobró fuera de línea
+app(RefundOrder::class)->execute($order, 25.50, 'Producto devuelto');
+```
+
+Cancelar devuelve las unidades reservadas al stock y cancela el pago que nunca se
+cobró. `MarkOrderAsPaid` es la forma de confirmar un pago que la tienda cobró por su
+cuenta, como el efectivo de una orden contra entrega.
+
+> **El reembolso se registra, no se ejecuta.** La API de Wompi no expone la forma de
+> devolver el dinero de un pago, así que el núcleo deja constancia del reembolso, repone
+> el stock y cierra la orden; el comerciante aplica la devolución en el panel de Wompi.
+> El stock se repone por valor: las unidades se calculan a prorrata del monto devuelto,
+> en enteros y nunca por encima de lo que se vendió.
+
+### Los puntos de extensión
+
+Solo hay dos contratos, y los dos tienen una columna que ya los respalda:
+
+| Contrato | Lo que trae el paquete | Cómo lo reemplaza un módulo |
+|---|---|---|
+| `ShippingRateCalculator` | `ShippingMethodRateCalculator`: el precio del método. | Enlaza su propia implementación: `app()->bind(ShippingRateCalculator::class, ...)`. |
+| `PaymentGateway` | `WompiPaymentGateway`. | Registra un driver en el `PaymentGatewayManager`: `app(PaymentGatewayManager::class)->extend('mi-pasarela', ...)`. |
+
+```php
+use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
+use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
+
+// Un módulo que cobra según el departamento.
+app()->bind(ShippingRateCalculator::class, MiCalculadora::class);
+
+// Un módulo que cobra con otra pasarela.
+app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela());
+```
+
+El driver de un método de pago sale de `payment_methods.driver`; cuando no dice nada,
+se usa `config('sivarcart-core.wompi.driver')`.
+
+### La facade
+
+La facade solo es azúcar: agrupa los servicios para llegar a ellos desde una plantilla o
+un comando.
+
+```php
+use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
+
+SivarcartCore::carts();       // CartService
+SivarcartCore::orders();      // OrderService
+SivarcartCore::payments();    // PaymentService
+SivarcartCore::inventory();   // InventoryService
+```
+
 ## Configuration
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
 numeración de órdenes y pagos, y la configuración de Wompi (ruta del webhook, ruta del
 redirect y las formas de pago habilitadas).
+
+Las credenciales de Wompi se guardan cifradas en `sivarcart_payment_methods.credentials`,
+de modo que el comerciante puede tener una cuenta por tienda. Cuando el método de pago
+no tiene credenciales propias, se usan las del paquete `rmirandasv/laravel-wompi`
+(`WOMPI_CLIENT_ID` y `WOMPI_CLIENT_SECRET`).
 
 Los ajustes que el comerciante cambia seguido, como el nombre, el logo, el IVA o el
 horario, viven en la tabla `sivarcart_stores` y se editan desde el panel de administración.

@@ -10,8 +10,8 @@ metadata:
 
 # SivarCart Core
 
-Use this skill when a Laravel application needs the SivarCart Core package, the
-data model of an online store for El Salvador.
+Use this skill when a Laravel application needs the SivarCart Core package, the data
+model and the domain of an online store for El Salvador.
 
 ## Primary Goal
 
@@ -43,22 +43,73 @@ php artisan sivarcart-core:install
 - the order lifecycle lives in `SivarcartCore\SivarcartCore\Enums\OrderStatus`; move an
   order with `$order->transitionTo(OrderStatus::PAID)` and never write the status by hand
 
-### 3. Collect the money with Wompi
+### 3. Sell
+
+- the services in `SivarcartCore\SivarcartCore\Services` are the spine of the domain:
+  `CartService`, `OrderService`, `PaymentService` and `InventoryService` are the ones a
+  storefront needs
+- the totals of a cart are a cache of what its items are worth: they are recalculated
+  from the items on every change and are never trusted on their own when the order is
+  placed
+- place the order with the `PlaceOrder` action and a `CheckoutData`; it reserves the
+  stock, freezes what was bought and closes the cart in a single transaction
+- the coupon of a cart is applied with `CartService::applyCoupon()`; the value of a
+  percentage coupon **is** the percentage, so 15 means 15 %
+
+```php
+use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
+use SivarcartCore\SivarcartCore\Data\CheckoutData;
+
+$order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
+    customerName: 'Ana Guzmán',
+    customerEmail: 'ana@example.com',
+    shippingAddress: ['municipality' => 'San Salvador', 'department' => 'San Salvador'],
+    shippingMethodCode: 'estandar',
+    paymentMethodCode: 'wompi',
+));
+```
+
+### 4. Collect the money with Wompi
 
 - the credentials of the gateway live in `sivarcart_payment_methods` and are stored
   encrypted; the package `rmirandasv/laravel-wompi` handles the OAuth2, the HMAC
   signature and the payload normalization
-- keep the merchant reference of a payment in `sivarcart_orders.reference` and send it
-  as the `identificadorEnlaceComercio` of the payment link: that is how the webhook is
-  matched with the order
-- record every delivery of the webhook in `sivarcart_payment_transactions` with its
-  `idempotency_key`; the column has a unique index because Wompi retries deliveries
+- ask for the payment link with the `StartPayment` action; the merchant reference of the
+  link is the reference of the payment, so the webhook finds the order without guessing
+- the package registers the route of the webhook: `POST webhooks/wompi`, named
+  `sivarcart-core.wompi.webhook`. The application must **not** publish the route of the
+  `laravel-wompi` package, because both would answer the same path
+- the controller always answers 200: a webhook that cannot be applied is logged, and
+  answering with an error would make Wompi deliver it over and over
 - mark an order as paid only when the transaction was approved **and** was a real
   charge: a test transaction (`EsProductiva` false) was never billed to the customer
+- the webhook is idempotent: `payment_transactions.idempotency_key` has a unique index,
+  so a repeated delivery never charges or moves the stock twice
 
-### 4. Extend the store
+### 5. Move the order
+
+- `MarkOrderAsPaid` confirms a payment the store collected on its own, like the cash of
+  a delivery order
+- `CancelOrder` gives the reserved units back to the stock and cancels the payment that
+  was never settled
+- `RefundOrder` registers a refund: the Wompi API does not offer a way to refund a
+  payment, so the core records the refund, gives the units back and closes the order,
+  and the merchant applies the money back on the Wompi dashboard
+- the actions emit `OrderPlaced`, `OrderPaid`, `OrderCancelled`, `OrderRefunded` and
+  `PaymentFailed` after the commit, so a listener never sees a state that can still be
+  reverted
+
+### 6. Extend the store
 
 - store module settings in `sivarcart_settings` instead of changing the schema
+- the shipping cost comes from the `ShippingRateCalculator` contract and the payment
+  from the `PaymentGateway` contract; both can be replaced without touching the package
+- another gateway is registered as a driver of the payment gateway manager:
+
+```php
+app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela());
+```
+
 - the publish tags are `sivarcart-core`, `sivarcart-core-config`,
   `sivarcart-core-migrations`, `sivarcart-core-views`, `sivarcart-core-lang` and
   `sivarcart-core-assets`
@@ -67,7 +118,7 @@ php artisan sivarcart-core:install
 
 Read before executing:
 
-- `README.md` — the table by table data model and the install flow
+- `README.md` — the table by table data model, the install flow and the domain layer
 - `config/sivarcart-core.php` — store defaults, numbering prefixes and the Wompi settings
 
 ## Examples
@@ -83,34 +134,38 @@ $store->currency;             // "USD"
 $store->prices_include_tax;   // true
 ```
 
-- build a product with its variants and read the price range for the listing:
+- build a cart, apply a coupon and place the order:
 
 ```php
-use SivarcartCore\SivarcartCore\Models\Product;
+use SivarcartCore\SivarcartCore\Services\CartService;
 
-$product = Product::factory()->variable()->create();
+$carts = app(CartService::class);
 
-$product->variants()->create(['sku' => 'CAM-AZUL-M', 'price' => 25.50]);
-
-$product->fresh()->priceRange();   // ['min' => 25.5, 'max' => 25.5]
+$cart = $carts->findOrCreate($customer?->getKey(), $sessionId);
+$cart = $carts->addItem($cart, $variant, 2);
+$cart = $carts->applyCoupon($cart, 'BIENVENIDA');
 ```
 
-- record a webhook of Wompi and mark the order as paid only for a real charge:
+- ask for the payment link of an order and read the URL to send the shopper:
 
 ```php
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\PaymentTransaction;
+use SivarcartCore\SivarcartCore\Actions\StartPayment;
 
-$transaction = PaymentTransaction::factory()->create([
-    'payment_id' => $payment->getKey(),
-    'idempotency_key' => $webhook->idempotencyKey(),
-    'is_approved' => $webhook->isApproved(),
-    'is_production' => $webhook->isProduction(),
-]);
+$link = app(StartPayment::class)->execute($order);
 
-if ($transaction->isSuccessful()) {
-    $order->transitionTo(OrderStatus::PAID);
-}
+$link->url;        // https://checkout.wompi.sv/l/...
+$link->reference;  // the identifier of the link on Wompi
+```
+
+- listen to the events of the domain:
+
+```php
+use SivarcartCore\SivarcartCore\Events\OrderPaid;
+
+Event::listen(function (OrderPaid $event): void {
+    $event->order;
+    $event->payment;
+});
 ```
 
 ## Anti-patterns
@@ -118,6 +173,11 @@ if ($transaction->isSuccessful()) {
 - do not put a price or a stock in `sivarcart_products`; it belongs to the variant
 - do not mark an order as paid without checking `is_production`, a test transaction was
   never billed
+- do not publish the route of the `laravel-wompi` package; the package already registers
+  the webhook and both would answer the same path
+- do not call the payment gateway inside a database transaction; the order and its
+  reservation have to survive a failure of the gateway
+- do not trust the totals of a cart; they are recalculated from the items
 - do not load the migrations of the package with `loadMigrationsFrom`; they are
   published, and loading both copies makes `migrate` fail with a duplicate class
 - do not write the status of an order directly; use `transitionTo` so the history stays

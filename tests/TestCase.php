@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Rmirandasv\Wompi\WompiServiceProvider;
 use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
 
 abstract class TestCase extends Orchestra
@@ -37,6 +38,7 @@ abstract class TestCase extends Orchestra
     {
         return [
             SivarcartCoreServiceProvider::class,
+            WompiServiceProvider::class,
         ];
     }
 

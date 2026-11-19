@@ -4,7 +4,58 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore;
 
+use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\OrderService;
+use SivarcartCore\SivarcartCore\Services\PaymentService;
+
+/**
+ * The entry point of the package.
+ *
+ * It only gathers the services of the domain, so a host application can
+ * reach them with a facade. The services are injected in the constructor:
+ * that is the way the package itself uses them.
+ */
 class SivarcartCore
 {
-    //
+    public function __construct(
+        private readonly CartService $carts,
+        private readonly OrderService $orders,
+        private readonly PaymentService $payments,
+        private readonly InventoryService $inventory,
+    ) {
+        //
+    }
+
+    /**
+     * The service that keeps the carts.
+     */
+    public function carts(): CartService
+    {
+        return $this->carts;
+    }
+
+    /**
+     * The service that keeps the orders.
+     */
+    public function orders(): OrderService
+    {
+        return $this->orders;
+    }
+
+    /**
+     * The service that keeps the payments.
+     */
+    public function payments(): PaymentService
+    {
+        return $this->payments;
+    }
+
+    /**
+     * The service that moves the stock.
+     */
+    public function inventory(): InventoryService
+    {
+        return $this->inventory;
+    }
 }

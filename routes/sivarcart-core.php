@@ -2,6 +2,27 @@
 
 declare(strict_types=1);
 
-// use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;
+use SivarcartCore\SivarcartCore\Http\Controllers\WompiWebhookController;
 
-// Route::get('sivarcart-core', fn () => 'SivarcartCore placeholder route.')->name('sivarcart-core.placeholder');
+/*
+|--------------------------------------------------------------------------
+| Wompi Webhook
+|--------------------------------------------------------------------------
+|
+| Wompi sends this route when a payment is made. The "wompi.webhook"
+| middleware of the laravel-wompi package validates the signature of the
+| request before the controller runs.
+|
+| The host application does not have to publish this route: the package
+| registers it. It should not publish the route of the laravel-wompi package
+| either, because both would answer the same path.
+|
+*/
+
+Route::post(
+    (string) config('sivarcart-core.wompi.webhook_path', 'webhooks/wompi'),
+    WompiWebhookController::class,
+)
+    ->name('sivarcart-core.wompi.webhook')
+    ->middleware(['wompi.webhook']);

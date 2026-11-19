@@ -4,7 +4,19 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
+use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
+use SivarcartCore\SivarcartCore\Data\ShippingQuote;
+use SivarcartCore\SivarcartCore\Models\Cart;
+use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use SivarcartCore\SivarcartCore\Payments\WompiPaymentGateway;
+use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\OrderService;
+use SivarcartCore\SivarcartCore\Services\PaymentService;
+use SivarcartCore\SivarcartCore\Services\ShippingMethodRateCalculator;
 use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
 
 it('publishes the migrations under the documented tag', function () {
@@ -66,4 +78,42 @@ it('merges the package configuration into the application', function () {
 
 it('does not load the migrations from the package', function () {
     expect(app('migrator')->paths())->not->toContain(realpath(__DIR__.'/../../database/migrations'));
+});
+
+it('registers the services of the domain', function () {
+    expect(app(CartService::class))->toBeInstanceOf(CartService::class)
+        ->and(app(OrderService::class))->toBeInstanceOf(OrderService::class)
+        ->and(app(PaymentService::class))->toBeInstanceOf(PaymentService::class)
+        ->and(app(InventoryService::class))->toBeInstanceOf(InventoryService::class);
+});
+
+it('resolves the shipping rate calculator of the package', function () {
+    expect(app(ShippingRateCalculator::class))->toBeInstanceOf(ShippingMethodRateCalculator::class);
+});
+
+it('resolves the payment gateway of the package', function () {
+    expect(app(PaymentGateway::class))->toBeInstanceOf(WompiPaymentGateway::class);
+});
+
+it('resolves the same instance of every service', function () {
+    expect(app(CartService::class))->toBe(app(CartService::class))
+        ->and(app(OrderService::class))->toBe(app(OrderService::class));
+});
+
+it('lets a module replace the shipping rate calculator', function () {
+    $calculator = new class implements ShippingRateCalculator
+    {
+        public function quote(ShippingMethod $method, Cart $cart, array $shippingAddress): ShippingQuote
+        {
+            return new ShippingQuote(0.0);
+        }
+    };
+
+    app()->bind(ShippingRateCalculator::class, fn (): ShippingRateCalculator => $calculator);
+
+    expect(app(ShippingRateCalculator::class))->toBe($calculator);
+});
+
+it('registers the route of the webhook of Wompi', function () {
+    expect(Route::has('sivarcart-core.wompi.webhook'))->toBeTrue();
 });

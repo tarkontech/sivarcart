@@ -69,8 +69,23 @@ return [
 
     'wompi' => [
         'enabled' => true,
+
+        /*
+        | The payment gateway used by the payment methods that do not name one.
+        | A module can register another driver on the payment gateway manager.
+        */
+        'driver' => 'wompi',
+
         'webhook_path' => 'webhooks/wompi',
+
+        /*
+        | Where Wompi sends the shopper back once the payment is done. When it
+        | is null the URL is built with the URL of the application and the
+        | redirect path.
+        */
         'redirect_path' => 'payments/wompi/return',
+        'redirect_url' => null,
+
         'payment_link' => [
             'permitir_tarjeta_credito_debito' => true,
             'permitir_pago_con_punto_agricola' => true,
