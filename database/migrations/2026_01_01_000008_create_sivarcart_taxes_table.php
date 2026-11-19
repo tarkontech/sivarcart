@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('sivarcart_taxes', function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+            $table->string('code', 32)->unique();
+            $table->decimal('rate', 5, 4)->default(0);
+            $table->boolean('is_default')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->boolean('applies_to_shipping')->default(false);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('sivarcart_taxes');
+    }
+};

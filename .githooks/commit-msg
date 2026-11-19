@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Valida el mensaje del commit antes de acceptarlo.
+
+root=$(git rev-parse --show-toplevel) || exit 1
+git_dir=$(git rev-parse --git-dir) || exit 1
+
+# Git escribe los mensajes que genera el mismo (merges, cherry-picks y
+# reversiones) y no hay forma de corregirlos, asi que no se validan.
+if [ -f "$git_dir/MERGE_HEAD" ] || [ -f "$git_dir/CHERRY_PICK_HEAD" ] || [ -f "$git_dir/REVERT_HEAD" ]; then
+    exit 0
+fi
+
+exec php "$root/tools/bin/commit-msg.php" "$1"

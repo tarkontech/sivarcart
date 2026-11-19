@@ -1,0 +1,18 @@
+parameters:
+    level: 7
+    paths:
+        - src
+        - config
+        - database
+        - routes
+        - tools
+    tmpDir: build/phpstan
+    # Larastan reads the migrations of the host application to know the columns
+    # of every table. A package ships its own migrations, so the path has to
+    # be pointed at them explicitly.
+    databaseMigrationsPath:
+        - database/migrations
+    # The models of this package declare their casts in the casts() method, so
+    # Larastan has to parse it to know that an attribute is an enum and not a
+    # plain string.
+    parseModelCastsMethod: true

@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Corre la suite completa antes de subir los commits.
+
+root=$(git rev-parse --show-toplevel) || exit 1
+
+cd "$root" || exit 1
+
+composer test

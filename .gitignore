@@ -1,0 +1,63 @@
+# Dependencias
+/vendor
+/node_modules
+
+# Artefactos de build y analisis
+/build
+/.phpunit.cache
+/.phpunit.result.cache
+/coverage
+/.php-cs-fixer.cache
+
+# Archivos de entorno: las credenciales nunca se versionan
+.env
+.env.*
+!.env.example
+*.local.php
+
+# Bases de datos locales
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+
+# Certificados, llaves y secretos
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+
+# Logs
+*.log
+
+# Editores e IDE
+/.idea
+/.vscode
+/.fleet
+/.zed
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Residuos de merge
+*.orig
+*.rej
+
+# Laravel
+/public/hot
+/public/storage
+
+# El archivo de bloqueo no se versiona: es una libreria y la matriz de CI
+# prueba tanto las dependencias mas bajas como las mas estables.
+composer.lock
