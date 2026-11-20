@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore\Models;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use SivarcartCore\SivarcartCore\Database\Factories\OrderFactory;
@@ -135,7 +136,7 @@ class Order extends Model
      *
      * @throws InvalidOrderStatusTransition
      */
-    public function transitionTo(OrderStatus $status, ?StoreUser $user = null, ?string $note = null): void
+    public function transitionTo(OrderStatus $status, ?Authenticatable $user = null, ?string $note = null): void
     {
         $previous = $this->status;
 

@@ -56,6 +56,7 @@
             "@php vendor/bin/testbench package:discover --ansi"
         ],
         "build": [
+            "@clear",
             "@php vendor/bin/testbench workbench:build --ansi"
         ],
         "serve": [

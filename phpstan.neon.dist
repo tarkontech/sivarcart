@@ -6,6 +6,13 @@ parameters:
         - database
         - routes
         - tools
+        # The workbench plays the role of the host application, so it holds
+        # the model that uses the trait of the roles of the store. Without it
+        # PHPStan reports that trait as never used.
+        - workbench
+    excludePaths:
+        # The compiled views of the workbench are build artifacts.
+        - workbench/storage
     tmpDir: build/phpstan
     # Larastan reads the migrations of the host application to know the columns
     # of every table. A package ships its own migrations, so the path has to

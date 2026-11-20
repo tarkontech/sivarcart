@@ -34,6 +34,10 @@ El comando publica las migraciones en `database/migrations`, las ejecuta y siemb
 datos base: los 14 departamentos de El Salvador, las categorías de IVA, los roles del
 personal, la tienda, los métodos de pago y los métodos de envío.
 
+> **La aplicación necesita su propia tabla de usuarios.** El personal de la tienda son
+> los usuarios de la aplicación, así que la migración que crea la tabla `users` tiene que
+> existir antes de correr las migraciones del paquete.
+
 Si prefieres hacerlo paso a paso:
 
 ```bash
@@ -76,9 +80,64 @@ Todas las tablas llevan el prefijo `sivarcart_`. Los modelos viven en
 
 | Tabla | Modelo | Para qué sirve |
 |---|---|---|
-| `sivarcart_store_users` | `StoreUser` | El dueño y los empleados. El paquete trae su propia autenticación y no depende de la tabla `users` de la aplicación. |
 | `sivarcart_store_roles` | `StoreRole` | Roles y permisos. |
 | `sivarcart_store_role_user` | — | Pivote entre el personal y los roles. |
+
+El personal de la tienda son los usuarios de la aplicación: el paquete no tiene
+contraseñas, ni sesiones, ni recuperación de contraseña. La llave foránea del pivote
+apunta a la tabla `users` de la aplicación anfitriona, y su tipo de columna se deriva
+del modelo de usuario, así que una aplicación con llaves `uuid` o con otra tabla de
+usuarios no necesita ningún ajuste.
+
+### Autenticación
+
+El paquete usa la autenticación de Laravel. Toma el modelo de usuario del proveedor
+`users` de `config/auth.php`, que es `App\Models\User` por defecto:
+
+```php
+// config/auth.php
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,
+    ],
+],
+```
+
+Para que un usuario tenga los roles de la tienda, agregale el trait a tu modelo:
+
+```php
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreRoles;
+
+class User extends Authenticatable
+{
+    use HasStoreRoles;
+}
+```
+
+Con el trait el usuario tiene sus roles y sus permisos:
+
+```php
+$user->storeRoles;                          // Los roles de la tienda que tiene.
+$user->hasStoreRole('owner');               // ¿Tiene el rol indicado?
+$user->hasStorePermission('orders.view');   // ¿Alguno de sus roles da el permiso?
+$user->assignStoreRole('manager');          // Le da un rol.
+$user->revokeStoreRole('manager');          // Se lo quita.
+```
+
+Y el paquete resuelve el usuario autenticado con el guard configurado:
+
+```php
+use SivarcartCore\SivarcartCore\Support\Auth;
+
+Auth::user();     // El usuario autenticado, o null.
+Auth::model();    // La clase del modelo de usuario.
+Auth::guard();    // El nombre del guard.
+```
+
+El trait es opcional: sin él, el paquete sigue funcionando y los roles se pueden
+asignar desde el pivote o desde el panel de administración.
 
 ### Compradores
 
@@ -407,8 +466,19 @@ SivarcartCore::inventory();   // InventoryService
 ## Configuration
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
-numeración de órdenes y pagos, y la configuración de Wompi (ruta del webhook, ruta del
-redirect y las formas de pago habilitadas).
+numeración de órdenes y pagos, la configuración de Wompi (ruta del webhook, ruta del
+redirect y las formas de pago habilitadas) y las dos claves de autenticación.
+
+Las claves de autenticación son `null` por defecto, y en ese caso el paquete lee el
+modelo del proveedor `users` y el guard por defecto de `config/auth.php`. Solo hay que
+tocarlas cuando la aplicación usa otro modelo de usuario u otro guard:
+
+```php
+'auth' => [
+    'model' => null,   // Por defecto: config('auth.providers.users.model').
+    'guard' => null,   // Por defecto: config('auth.defaults.guard').
+],
+```
 
 Las credenciales de Wompi se guardan cifradas en `sivarcart_payment_methods.credentials`,
 de modo que el comerciante puede tener una cuenta por tienda. Cuando el método de pago

@@ -7,6 +7,7 @@ namespace SivarcartCore\SivarcartCore\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use SivarcartCore\SivarcartCore\Database\Factories\OrderStatusHistoryFactory;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
+use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
  * A recorded change of the status of an order.
@@ -63,11 +64,14 @@ class OrderStatusHistory extends Model
     /**
      * The member of the staff who recorded the change.
      *
-     * @return BelongsTo<StoreUser, $this>
+     * The staff are the users of the host application, so the relation
+     * points at the model of the "users" provider of "config/auth.php".
+     *
+     * @return BelongsTo<\Illuminate\Database\Eloquent\Model, $this>
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(StoreUser::class);
+        return $this->belongsTo(Auth::model(), 'user_id');
     }
 
     /**

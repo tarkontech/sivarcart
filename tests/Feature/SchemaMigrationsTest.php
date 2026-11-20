@@ -10,7 +10,6 @@ it('creates every table of the data model', function () {
         'sivarcart_settings',
         'sivarcart_departments',
         'sivarcart_document_sequences',
-        'sivarcart_store_users',
         'sivarcart_store_roles',
         'sivarcart_store_role_user',
         'sivarcart_customers',
@@ -42,7 +41,7 @@ it('creates every table of the data model', function () {
         expect(Schema::hasTable($table))->toBeTrue("The table [{$table}] was not created.");
     }
 
-    expect($tables)->toHaveCount(30);
+    expect($tables)->toHaveCount(29);
 });
 
 it('stores money with two decimals and tax rates with four', function () {
@@ -73,7 +72,6 @@ it('keeps the identifiers that must not repeat unique', function () {
         'sivarcart_payment_transactions' => ['idempotency_key'],
         'sivarcart_orders' => ['order_number', 'reference'],
         'sivarcart_payments' => ['reference'],
-        'sivarcart_store_users' => ['email', 'uuid'],
         'sivarcart_customers' => ['email'],
         'sivarcart_coupons' => ['code'],
         'sivarcart_payment_methods' => ['code'],
@@ -94,7 +92,6 @@ it('keeps the identifiers that must not repeat unique', function () {
 
 it('soft deletes only the resources of the store', function () {
     $softDeleted = [
-        'sivarcart_store_users',
         'sivarcart_customers',
         'sivarcart_categories',
         'sivarcart_products',

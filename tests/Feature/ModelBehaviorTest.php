@@ -13,7 +13,7 @@ use SivarcartCore\SivarcartCore\Models\ProductOption;
 use SivarcartCore\SivarcartCore\Models\ProductOptionValue;
 use SivarcartCore\SivarcartCore\Models\ProductVariant;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Models\StoreUser;
+use Workbench\App\Models\User;
 
 it('gives every product a sellable unit', function () {
     $product = Product::factory()->create();
@@ -103,11 +103,12 @@ it('refuses to leave a terminal status', function () {
 });
 
 it('gives the staff of the store its roles', function () {
-    $user = StoreUser::factory()->create();
+    $user = User::factory()->create();
     $role = StoreRole::factory()->create(['permissions' => ['orders.view']]);
 
-    $user->roles()->attach($role);
+    $user->storeRoles()->attach($role);
 
-    expect($user->fresh()->roles)->toHaveCount(1);
-    expect($user->fresh()->roles->first()->permissions)->toBe(['orders.view']);
+    expect($user->fresh()->storeRoles)->toHaveCount(1);
+    expect($user->fresh()->storeRoles->first()->permissions)->toBe(['orders.view']);
+    expect($role->fresh()->users)->toHaveCount(1);
 });

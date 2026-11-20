@@ -2,6 +2,22 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### La autenticación es la de Laravel
+
+- el paquete ya no tiene autenticación propia: desaparecen la tabla `sivarcart_store_users`,
+  el modelo `StoreUser` y su factory. Las credenciales, las sesiones y la recuperación de
+  contraseña son de la aplicación que instala el paquete
+- el personal de la tienda son los usuarios de la aplicación. El modelo se toma del
+  proveedor `users` de `config/auth.php` y el guard de su guard por defecto, y ambos se
+  pueden anular con las claves `auth.model` y `auth.guard` de la configuración del paquete
+- la llave foránea de `sivarcart_store_role_user`, `sivarcart_inventory_movements` y
+  `sivarcart_order_status_histories` se deriva del modelo de usuario, así que una
+  aplicación con llaves `uuid` o con otra tabla de usuarios no necesita ningún ajuste
+- el trait `HasStoreRoles` se agrega al modelo de usuario de la aplicación para que el
+  usuario tenga sus roles y sus permisos, y `Support\Auth` resuelve el usuario
+  autenticado, el modelo y el guard
+- `Order::transitionTo()` ahora acepta cualquier `Authenticatable`, no un `StoreUser`
+
 ### La capa de dominio
 
 - `CartService`, `PricingService`, `CouponService`, `InventoryService`, `OrderService`,

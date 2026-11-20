@@ -33,6 +33,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Authentication
+    |--------------------------------------------------------------------------
+    |
+    | The package does not authenticate anybody. The credentials, the sessions
+    | and the password resets belong to the application that installs it, so
+    | the staff of the store are the users of the application.
+    |
+    | These two keys only tell the package which model holds those users and
+    | which guard holds their session. When they are null the package reads
+    | the "users" provider and the default guard of "config/auth.php", which
+    | is what an application that has not changed them needs.
+    |
+    */
+
+    'auth' => [
+        'model' => null,
+        'guard' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Orders
     |--------------------------------------------------------------------------
     |

@@ -5,18 +5,39 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use SivarcartCore\SivarcartCore\Support\Auth;
+
+/*
+|--------------------------------------------------------------------------
+| The roles of the staff of the store
+|--------------------------------------------------------------------------
+|
+| The staff are the users of the host application, so the pivot points at
+| the model of the "users" provider of "config/auth.php". The column and
+| the constraint are derived from that model, so an application whose users
+| have another kind of key, or another table, does not need any change here.
+|
+*/
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('sivarcart_store_role_user', function (Blueprint $table): void {
+        Auth::assertUserTableExists();
+
+        $user = Auth::newModel();
+
+        Schema::create('sivarcart_store_role_user', function (Blueprint $table) use ($user): void {
             $table->id();
-            $table->foreignId('store_user_id')->constrained('sivarcart_store_users')->cascadeOnDelete()->cascadeOnUpdate();
+
+            $column = $table->foreignIdFor($user, 'user_id');
+            $column->nullable();
+            $column->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+
             $table->foreignId('store_role_id')->constrained('sivarcart_store_roles')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
 
-            $table->unique(['store_user_id', 'store_role_id']);
+            $table->unique(['user_id', 'store_role_id']);
         });
     }
 

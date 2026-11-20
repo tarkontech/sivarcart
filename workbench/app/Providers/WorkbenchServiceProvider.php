@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Workbench\App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Workbench\App\Models\User;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,11 @@ class WorkbenchServiceProvider extends ServiceProvider
         // lost as soon as the command finishes and "composer serve" would
         // start without a database.
         config(['database.default' => 'sqlite']);
+
+        // The workbench plays the role of the host application, so the staff
+        // of the store are its own users. SivarCart Core reads the model of
+        // the "users" provider of "config/auth.php" to relate them.
+        config(['auth.providers.users.model' => User::class]);
     }
 
     /**

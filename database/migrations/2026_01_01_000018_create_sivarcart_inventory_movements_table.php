@@ -5,12 +5,17 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use SivarcartCore\SivarcartCore\Support\Auth;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('sivarcart_inventory_movements', function (Blueprint $table): void {
+        Auth::assertUserTableExists();
+
+        $user = Auth::newModel();
+
+        Schema::create('sivarcart_inventory_movements', function (Blueprint $table) use ($user): void {
             $table->id();
             $table->foreignId('product_variant_id')->constrained('sivarcart_product_variants')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('type', 32);
@@ -19,7 +24,11 @@ return new class extends Migration
             $table->string('reason')->nullable();
             $table->string('reference_type')->nullable();
             $table->unsignedBigInteger('reference_id')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('sivarcart_store_users')->nullOnDelete()->cascadeOnUpdate();
+
+            $column = $table->foreignIdFor($user, 'user_id');
+            $column->nullable();
+            $column->constrained()->nullOnDelete()->cascadeOnUpdate();
+
             $table->json('meta')->nullable();
             $table->timestamp('created_at')->nullable();
 

@@ -19,6 +19,14 @@ migrations:
 seeders:
   - Workbench\Database\Seeders\DatabaseSeeder
 
+# The migrations published in the skeleton of the workbench are purged before
+# every build. "vendor:publish" never overwrites a file that already exists,
+# so without the purge a build would keep running the migrations that the
+# package already removed.
+purge:
+  files:
+    - database/migrations/*
+
 workbench:
   start: '/'
   install: true

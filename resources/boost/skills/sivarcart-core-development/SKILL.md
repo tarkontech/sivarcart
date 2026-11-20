@@ -42,8 +42,35 @@ php artisan sivarcart-core:install
   never rewrites an order that was already placed
 - the order lifecycle lives in `SivarcartCore\SivarcartCore\Enums\OrderStatus`; move an
   order with `$order->transitionTo(OrderStatus::PAID)` and never write the status by hand
+- the staff of the store are the users of the application: `sivarcart_store_role_user`
+  points at the table `users` of the application, and the type of that column is derived
+  from the user model
 
-### 3. Sell
+### 3. Authenticate with the application
+
+- the package does not authenticate anybody: the credentials, the sessions and the
+  password resets belong to the application that installs it
+- the user model comes from the `users` provider of `config/auth.php` and the guard from
+  its default guard; both can be overridden in the `auth` section of
+  `config/sivarcart-core.php`
+- add the trait of the roles to the user model of the application:
+
+```php
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreRoles;
+
+class User extends Authenticatable
+{
+    use HasStoreRoles;
+}
+```
+
+- with the trait the user knows the roles of the store it holds and the permissions those
+  roles grant, and the package reads the authenticated user with
+  `SivarcartCore\SivarcartCore\Support\Auth::user()`
+- the application needs its own table of users before the migrations of the package run
+
+### 4. Sell
 
 - the services in `SivarcartCore\SivarcartCore\Services` are the spine of the domain:
   `CartService`, `OrderService`, `PaymentService` and `InventoryService` are the ones a
@@ -69,7 +96,7 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 ));
 ```
 
-### 4. Collect the money with Wompi
+### 5. Collect the money with Wompi
 
 - the credentials of the gateway live in `sivarcart_payment_methods` and are stored
   encrypted; the package `rmirandasv/laravel-wompi` handles the OAuth2, the HMAC
@@ -86,7 +113,7 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 - the webhook is idempotent: `payment_transactions.idempotency_key` has a unique index,
   so a repeated delivery never charges or moves the stock twice
 
-### 5. Move the order
+### 6. Move the order
 
 - `MarkOrderAsPaid` confirms a payment the store collected on its own, like the cash of
   a delivery order
@@ -99,7 +126,7 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
   `PaymentFailed` after the commit, so a listener never sees a state that can still be
   reverted
 
-### 6. Extend the store
+### 7. Extend the store
 
 - store module settings in `sivarcart_settings` instead of changing the schema
 - the shipping cost comes from the `ShippingRateCalculator` contract and the payment
@@ -119,7 +146,8 @@ app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela
 Read before executing:
 
 - `README.md` — the table by table data model, the install flow and the domain layer
-- `config/sivarcart-core.php` — store defaults, numbering prefixes and the Wompi settings
+- `config/sivarcart-core.php` — store defaults, numbering prefixes, the Wompi settings and
+  the model and guard of the users
 
 ## Examples
 
@@ -168,9 +196,21 @@ Event::listen(function (OrderPaid $event): void {
 });
 ```
 
+- give a member of the staff a role of the store and check what it may do:
+
+```php
+$user->assignStoreRole('manager');
+
+$user->hasStoreRole('manager');           // true
+$user->hasStorePermission('orders.view'); // true
+$user->hasStorePermission('settings.edit'); // false
+```
+
 ## Anti-patterns
 
 - do not put a price or a stock in `sivarcart_products`; it belongs to the variant
+- do not create a table of staff: the staff of the store are the users of the application,
+  and the package relates them to the `users` provider of `config/auth.php`
 - do not mark an order as paid without checking `is_production`, a test transaction was
   never billed
 - do not publish the route of the `laravel-wompi` package; the package already registers
