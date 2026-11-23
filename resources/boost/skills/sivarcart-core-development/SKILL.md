@@ -75,6 +75,19 @@ class User extends Authenticatable
 - with the trait the user knows the roles of the store it holds and the permissions those
   roles grant, and the package reads the authenticated user with
   `SivarcartCore\SivarcartCore\Support\Auth::user()`
+- protect the routes of the application with the permissions of the staff: the package
+  registers the middleware with the alias `store.permission` and the ability
+  `store-permission` of the Gate, so the application does not have to register anything
+
+```php
+Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): void {
+    Route::get('/orders', OrderController::class)->name('orders.index');
+});
+```
+
+- a request without the permission, without a user, or with a user whose model does not
+  carry the trait of the roles is refused with a 403; the middleware does not authenticate
+  anybody, the application puts its own `auth` middleware in front of it
 - the application needs its own table of users before the migrations of the package run
 
 ### 4. Sell
@@ -256,6 +269,16 @@ $user->assignStoreRole('manager');
 $user->hasStoreRole('manager');           // true
 $user->hasStorePermission('orders.view'); // true
 $user->hasStorePermission('settings.edit'); // false
+```
+
+- protect a route of the application with a permission of the staff, and ask for the same
+  permission in a template:
+
+```php
+Route::middleware(['auth', 'store.permission:orders.update'])
+    ->get('/orders/{order}/edit', OrderController::class);
+
+// @can('store-permission', 'orders.update')
 ```
 
 - turn one of the emails to the buyer off:

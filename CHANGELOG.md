@@ -97,6 +97,28 @@
   autenticado, el modelo y el guard
 - `Order::transitionTo()` ahora acepta cualquier `Authenticatable`, no un `StoreUser`
 
+### Los permisos del personal ya protegen las rutas
+
+- el vocabulario de permisos que el paquete siembra deja de ser decorativo: el middleware
+  `EnsureStorePermission` y el ability `store-permission` del `Gate` los aplican de verdad
+- el middleware queda registrado con el alias `store.permission`, así que la aplicación
+  anfitriona protege sus rutas sin registrar nada:
+
+```php
+Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): void {
+    Route::get('/orders', OrderController::class)->name('orders.index');
+});
+```
+
+- el permiso sale del parámetro del middleware y, cuando no hay, del parámetro `permission`
+  de la ruta. Las plantillas preguntan por él con `@can('store-permission', 'orders.update')`
+- el middleware **falla cerrado**: una petición sin permiso, sin usuario autenticado, o con
+  un usuario cuyo modelo no lleva el trait `HasStoreRoles` recibe un 403. El paquete sigue
+  sin autenticar a nadie: el middleware `auth` de la aplicación va delante
+- el criterio de autorización vive en un solo sitio, `Support\Auth::hasStorePermission()`, que
+  usan el middleware y el ability del `Gate`
+- el paquete no pisa un ability `store-permission` que la aplicación ya haya definido
+
 ### La capa de dominio
 
 - `CartService`, `PricingService`, `CouponService`, `InventoryService`, `OrderService`,

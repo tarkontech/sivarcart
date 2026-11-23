@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
 use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
 use SivarcartCore\SivarcartCore\Data\ShippingQuote;
+use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
 use SivarcartCore\SivarcartCore\Models\Cart;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Payments\WompiPaymentGateway;
@@ -116,4 +118,12 @@ it('lets a module replace the shipping rate calculator', function () {
 
 it('registers the route of the webhook of Wompi', function () {
     expect(Route::has('sivarcart-core.wompi.webhook'))->toBeTrue();
+});
+
+it('registers the middleware of the permissions of the store', function () {
+    expect(app('router')->getMiddleware())->toHaveKey('store.permission', EnsureStorePermission::class);
+});
+
+it('defines the ability of the permissions of the store', function () {
+    expect(Gate::has('store-permission'))->toBeTrue();
 });

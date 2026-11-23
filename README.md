@@ -91,6 +91,41 @@ apunta a la tabla `users` de la aplicación anfitriona, y su tipo de columna se 
 del modelo de usuario, así que una aplicación con llaves `uuid` o con otra tabla de
 usuarios no necesita ningún ajuste.
 
+#### Proteger las rutas con los permisos
+
+El paquete trae un middleware y un *ability* de `Gate` para que la aplicación proteja
+sus rutas con los permisos que ya guarda en los roles del personal. El alias
+`store.permission` y el ability `store-permission` están registrados por el paquete:
+la aplicación no tiene que registrar nada.
+
+```php
+// routes/web.php de la aplicación
+Route::middleware(['auth', 'store.permission:orders.view'])
+    ->group(function (): void {
+        Route::get('/pedidos', OrderController::class)->name('orders.index');
+    });
+```
+
+El permiso sale del parámetro del middleware y, cuando no hay, del parámetro
+`permission` de la ruta:
+
+```php
+Route::get('/reportes/{permission}', ReportController::class)
+    ->middleware('store.permission');
+```
+
+Las plantillas preguntan por el permiso con `@can`, que usa el mismo criterio:
+
+```blade
+@can('store-permission', 'orders.update')
+    <a href="{{ route('orders.edit', $order) }}">Editar</a>
+@endcan
+```
+
+Una petición sin permiso, sin usuario autenticado, o con un usuario cuyo modelo no
+lleva el trait de los roles recibe un **403**. El middleware no autentica a nadie: la
+aplicación pone su middleware `auth` delante del suyo.
+
 ### Autenticación
 
 El paquete usa la autenticación de Laravel. Toma el modelo de usuario del proveedor
@@ -139,7 +174,9 @@ Auth::guard();    // El nombre del guard.
 ```
 
 El trait es opcional: sin él, el paquete sigue funcionando y los roles se pueden
-asignar desde el pivote o desde el panel de administración.
+asignar desde el pivote o desde el panel de administración. Un usuario cuyo modelo no
+lleva el trait no tiene ningún permiso, así que el middleware de los permisos le
+responde con un 403.
 
 ### Compradores
 

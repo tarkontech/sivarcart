@@ -90,6 +90,25 @@ final class Auth
     }
 
     /**
+     * Whether the user holds a permission of the store.
+     *
+     * The trait of the roles of the store is optional, so a user whose model
+     * does not carry it holds no permission at all.
+     */
+    public static function hasStorePermission(?Authenticatable $user, string $permission): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        if (! method_exists($user, 'hasStorePermission')) {
+            return false;
+        }
+
+        return $user->hasStorePermission($permission);
+    }
+
+    /**
      * Make sure the table of the users of the host application exists.
      *
      * The migrations of the package derive the foreign key of the staff from
