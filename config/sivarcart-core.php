@@ -78,6 +78,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Notifications
+    |--------------------------------------------------------------------------
+    |
+    | The package tells the buyer when the order moves. Which of those emails
+    | leave the store is a decision of the merchant, so it lives in the
+    | database: the table of the notification settings holds one row per
+    | notification the admin has turned on or off.
+    |
+    | The "enabled" key is the value used for the notifications that have no
+    | row saved yet, so a store that just installed the package already tells
+    | the buyer what is going on with the order.
+    |
+    */
+
+    'notifications' => [
+        'enabled' => true,
+
+        /*
+        | The address the emails come from. When it is null the address of the
+        | "mail.from" configuration of the application is used.
+        */
+        'from' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Wompi
     |--------------------------------------------------------------------------
     |

@@ -5,14 +5,31 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
+use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCorePublishMailablesCommand;
 use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
 use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
+use SivarcartCore\SivarcartCore\Events\OrderCancelled;
+use SivarcartCore\SivarcartCore\Events\OrderDelivered;
+use SivarcartCore\SivarcartCore\Events\OrderPaid;
+use SivarcartCore\SivarcartCore\Events\OrderPlaced;
+use SivarcartCore\SivarcartCore\Events\OrderRefunded;
+use SivarcartCore\SivarcartCore\Events\OrderShipped;
+use SivarcartCore\SivarcartCore\Events\PaymentFailed;
+use SivarcartCore\SivarcartCore\Listeners\SendOrderCancelledNotification;
+use SivarcartCore\SivarcartCore\Listeners\SendOrderDeliveredNotification;
+use SivarcartCore\SivarcartCore\Listeners\SendOrderPaidNotification;
+use SivarcartCore\SivarcartCore\Listeners\SendOrderPlacedNotification;
+use SivarcartCore\SivarcartCore\Listeners\SendOrderRefundedNotification;
+use SivarcartCore\SivarcartCore\Listeners\SendOrderShippedNotification;
+use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
 use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
 use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CouponService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\NotificationService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
 use SivarcartCore\SivarcartCore\Services\PricingService;
@@ -50,6 +67,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             OrderService::class,
             PaymentService::class,
             PaymentGatewayManager::class,
+            NotificationService::class,
         ] as $service) {
             $this->app->singleton($service);
         }
@@ -98,6 +116,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'sivarcart-core');
 
+        $this->registerNotificationListeners();
+
         if (! $this->app->runningInConsole()) {
             return;
         }
@@ -109,6 +129,10 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/sivarcart-core'),
         ], ['sivarcart-core', 'sivarcart-core-views']);
+
+        $this->publishes([
+            __DIR__.'/../resources/views/mail' => resource_path('views/vendor/sivarcart-core/mail'),
+        ], ['sivarcart-core', 'sivarcart-core-mailables']);
 
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/sivarcart-core'),
@@ -124,6 +148,24 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $this->commands([
             SivarcartCoreInstallCommand::class,
+            SivarcartCorePublishMailablesCommand::class,
         ]);
+    }
+
+    /**
+     * Write to the buyer when the order moves.
+     *
+     * The listeners are registered here and not by discovery, so the wiring of
+     * the package is written down in one place.
+     */
+    private function registerNotificationListeners(): void
+    {
+        Event::listen(OrderPlaced::class, SendOrderPlacedNotification::class);
+        Event::listen(OrderPaid::class, SendOrderPaidNotification::class);
+        Event::listen(OrderShipped::class, SendOrderShippedNotification::class);
+        Event::listen(OrderDelivered::class, SendOrderDeliveredNotification::class);
+        Event::listen(OrderCancelled::class, SendOrderCancelledNotification::class);
+        Event::listen(OrderRefunded::class, SendOrderRefundedNotification::class);
+        Event::listen(PaymentFailed::class, SendPaymentFailedNotification::class);
     }
 }

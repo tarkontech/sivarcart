@@ -20,11 +20,20 @@ abstract class TestCase extends Orchestra
     protected string $temporaryDatabasePath;
 
     /**
+     * The temporary base path of the application.
+     */
+    protected string $temporaryBasePath;
+
+    /**
      * Prepare the test case.
      */
     protected function setUp(): void
     {
         $this->temporaryDatabasePath = sys_get_temp_dir()
+            .DIRECTORY_SEPARATOR.'sivarcart-core-tests'
+            .DIRECTORY_SEPARATOR.Str::uuid()->toString();
+
+        $this->temporaryBasePath = sys_get_temp_dir()
             .DIRECTORY_SEPARATOR.'sivarcart-core-tests'
             .DIRECTORY_SEPARATOR.Str::uuid()->toString();
 
@@ -44,11 +53,16 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Point the application to a temporary database path.
+     * Point the application to a temporary database path and to a temporary
+     * base path.
      *
      * The provider publishes the migrations into the database path of the
      * application, so every test needs a directory of its own. Sharing one
      * would let the tests of a parallel run delete the files of each other.
+     *
+     * The base path moves too, because the provider publishes the views and
+     * the translations into it: the tests of the package never write inside
+     * the skeleton of Testbench.
      *
      * The tests also run against the in-memory database of Testbench, so they
      * never depend on the state of the SQLite file used by the workbench.
@@ -59,6 +73,10 @@ abstract class TestCase extends Orchestra
     {
         $app->useDatabasePath($this->temporaryDatabasePath);
 
+        $this->prepareTemporaryBasePath();
+
+        $app->setBasePath($this->temporaryBasePath);
+
         $app['config']->set('database.default', 'testing');
 
         // The package does not own the users: the staff of the store are the
@@ -66,6 +84,28 @@ abstract class TestCase extends Orchestra
         // application, so they point the "users" provider at the model of the
         // workbench, the same way a real application does.
         $app['config']->set('auth.providers.users.model', User::class);
+    }
+
+    /**
+     * Build a base path that looks like a Laravel application.
+     *
+     * Blade reads the composer.json of the base path to guess the namespace
+     * of a component, so the directory needs one.
+     */
+    private function prepareTemporaryBasePath(): void
+    {
+        File::ensureDirectoryExists($this->temporaryBasePath.DIRECTORY_SEPARATOR.'app');
+
+        File::put(
+            $this->temporaryBasePath.DIRECTORY_SEPARATOR.'composer.json',
+            (string) json_encode([
+                'autoload' => [
+                    'psr-4' => [
+                        'App\\' => 'app/',
+                    ],
+                ],
+            ], JSON_PRETTY_PRINT),
+        );
     }
 
     /**
@@ -93,5 +133,6 @@ abstract class TestCase extends Orchestra
         parent::tearDown();
 
         File::deleteDirectory($this->temporaryDatabasePath);
+        File::deleteDirectory($this->temporaryBasePath);
     }
 }

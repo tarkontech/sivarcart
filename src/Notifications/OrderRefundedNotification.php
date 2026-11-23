@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SivarcartCore\SivarcartCore\Notifications;
+
+use Illuminate\Contracts\Mail\Mailable;
+use SivarcartCore\SivarcartCore\Mail\OrderRefundedMail;
+use SivarcartCore\SivarcartCore\Models\Order;
+
+/**
+ * Tells the buyer that the order was refunded.
+ */
+final class OrderRefundedNotification extends BuyerNotification
+{
+    /**
+     * How much was refunded.
+     */
+    public readonly float $amount;
+
+    /**
+     * @param  float  $amount  How much was refunded.
+     */
+    public function __construct(
+        Order $order,
+        string $recipient,
+        float $amount,
+    ) {
+        parent::__construct($order, $recipient);
+
+        $this->amount = $amount;
+    }
+
+    /**
+     * The email the notification delivers.
+     */
+    public function toMail(object $notifiable): Mailable
+    {
+        return new OrderRefundedMail($this->order, $this->recipient, $this->amount);
+    }
+}

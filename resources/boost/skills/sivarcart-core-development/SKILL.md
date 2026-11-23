@@ -141,7 +141,32 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
   `PaymentFailed` after the commit, so a listener never sees a state that can still be
   reverted
 
-### 7. Extend the store
+### 7. Write to the buyer
+
+- the package writes to the buyer when the order moves: every notification of
+  `SivarcartCore\SivarcartCore\Enums\OrderNotification` delivers a markdown mailable, and
+  the notifications are queued, so a mail never holds the checkout
+- **which emails leave the store is a decision of the merchant, and it lives in the
+  database**: `sivarcart_notification_settings` holds one row per notification the
+  administration panel turned on or off. A notification without a row follows
+  `config('sivarcart-core.notifications.enabled')`, which comes enabled
+- the notifications that exist are the cases of `OrderNotification`: `order_placed`,
+  `order_paid`, `order_shipped`, `order_delivered`, `order_cancelled`, `order_refunded`
+  and `payment_failed`
+- to rewrite an email, publish the templates and edit them; the views of the
+  `sivarcart-core` namespace are read from the application first, so the published copy
+  wins without touching PHP:
+
+```bash
+php artisan sivarcart-core:publish-mailables
+```
+
+- the texts of the emails live in the language files (`lang/en/messages.php` and
+  `lang/es/messages.php`), which are published with the tag `sivarcart-core-lang`
+- the sender comes from `config('sivarcart-core.notifications.from')`, and when it is
+  null the `mail.from` of the application is used
+
+### 8. Extend the store
 
 - store module settings in `sivarcart_settings` instead of changing the schema
 - the shipping cost comes from the `ShippingRateCalculator` contract and the payment
@@ -153,16 +178,16 @@ app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela
 ```
 
 - the publish tags are `sivarcart-core`, `sivarcart-core-config`,
-  `sivarcart-core-migrations`, `sivarcart-core-views`, `sivarcart-core-lang` and
-  `sivarcart-core-assets`
+  `sivarcart-core-migrations`, `sivarcart-core-views`, `sivarcart-core-mailables`,
+  `sivarcart-core-lang` and `sivarcart-core-assets`
 
 ## Rules, References, and Templates
 
 Read before executing:
 
 - `README.md` — the table by table data model, the install flow and the domain layer
-- `config/sivarcart-core.php` — store defaults, numbering prefixes, the Wompi settings and
-  the model and guard of the users
+- `config/sivarcart-core.php` — store defaults, numbering prefixes, the Wompi settings, the
+  notifications of the buyer and the model and guard of the users
 
 ## Examples
 
@@ -231,6 +256,18 @@ $user->assignStoreRole('manager');
 $user->hasStoreRole('manager');           // true
 $user->hasStorePermission('orders.view'); // true
 $user->hasStorePermission('settings.edit'); // false
+```
+
+- turn one of the emails to the buyer off:
+
+```php
+use SivarcartCore\SivarcartCore\Enums\OrderNotification;
+use SivarcartCore\SivarcartCore\Models\NotificationSetting;
+
+NotificationSetting::query()->updateOrCreate(
+    ['notification' => OrderNotification::ORDER_SHIPPED],
+    ['is_enabled' => false],
+);
 ```
 
 ## Anti-patterns

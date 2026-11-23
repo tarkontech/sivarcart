@@ -27,7 +27,8 @@ it('lets the host application override the package config', function () {
 });
 
 it('loads the package translations', function () {
-    expect(trans('sivarcart-core::messages.placeholder'))->toBe('SivarcartCore placeholder translation.');
+    expect(trans('sivarcart-core::messages.order_notifications.order_placed.label'))
+        ->toBe('Order received');
 });
 
 it('loads the package views', function () {
@@ -36,4 +37,8 @@ it('loads the package views', function () {
 
 it('registers the artisan command', function () {
     expect(array_key_exists('sivarcart-core:install', $this->app[Kernel::class]->all()))->toBeTrue();
+});
+
+it('registers the command that publishes the mailables', function () {
+    expect(array_key_exists('sivarcart-core:publish-mailables', $this->app[Kernel::class]->all()))->toBeTrue();
 });

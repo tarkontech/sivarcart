@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use SivarcartCore\SivarcartCore\Models\Department;
 use SivarcartCore\SivarcartCore\Models\PaymentMethod;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
@@ -15,6 +16,13 @@ it('installs the package in a single command', function () {
         ->assertSuccessful();
 
     expect(File::exists(database_path('migrations').'/2026_01_01_000001_create_sivarcart_departments_table.php'))->toBeTrue();
+});
+
+it('creates the table of the notification settings', function () {
+    $this->artisan('sivarcart-core:install')
+        ->assertSuccessful();
+
+    expect(Schema::hasTable('sivarcart_notification_settings'))->toBeTrue();
 });
 
 it('seeds the base data of a Salvadoran store', function () {

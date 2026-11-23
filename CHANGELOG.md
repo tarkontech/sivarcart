@@ -2,6 +2,30 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### El comprador recibe los correos de su orden
+
+- el paquete trae la capa de notificación: cada evento del ciclo de la orden dispara
+  una notificación de Laravel que entrega un *mailable* markdown. Los correos del
+  comprador son los de la orden colocada, la orden pagada, la orden enviada, la orden
+  entregada, la orden cancelada, el reembolso y el pago que no pasó
+- las notificaciones van encoladas (`ShouldQueue`): el correo nunca alarga el checkout
+  y un mailer caído no rompe una orden que ya está guardada. El error va al log
+- **qué correos salen lo decide el comerciante en la base de datos**: la tabla nueva
+  `sivarcart_notification_settings` guarda una fila por notificación que el panel de
+  administración haya encendido o apagado. Una notificación sin fila sigue el valor de
+  `config('sivarcart-core.notifications.enabled')`, que viene habilitado
+- el enum `OrderNotification` es el registro de las notificaciones que existen: es lo
+  que el panel lista
+- el comando `sivarcart-core:publish-mailables` publica las plantillas markdown en
+  `resources/views/vendor/sivarcart-core/mail`, con el tag `sivarcart-core-mailables`.
+  Las vistas del namespace `sivarcart-core` se leen primero en la aplicación, así que
+  la plantilla publicada gana sin tocar PHP
+- los textos de los correos salen de los archivos de idioma: `lang/en/messages.php` deja
+  de ser un placeholder y gana su versión en español (`lang/es/messages.php`) y la del
+  locale de la tienda (`lang/es_SV/messages.php`)
+- la configuración gana la sección `notifications`, con el valor por defecto y la
+  dirección desde la que salen los correos
+
 ### La orden tiene un solo estado
 
 - el enum `FulfillmentStatus` desaparece: su vocabulario (`processing`, `shipped`,

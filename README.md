@@ -52,6 +52,7 @@ php artisan db:seed --class="SivarcartCore\\SivarcartCore\\Database\\Seeders\\Da
 php artisan vendor:publish --tag="sivarcart-core"           # todo
 php artisan vendor:publish --tag="sivarcart-core-config"    # config/sivarcart-core.php
 php artisan vendor:publish --tag="sivarcart-core-views"     # resources/views/vendor/sivarcart-core
+php artisan vendor:publish --tag="sivarcart-core-mailables" # resources/views/vendor/sivarcart-core/mail
 php artisan vendor:publish --tag="sivarcart-core-lang"      # lang/vendor/sivarcart-core
 php artisan vendor:publish --tag="sivarcart-core-assets"    # public/vendor/sivarcart-core
 ```
@@ -73,6 +74,7 @@ Todas las tablas llevan el prefijo `sivarcart_`. Los modelos viven en
 |---|---|---|
 | `sivarcart_stores` | `Store` | Perfil y ajustes de la tienda: nombre, NIT, logo, moneda, zona horaria, IVA por defecto. |
 | `sivarcart_settings` | `Setting` | Ajustes libres en clave y valor. Es el punto de extensión de los módulos opcionales. |
+| `sivarcart_notification_settings` | `NotificationSetting` | Qué correos al comprador salen y cuáles no. El panel de administración la edita. |
 | `sivarcart_departments` | `Department` | Los 14 departamentos de El Salvador. |
 | `sivarcart_document_sequences` | `DocumentSequence` | Contadores por tipo y periodo para numerar órdenes y pagos sin colisiones. |
 
@@ -475,6 +477,58 @@ Event::listen(function (OrderPaid $event): void {
 });
 ```
 
+### Los correos al comprador
+
+El paquete escribe al comprador cuando la orden avanza. Cada correo es una notificación
+de Laravel que entrega un *mailable* markdown, así que el comprador recibe el resumen
+de su orden con los componentes de correo de Laravel (`x-mail::message`, `x-mail::table`,
+`x-mail::button`).
+
+| Notificación | Cuándo |
+|---|---|
+| `order_placed` | Se colocó la orden. |
+| `order_paid` | Se pagó la orden. |
+| `order_shipped` | Se envió la orden. |
+| `order_delivered` | Se entregó la orden. |
+| `order_cancelled` | Se canceló la orden. |
+| `order_refunded` | Se registró un reembolso. |
+| `payment_failed` | Un pago no pasó. |
+
+Los correos salen **encolados** (`ShouldQueue`), así que nunca alargan el checkout, y un
+mailer caído no rompe una orden que ya está guardada.
+
+**Qué correos salen lo decide el comerciante, en la base de datos.** La tabla
+`sivarcart_notification_settings` guarda una fila por notificación que el panel de
+administración haya cambiado:
+
+```php
+use SivarcartCore\SivarcartCore\Enums\OrderNotification;
+use SivarcartCore\SivarcartCore\Models\NotificationSetting;
+
+NotificationSetting::query()->updateOrCreate(
+    ['notification' => OrderNotification::ORDER_PLACED],
+    ['is_enabled' => false],   // este correo ya no sale
+);
+```
+
+Una notificación **sin fila** no está apagada: sigue el valor de
+`config('sivarcart-core.notifications.enabled')`, que viene habilitado. El conjunto de
+notificaciones que existen lo define el código, en `OrderNotification::cases()`, que es
+lo que el panel lista.
+
+**Para reescribir un correo**, publica las plantillas y edítalas: las vistas del
+namespace `sivarcart-core` se leen primero en la aplicación, así que la copia gana sin
+tocar una línea de PHP.
+
+```bash
+php artisan sivarcart-core:publish-mailables
+```
+
+El comando publica las siete plantillas en
+`resources/views/vendor/sivarcart-core/mail`. Sin `--force` no pisa las que ya están
+publicadas; con `--force` las sobrescribe. El texto de los correos vive en los archivos
+de idioma (`lang/en/messages.php` y `lang/es/messages.php`), que también se publican.
+
 ### Cancelar y reembolsar
 
 ```php
@@ -557,6 +611,20 @@ tocarlas cuando la aplicación usa otro modelo de usuario u otro guard:
 'auth' => [
     'model' => null,   // Por defecto: config('auth.providers.users.model').
     'guard' => null,   // Por defecto: config('auth.defaults.guard').
+],
+```
+
+Los correos al comprador se controlan desde la base de datos (ver *Los correos al
+comprador*), y la configuración solo pone el valor por defecto:
+
+```php
+'notifications' => [
+    // El valor que se usa para las notificaciones que no tienen fila guardada.
+    'enabled' => true,
+
+    // La dirección desde la que salen los correos. Con null gana el "mail.from"
+    // de la aplicación.
+    'from' => null,
 ],
 ```
 
