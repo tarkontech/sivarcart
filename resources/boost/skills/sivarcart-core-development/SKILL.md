@@ -40,8 +40,15 @@ php artisan sivarcart-core:install
   product owns exactly one variant and a variable product owns one per combination
 - an order freezes what was bought in `sivarcart_order_items`, so editing the catalog
   never rewrites an order that was already placed
-- the order lifecycle lives in `SivarcartCore\SivarcartCore\Enums\OrderStatus`; move an
-  order with `$order->transitionTo(OrderStatus::PAID)` and never write the status by hand
+- an order carries **two axes**: `status` says where the order is
+  (`SivarcartCore\SivarcartCore\Enums\OrderStatus`) and `payment_status` says where
+  the money is (`SivarcartCore\SivarcartCore\Enums\PaymentStatus`). They move apart:
+  an order paid on delivery is `delivered` and `unpaid` at the same time
+- move the order with `$order->transitionTo(OrderStatus::SHIPPED)` and the payment
+  with `$order->transitionPaymentTo(PaymentStatus::PAID)`; never write either field
+  by hand
+- the history of the order keeps one row per axis: the `axis` column tells them
+  apart, and `OrderStatusHistory::scopeForAxis()` filters them
 - the staff of the store are the users of the application: `sivarcart_store_role_user`
   points at the table `users` of the application, and the type of that column is derived
   from the user model
@@ -116,13 +123,21 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 ### 6. Move the order
 
 - `MarkOrderAsPaid` confirms a payment the store collected on its own, like the cash of
-  a delivery order
+  a delivery order. It only moves the payment axis: the order stays `pending` until the
+  staff prepare and ship it
+- `PrepareOrder`, `ShipOrder`, `DeliverOrder` and `ReturnOrder` move the order through
+  its physical half: pending → processing → shipped → delivered, and back to returned.
+  An order that is not paid yet can be shipped, because an order paid on delivery
+  leaves the store before the money arrives
+- dispatching **does not move the stock**: the units were reserved when the order was
+  placed and they become a sale when the order is paid
 - `CancelOrder` gives the reserved units back to the stock and cancels the payment that
   was never settled
 - `RefundOrder` registers a refund: the Wompi API does not offer a way to refund a
   payment, so the core records the refund, gives the units back and closes the order,
   and the merchant applies the money back on the Wompi dashboard
-- the actions emit `OrderPlaced`, `OrderPaid`, `OrderCancelled`, `OrderRefunded` and
+- the actions emit `OrderPlaced`, `OrderPaid`, `OrderPrepared`, `OrderShipped`,
+  `OrderDelivered`, `OrderReturned`, `OrderCancelled`, `OrderRefunded` and
   `PaymentFailed` after the commit, so a listener never sees a state that can still be
   reverted
 
@@ -196,6 +211,18 @@ Event::listen(function (OrderPaid $event): void {
 });
 ```
 
+- move an order through its dispatch and read both axes:
+
+```php
+use SivarcartCore\SivarcartCore\Actions\ShipOrder;
+
+app(ShipOrder::class)->execute($order);
+
+$order->fresh()->status;         // OrderStatus::SHIPPED
+$order->fresh()->payment_status; // PaymentStatus::UNPAID
+$order->fresh()->fulfilled_at;   // the moment it left the store
+```
+
 - give a member of the staff a role of the store and check what it may do:
 
 ```php
@@ -222,4 +249,8 @@ $user->hasStorePermission('settings.edit'); // false
   published, and loading both copies makes `migrate` fail with a duplicate class
 - do not write the status of an order directly; use `transitionTo` so the history stays
   consistent
+- do not write the payment status of an order directly; use `transitionPaymentTo` so the
+  history stays consistent and the change is idempotent
+- do not move the stock when an order is dispatched; the reservation becomes a sale when
+  the order is paid
 - do not document the columns of a table as public API; the models and the enums are

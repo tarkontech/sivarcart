@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Enums\ProductStatus;
@@ -75,16 +76,41 @@ it('casts the money, the flags and the states of a model', function () {
 it('records the status changes of an order', function () {
     $order = Order::factory()->create();
 
-    $order->transitionTo(OrderStatus::PAID, note: 'Pago recibido');
+    $order->transitionTo(OrderStatus::PROCESSING, note: 'En preparación');
 
     $order->refresh();
 
-    expect($order->status)->toBe(OrderStatus::PAID);
+    expect($order->status)->toBe(OrderStatus::PROCESSING);
+    expect($order->statusHistories)->toHaveCount(1);
+    expect($order->statusHistories->first()->axis)->toBe(OrderHistoryAxis::STATUS);
+    expect($order->statusHistories->first()->status)->toBe(OrderStatus::PROCESSING);
+    expect($order->statusHistories->first()->previous_status)->toBe(OrderStatus::PENDING);
+    expect($order->statusHistories->first()->note)->toBe('En preparación');
+});
+
+it('records the changes of the payment of an order', function () {
+    $order = Order::factory()->create();
+
+    $order->transitionPaymentTo(PaymentStatus::PAID, note: 'Pago recibido');
+
+    $order->refresh();
+
+    expect($order->status)->toBe(OrderStatus::PENDING);
     expect($order->payment_status)->toBe(PaymentStatus::PAID);
     expect($order->paid_at)->not->toBeNull();
     expect($order->statusHistories)->toHaveCount(1);
-    expect($order->statusHistories->first()->previous_status)->toBe(OrderStatus::PENDING);
+    expect($order->statusHistories->first()->axis)->toBe(OrderHistoryAxis::PAYMENT);
+    expect($order->statusHistories->first()->payment_status)->toBe(PaymentStatus::PAID);
+    expect($order->statusHistories->first()->previous_payment_status)->toBe(PaymentStatus::UNPAID);
     expect($order->statusHistories->first()->note)->toBe('Pago recibido');
+});
+
+it('does not record anything when the payment is already in that state', function () {
+    $order = Order::factory()->create(['payment_status' => PaymentStatus::PAID]);
+
+    $order->transitionPaymentTo(PaymentStatus::PAID);
+
+    expect($order->fresh()->statusHistories)->toHaveCount(0);
 });
 
 it('refuses a transition the order cannot make', function () {

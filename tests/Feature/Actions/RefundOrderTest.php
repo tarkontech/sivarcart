@@ -58,7 +58,7 @@ it('keeps the order open when only a part of the payment is refunded', function 
     app(RefundOrder::class)->execute($order, 10.00);
 
     expect($order->fresh()->payment_status)->toBe(PaymentStatus::PARTIALLY_REFUNDED)
-        ->and($order->fresh()->status)->toBe(OrderStatus::PAID)
+        ->and($order->fresh()->status)->toBe(OrderStatus::PENDING)
         ->and($order->payments->first()->fresh()->status)->toBe(PaymentRecordStatus::PARTIALLY_REFUNDED);
 });
 

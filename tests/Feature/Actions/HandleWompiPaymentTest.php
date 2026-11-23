@@ -35,7 +35,7 @@ it('marks the order as paid when the payment was approved', function () use ($or
 
     expect($payment->fresh()->status)->toBe(PaymentRecordStatus::PAID)
         ->and($payment->fresh()->paid_at)->not->toBeNull()
-        ->and($order->fresh()->status)->toBe(OrderStatus::PAID)
+        ->and($order->fresh()->status)->toBe(OrderStatus::PENDING)
         ->and($order->fresh()->payment_status->value)->toBe('paid');
 
     Event::assertDispatched(OrderPaid::class);

@@ -11,8 +11,11 @@ parameters:
         # PHPStan reports that trait as never used.
         - workbench
     excludePaths:
-        # The compiled views of the workbench are build artifacts.
-        - workbench/storage
+        # The compiled views of the workbench are build artifacts. The "?" marks
+        # the path as optional: the directory is a build artifact of the
+        # workbench and it does not exist on a fresh checkout, and PHPStan
+        # refuses to run when an excluded path is missing.
+        - workbench/storage (?)
     tmpDir: build/phpstan
     # Larastan reads the migrations of the host application to know the columns
     # of every table. A package ships its own migrations, so the path has to

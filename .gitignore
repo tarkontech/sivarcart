@@ -61,3 +61,6 @@ Desktop.ini
 # El archivo de bloqueo no se versiona: es una libreria y la matriz de CI
 # prueba tanto las dependencias mas bajas como las mas estables.
 composer.lock
+
+# El registro de pendientes vive solo en el repositorio local: nunca se versiona
+/todo.md

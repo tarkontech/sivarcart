@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore\Services;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Log;
 use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
 use SivarcartCore\SivarcartCore\Data\CheckoutData;
 use SivarcartCore\SivarcartCore\Data\ShippingQuote;
 use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
-use SivarcartCore\SivarcartCore\Enums\FulfillmentStatus;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
@@ -109,7 +109,6 @@ final class OrderService
             'customer_phone' => $data->customerPhone,
             'status' => OrderStatus::PENDING,
             'payment_status' => PaymentStatus::UNPAID,
-            'fulfillment_status' => FulfillmentStatus::UNFULFILLED,
             'currency' => $locked->currency,
             'subtotal' => $totals->subtotal,
             'discount_total' => $totals->discountTotal,
@@ -149,20 +148,61 @@ final class OrderService
     }
 
     /**
-     * Move an order to the paid status.
+     * Move the payment of an order to the paid state.
+     *
+     * The payment is an axis of its own: it does not move the order. An order
+     * that is paid and not prepared yet stays pending, and the change is
+     * recorded on the axis of the payment.
      */
-    public function markPaid(Order $order): Order
+    public function markPaid(Order $order, ?Authenticatable $user = null): Order
     {
-        if ($order->status === OrderStatus::PENDING) {
-            $order->transitionTo(OrderStatus::PAID);
+        $order->transitionPaymentTo(PaymentStatus::PAID, $user);
 
-            return $order;
-        }
+        return $order;
+    }
 
-        if ($order->payment_status !== PaymentStatus::PAID) {
-            $order->payment_status = PaymentStatus::PAID;
-            $order->save();
-        }
+    /**
+     * Start the preparation of an order.
+     */
+    public function prepare(Order $order, ?Authenticatable $user = null, ?string $note = null): Order
+    {
+        $order->transitionTo(OrderStatus::PROCESSING, $user, $note);
+
+        return $order;
+    }
+
+    /**
+     * Ship an order.
+     *
+     * The order does not have to be paid: an order paid on delivery leaves
+     * the store before the money arrives.
+     */
+    public function ship(Order $order, ?Authenticatable $user = null, ?string $note = null): Order
+    {
+        $order->transitionTo(OrderStatus::SHIPPED, $user, $note);
+
+        return $order;
+    }
+
+    /**
+     * Mark an order as delivered.
+     */
+    public function deliver(Order $order, ?Authenticatable $user = null, ?string $note = null): Order
+    {
+        $order->transitionTo(OrderStatus::DELIVERED, $user, $note);
+
+        return $order;
+    }
+
+    /**
+     * Register that an order came back to the store.
+     *
+     * The units do not go back to the stock yet: they do when the order is
+     * refunded.
+     */
+    public function markReturned(Order $order, ?Authenticatable $user = null, ?string $reason = null): Order
+    {
+        $order->transitionTo(OrderStatus::RETURNED, $user, $reason);
 
         return $order;
     }
@@ -231,7 +271,7 @@ final class OrderService
     /**
      * Refund an order, give the units back and close it.
      */
-    public function refund(Order $order, float $amount, ?string $reason = null): Order
+    public function refund(Order $order, float $amount, ?string $reason = null, ?Authenticatable $user = null): Order
     {
         if ($amount <= 0) {
             throw new SivarcartCoreException('El monto del reembolso tiene que ser mayor que cero.');
@@ -257,13 +297,15 @@ final class OrderService
         $refunded = round((float) $payment->refunded_amount, 2);
         $isTotal = $refunded >= (float) $payment->amount;
 
-        $order->payment_status = $isTotal ? PaymentStatus::REFUNDED : PaymentStatus::PARTIALLY_REFUNDED;
-        $order->save();
+        $order->transitionPaymentTo(
+            $isTotal ? PaymentStatus::REFUNDED : PaymentStatus::PARTIALLY_REFUNDED,
+            $user,
+        );
 
         $this->returnStock($order, $amount);
 
         if ($isTotal && $order->status->canTransitionTo(OrderStatus::REFUNDED)) {
-            $order->transitionTo(OrderStatus::REFUNDED, note: $reason);
+            $order->transitionTo(OrderStatus::REFUNDED, $user, $reason);
         }
 
         return $order;

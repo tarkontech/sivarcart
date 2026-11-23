@@ -8,10 +8,11 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use SivarcartCore\SivarcartCore\Database\Factories\OrderFactory;
-use SivarcartCore\SivarcartCore\Enums\FulfillmentStatus;
+use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Exceptions\InvalidOrderStatusTransition;
+use SivarcartCore\SivarcartCore\Exceptions\InvalidPaymentStatusTransition;
 use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
 
 /**
@@ -42,7 +43,6 @@ class Order extends Model
         'customer_phone',
         'status',
         'payment_status',
-        'fulfillment_status',
         'currency',
         'subtotal',
         'discount_total',
@@ -74,7 +74,6 @@ class Order extends Model
         return [
             'status' => OrderStatus::class,
             'payment_status' => PaymentStatus::class,
-            'fulfillment_status' => FulfillmentStatus::class,
             'subtotal' => 'decimal:2',
             'discount_total' => 'decimal:2',
             'tax_total' => 'decimal:2',
@@ -124,6 +123,10 @@ class Order extends Model
     /**
      * The status changes of the order.
      *
+     * The timeline holds the changes of both axes: the lifecycle of the order
+     * and the state of its payment. The "forAxis" scope of the history tells
+     * them apart.
+     *
      * @return HasMany<OrderStatusHistory, $this>
      */
     public function statusHistories(): HasMany
@@ -146,14 +149,6 @@ class Order extends Model
 
         $attributes = ['status' => $status];
 
-        if ($status === OrderStatus::PAID) {
-            $attributes['payment_status'] = PaymentStatus::PAID;
-
-            if ($this->paid_at === null) {
-                $attributes['paid_at'] = now();
-            }
-        }
-
         if ($status === OrderStatus::CANCELLED && $this->cancelled_at === null) {
             $attributes['cancelled_at'] = now();
         }
@@ -165,8 +160,48 @@ class Order extends Model
         $this->fill($attributes)->save();
 
         $this->statusHistories()->create([
+            'axis' => OrderHistoryAxis::STATUS,
             'status' => $status,
             'previous_status' => $previous,
+            'note' => $note,
+            'user_id' => $user?->getKey(),
+        ]);
+    }
+
+    /**
+     * Move the payment of the order to another state and record the change.
+     *
+     * The payment is an axis of its own: it does not follow the lifecycle of
+     * the order, so an order can be delivered and still be unpaid. The change
+     * does nothing when the payment is already in that state, because the
+     * same payment can be confirmed twice.
+     *
+     * @throws InvalidPaymentStatusTransition
+     */
+    public function transitionPaymentTo(PaymentStatus $status, ?Authenticatable $user = null, ?string $note = null): void
+    {
+        $previous = $this->payment_status;
+
+        if ($previous === $status) {
+            return;
+        }
+
+        if (! $previous->canTransitionTo($status)) {
+            throw InvalidPaymentStatusTransition::between($previous, $status);
+        }
+
+        $attributes = ['payment_status' => $status];
+
+        if ($status === PaymentStatus::PAID && $this->paid_at === null) {
+            $attributes['paid_at'] = now();
+        }
+
+        $this->fill($attributes)->save();
+
+        $this->statusHistories()->create([
+            'axis' => OrderHistoryAxis::PAYMENT,
+            'payment_status' => $status,
+            'previous_payment_status' => $previous,
             'note' => $note,
             'user_id' => $user?->getKey(),
         ]);

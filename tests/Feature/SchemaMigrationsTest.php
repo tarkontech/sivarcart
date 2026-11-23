@@ -123,3 +123,12 @@ it('keeps the stock ledger and the order history append only', function () {
     expect(Schema::hasColumn('sivarcart_inventory_movements', 'updated_at'))->toBeFalse();
     expect(Schema::hasColumn('sivarcart_order_status_histories', 'updated_at'))->toBeFalse();
 });
+
+it('keeps one axis for the order and one for its payment', function () {
+    expect(Schema::hasColumn('sivarcart_orders', 'fulfillment_status'))->toBeFalse();
+
+    $history = collect(Schema::getColumns('sivarcart_order_status_histories'))->keyBy('name');
+
+    expect($history)->toHaveKeys(['axis', 'status', 'previous_status', 'payment_status', 'previous_payment_status'])
+        ->and($history['status']['nullable'])->toBeTrue();
+});

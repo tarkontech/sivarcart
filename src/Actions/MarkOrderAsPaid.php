@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore\Actions;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
 use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
 use SivarcartCore\SivarcartCore\Events\OrderPaid;
@@ -31,9 +32,9 @@ final class MarkOrderAsPaid
     /**
      * Mark an order as paid.
      */
-    public function execute(Order $order, ?Payment $payment = null): Order
+    public function execute(Order $order, ?Payment $payment = null, ?Authenticatable $user = null): Order
     {
-        return DB::transaction(function () use ($order, $payment): Order {
+        return DB::transaction(function () use ($order, $payment, $user): Order {
             $target = $payment ?? $order->payments()
                 ->where('status', PaymentRecordStatus::PENDING)
                 ->first();
@@ -43,7 +44,7 @@ final class MarkOrderAsPaid
             }
 
             $this->orders->convertReservationToSale($order);
-            $this->orders->markPaid($order);
+            $this->orders->markPaid($order, $user);
 
             DB::afterCommit(fn () => event(new OrderPaid($order, $target)));
 

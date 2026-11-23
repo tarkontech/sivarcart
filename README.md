@@ -238,26 +238,57 @@ $transaction->isSuccessful();   // true solo si fue aprobada y fue un cobro real
 |---|---|---|
 | `sivarcart_orders` | `Order` | La orden, con los totales y las direcciones ya congelados. |
 | `sivarcart_order_items` | `OrderItem` | Lo comprado: nombre, SKU, opciones, precio y tasa de impuesto son una copia. |
-| `sivarcart_order_status_histories` | `OrderStatusHistory` | Cada cambio de estado de una orden. |
+| `sivarcart_order_status_histories` | `OrderStatusHistory` | Cada cambio de una orden: los de su ciclo de vida y los de su pago. |
 
 Cambiar el precio de un producto o renombrarlo nunca reescribe una orden ya colocada. Las
 líneas de la orden guardan su propia copia, y el producto puede quedar borrado sin que
 la orden deje de poder leerse.
 
-El ciclo de vida de la orden vive en el enum `OrderStatus`:
+La orden lleva **dos ejes**, y nunca dicen lo mismo:
+
+- `status` dice **dónde está la orden**: pendiente, en preparación, enviada, entregada,
+  devuelta, cancelada o reembolsada.
+- `payment_status` dice **dónde está el dinero**: sin pagar, pendiente, pagada, fallida,
+  cancelada o reembolsada.
+
+El ciclo de vida de la orden vive en el enum `OrderStatus`, y el del pago en
+`PaymentStatus`:
 
 ```php
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
+use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 
-$order->transitionTo(OrderStatus::PAID, note: 'Pago recibido');
+$order->transitionTo(OrderStatus::SHIPPED, note: 'Salió con el courier');
+$order->transitionPaymentTo(PaymentStatus::PAID, note: 'Pago recibido');
 
-$order->status;                 // OrderStatus::PAID
+$order->status;                 // OrderStatus::SHIPPED
 $order->payment_status;         // PaymentStatus::PAID
 $order->statusHistories;        // la transición queda registrada
 ```
 
+Los dos ejes se mueven por separado porque no siempre van al mismo paso: una orden
+contra entrega sale del store sin estar pagada, y una orden pagada puede esperar días a
+que la preparen. Por eso una orden se lee con dos campos y no con uno.
+
+Los dos enums comparten algunos nombres (`pending`, `cancelled`, `refunded`), pero cada
+valor vive en su propia columna, así que el campo dice siempre a qué eje pertenece:
+`status = cancelled` es una orden cancelada y `payment_status = cancelled` sería un
+pago cancelado.
+
 Las transiciones que no están permitidas lanzan `InvalidOrderStatusTransition`.
-`cancelled` y `refunded` son estados finales.
+`cancelled` y `refunded` son estados finales. Las transiciones del pago lanzan
+`InvalidPaymentStatusTransition`, y no hacen nada cuando el pago ya está en ese estado:
+el mismo pago se puede confirmar dos veces.
+
+El historial de la orden guarda **un renglón por eje**, y la columna `axis` los
+distingue:
+
+```php
+use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
+
+$order->statusHistories()->forAxis(OrderHistoryAxis::STATUS)->get();  // el ciclo de la orden
+$order->statusHistories()->forAxis(OrderHistoryAxis::PAYMENT)->get(); // el estado del pago
+```
 
 ## Capa de dominio
 
@@ -299,7 +330,7 @@ puede convertir dos veces; el segundo intento lanza `InvalidCartState`.
 | `PricingService` | Cuánto cuesta cada línea y cuánto cuesta el total. Redondea a dos decimales y siempre arma el total desde las partes ya redondeadas. |
 | `CouponService` | Valida los códigos de descuento y calcula lo que valen. El valor de un cupón porcentual **es** el porcentaje: 15 significa 15 %. |
 | `InventoryService` | Mueve el stock y escribe el libro mayorista de cada movimiento. |
-| `OrderService` | Coloca, paga, cancela y reembolsa las órdenes. |
+| `OrderService` | Coloca, paga, prepara, envía, entrega, cancela y reembolsa las órdenes. |
 | `PaymentService` | Los pagos y las transacciones que reporta la pasarela. |
 | `SequenceService` | Numera los documentos: `SIV-2026-00001`, `PAY-2026-00001`. |
 | `StoreService` | Los ajustes de la tienda única de la instalación. |
@@ -320,6 +351,47 @@ explica cada uno:
 El stock disponible nunca cuenta dos veces una unidad reservada, así que la última
 unidad de un producto no se vende dos veces. Al cobrar, la reserva se convierte en
 venta: **el stock disponible no cambia** al pagar.
+
+**Despachar la orden no mueve el stock.** El libro mayorista tiene cuatro momentos y
+ninguno es "enviar": preparar, enviar y entregar solo describen la realidad física de
+la orden. Las unidades vuelven al stock cuando la orden se cancela o se reembolsa.
+
+### El despacho de la orden
+
+El despacho es la mitad física del ciclo de vida de la orden, y lo maneja el personal de
+la tienda con las acciones del paquete:
+
+```php
+use SivarcartCore\SivarcartCore\Actions\DeliverOrder;
+use SivarcartCore\SivarcartCore\Actions\PrepareOrder;
+use SivarcartCore\SivarcartCore\Actions\ReturnOrder;
+use SivarcartCore\SivarcartCore\Actions\ShipOrder;
+
+app(PrepareOrder::class)->execute($order);        // pendiente → en preparación
+app(ShipOrder::class)->execute($order);           // → enviada
+app(DeliverOrder::class)->execute($order);        // → entregada
+app(ReturnOrder::class)->execute($order, null, 'El comprador la rechazó');
+```
+
+El ciclo es este, y las transiciones que no están permitidas lanzan
+`InvalidOrderStatusTransition`:
+
+```
+pending ──→ processing ──→ shipped ──→ delivered
+   │             │             │            │
+   │             │             └─→ returned ┘
+   └─→ shipped   │
+                 └──→ cancelled
+```
+
+Un par de reglas que vale la pena conocer:
+
+- **Una orden sin pagar se puede enviar.** El grafo lo permite porque en el mercado
+  local la orden contra entrega sale del store antes de que el comprador pague. Por eso
+  `payment_status` es un eje aparte: una orden puede estar `delivered` y `unpaid` a la
+  vez.
+- **`cancelled` y `refunded` son finales.** Una orden que ya salió no se cancela: se
+  devuelve. Y una orden devuelta todavía se puede reembolsar.
 
 ### Los precios y el IVA
 
@@ -386,6 +458,10 @@ que todavía puede revertirse:
 |---|---|
 | `OrderPlaced` | Se colocó la orden. |
 | `OrderPaid` | Se pagó la orden. |
+| `OrderPrepared` | Empezó a preparar la orden. |
+| `OrderShipped` | Se envió la orden. |
+| `OrderDelivered` | Se entregó la orden. |
+| `OrderReturned` | La orden volvió a la tienda. |
 | `OrderCancelled` | Se canceló la orden. |
 | `OrderRefunded` | Se registró un reembolso. |
 | `PaymentFailed` | Un pago no pasó. |
@@ -414,6 +490,10 @@ app(RefundOrder::class)->execute($order, 25.50, 'Producto devuelto');
 Cancelar devuelve las unidades reservadas al stock y cancela el pago que nunca se
 cobró. `MarkOrderAsPaid` es la forma de confirmar un pago que la tienda cobró por su
 cuenta, como el efectivo de una orden contra entrega.
+
+> **Pagar no mueve la orden.** `MarkOrderAsPaid` solo cambia el eje del pago: la orden
+> sigue `pending` hasta que el personal la prepara y la envía. Por eso una orden
+> pagada se lee con los dos campos, `status` y `payment_status`.
 
 > **El reembolso se registra, no se ejecuta.** La API de Wompi no expone la forma de
 > devolver el dinero de un pago, así que el núcleo deja constancia del reembolso, repone

@@ -6,7 +6,6 @@ namespace SivarcartCore\SivarcartCore\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\FulfillmentStatus;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Models\Order;
@@ -41,7 +40,6 @@ class OrderFactory extends Factory
             'customer_phone' => fake()->numerify('7#######'),
             'status' => OrderStatus::PENDING,
             'payment_status' => PaymentStatus::UNPAID,
-            'fulfillment_status' => FulfillmentStatus::UNFULFILLED,
             'currency' => 'USD',
             'subtotal' => $total,
             'discount_total' => 0,
@@ -73,11 +71,14 @@ class OrderFactory extends Factory
 
     /**
      * Create an order that has already been paid.
+     *
+     * The payment is an axis of its own: a paid order that is not prepared yet
+     * is still a pending order.
      */
     public function paid(): static
     {
         return $this->state(fn (array $attributes): array => [
-            'status' => OrderStatus::PAID,
+            'status' => OrderStatus::PENDING,
             'payment_status' => PaymentStatus::PAID,
             'paid_at' => now(),
         ]);

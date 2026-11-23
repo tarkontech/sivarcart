@@ -172,7 +172,7 @@ it('marks an order as paid', function () {
 
     app(OrderService::class)->markPaid($order);
 
-    expect($order->fresh()->status)->toBe(OrderStatus::PAID)
+    expect($order->fresh()->status)->toBe(OrderStatus::PENDING)
         ->and($order->fresh()->payment_status)->toBe(PaymentStatus::PAID)
         ->and($order->fresh()->paid_at)->not->toBeNull();
 });
@@ -239,4 +239,62 @@ it('refuses a refund of no money', function () {
 
     expect(fn () => app(OrderService::class)->refund($order, 0))
         ->toThrow(SivarcartCoreException::class);
+});
+
+it('prepares an order', function () {
+    $scenario = CheckoutScenario::guest();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    $prepared = app(OrderService::class)->prepare($order);
+
+    expect($prepared->status)->toBe(OrderStatus::PROCESSING);
+});
+
+it('ships an order', function () {
+    $scenario = CheckoutScenario::guest();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    $shipped = app(OrderService::class)->ship($order);
+
+    expect($shipped->status)->toBe(OrderStatus::SHIPPED)
+        ->and($shipped->fulfilled_at)->not->toBeNull();
+});
+
+it('delivers an order', function () {
+    $scenario = CheckoutScenario::guest();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    $order->transitionTo(OrderStatus::SHIPPED);
+
+    $delivered = app(OrderService::class)->deliver($order);
+
+    expect($delivered->status)->toBe(OrderStatus::DELIVERED);
+});
+
+it('registers the return of an order', function () {
+    $scenario = CheckoutScenario::guest();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    $order->transitionTo(OrderStatus::SHIPPED);
+
+    $returned = app(OrderService::class)->markReturned($order);
+
+    expect($returned->status)->toBe(OrderStatus::RETURNED);
+});
+
+it('does not move the stock when the order is shipped', function () {
+    $scenario = CheckoutScenario::guest();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    app(OrderService::class)->ship($order);
+
+    $variant = $scenario->variant->fresh();
+
+    expect($variant->stock_quantity)->toBe(25)
+        ->and($variant->reserved_quantity)->toBe(1);
 });

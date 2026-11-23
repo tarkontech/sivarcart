@@ -29,6 +29,44 @@ enum PaymentStatus: string
     }
 
     /**
+     * The statuses the payment of an order may move to from the current one.
+     *
+     * The payment is an axis of its own: it does not follow the lifecycle of
+     * the order. An order may be delivered and still be unpaid, and it may be
+     * paid and still be pending to be prepared.
+     *
+     * @return list<self>
+     */
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::UNPAID => [self::PENDING, self::PAID, self::FAILED, self::CANCELLED, self::REFUNDED],
+            self::PENDING => [self::PAID, self::FAILED, self::CANCELLED, self::REFUNDED],
+            self::PAID => [self::PARTIALLY_REFUNDED, self::REFUNDED],
+            self::PARTIALLY_REFUNDED => [self::REFUNDED],
+            self::FAILED => [self::PENDING, self::PAID, self::CANCELLED, self::REFUNDED],
+            self::CANCELLED => [],
+            self::REFUNDED => [],
+        };
+    }
+
+    /**
+     * Whether the status cannot be left.
+     */
+    public function isTerminal(): bool
+    {
+        return $this->allowedTransitions() === [];
+    }
+
+    /**
+     * Whether moving from this status to the given one is allowed.
+     */
+    public function canTransitionTo(self $status): bool
+    {
+        return in_array($status, $this->allowedTransitions(), true);
+    }
+
+    /**
      * A human readable label.
      */
     public function label(): string

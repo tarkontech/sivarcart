@@ -2,6 +2,45 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### La orden tiene un solo estado
+
+- el enum `FulfillmentStatus` desaparece: su vocabulario (`processing`, `shipped`,
+  `delivered`, `returned`) se integra en `OrderStatus`, que ahora cubre el ciclo
+  completo de la orden. La columna `sivarcart_orders.fulfillment_status` se borra
+  con una migración publicada
+- `OrderStatus::PAID` desaparece del enum: el estado del pago ya lo dice
+  `PaymentStatus`, y los dos campos nunca podían discrepar. Una orden pagada y sin
+  preparar es `OrderStatus::PENDING`
+- el pago es un eje aparte del ciclo de la orden: una orden contra entrega puede
+  estar `delivered` y `unpaid` a la vez, y una orden pagada puede esperar días a
+  que la preparen. `PaymentStatus` gana `allowedTransitions()` con la misma
+  filosofía que el ciclo de la orden
+- `Order::transitionTo()` ya no escribe el pago: el pago se mueve con
+  `Order::transitionPaymentTo()`, que no hace nada cuando el pago ya está en ese
+  estado y lanza `InvalidPaymentStatusTransition` cuando el cambio es imposible
+- el historial de la orden guarda **un renglón por eje**: gana la columna `axis`
+  (`status` o `payment`), las columnas `payment_status` y
+  `previous_payment_status`, y `status` pasa a admitir nulos. El scope
+  `forAxis()` los separa
+- el grafo de transiciones cambia: una orden sin pagar ya se puede enviar, porque
+  en el mercado local la orden contra entrega sale del store antes de que el
+  comprador pague. `cancelled` y `refunded` siguen siendo finales, y una orden
+  devuelta todavía se puede reembolsar
+
+### El despacho de la orden
+
+- las acciones `PrepareOrder`, `ShipOrder`, `DeliverOrder` y `ReturnOrder` mueven
+  la orden por su ciclo físico, con las reglas del enum y un renglón en el
+  historial de cada cambio
+- los eventos `OrderPrepared`, `OrderShipped`, `OrderDelivered` y `OrderReturned`
+  se emiten después del commit, como los demás
+- el despacho **no mueve el stock**: el libro mayorista sigue con sus cuatro
+  momentos (reserva, venta, liberación y devolución). Las unidades vuelven al
+  stock cuando la orden se cancela o se reembolsa
+- `OrderService` gana `prepare()`, `ship()`, `deliver()` y `markReturned()`, y las
+  acciones de pago y de reembolso aceptan el usuario que las hizo, para que el
+  historial diga quién movió cada eje
+
 ### La autenticación es la de Laravel
 
 - el paquete ya no tiene autenticación propia: desaparecen la tabla `sivarcart_store_users`,
@@ -47,6 +86,9 @@
   descuento
 - el cliente de Wompi ya no se construye al resolver la pasarela, sino al crear el
   enlace de pago: una tienda sin credenciales de Wompi puede usar el resto del paquete
+- `phpstan.neon.dist` excluía `workbench/storage`, que es un artefacto de compilación
+  del workbench y no existe en un clon recién bajado. PHPStan se negaba a correr con
+  ese error, así que la ruta se marca como opcional
 
 
 ## [v0.1.0](https://github.com/tarkontech/sivarcart-core/compare/...v0.1.0) - 202x-xx-xx

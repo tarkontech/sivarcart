@@ -78,7 +78,7 @@ it('marks the order as paid when the webhook arrives', function () {
         'CONTENT_TYPE' => 'application/json',
     ], $body)->assertOk();
 
-    expect($order->fresh()->status)->toBe(OrderStatus::PAID)
+    expect($order->fresh()->status)->toBe(OrderStatus::PENDING)
         ->and(PaymentTransaction::query()->count())->toBe(1);
 });
 
@@ -105,7 +105,7 @@ it('does not apply the same webhook twice', function () {
     }
 
     expect(PaymentTransaction::query()->count())->toBe(1)
-        ->and($order->fresh()->status)->toBe(OrderStatus::PAID);
+        ->and($order->fresh()->status)->toBe(OrderStatus::PENDING);
 });
 
 it('refuses a webhook with an invalid signature', function () {

@@ -21,7 +21,7 @@ it('marks the order as paid', function () {
 
     app(MarkOrderAsPaid::class)->execute($order);
 
-    expect($order->fresh()->status)->toBe(OrderStatus::PAID)
+    expect($order->fresh()->status)->toBe(OrderStatus::PENDING)
         ->and($order->fresh()->payment_status->value)->toBe('paid')
         ->and($order->fresh()->paid_at)->not->toBeNull();
 
@@ -62,7 +62,7 @@ it('marks a payment the store collected on its own as paid', function () {
     app(MarkOrderAsPaid::class)->execute($order, $payment);
 
     expect($payment->fresh()->status)->toBe(PaymentRecordStatus::PAID)
-        ->and($order->fresh()->status)->toBe(OrderStatus::PAID);
+        ->and($order->fresh()->status)->toBe(OrderStatus::PENDING);
 });
 
 it('marks an order without a payment as paid', function () {
@@ -72,6 +72,6 @@ it('marks an order without a payment as paid', function () {
 
     app(MarkOrderAsPaid::class)->execute($order);
 
-    expect($order->fresh()->status)->toBe(OrderStatus::PAID)
+    expect($order->fresh()->status)->toBe(OrderStatus::PENDING)
         ->and($order->fresh()->payments)->toHaveCount(0);
 });
