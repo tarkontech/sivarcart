@@ -17,15 +17,12 @@ enum CustomerDocumentType: string
 
     /**
      * A human readable label.
+     *
+     * The label comes from the language file of the package and not from the
+     * code, so it speaks the language of the application.
      */
     public function label(): string
     {
-        return match ($this) {
-            self::NIT => 'NIT',
-            self::RUC => 'RUC',
-            self::DUI => 'DUI',
-            self::PASAPORTE => 'Pasaporte',
-            self::OTRO => 'Otro',
-        };
+        return (string) __('sivarcart-core::messages.customer_document_type.'.$this->value);
     }
 }

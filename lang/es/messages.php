@@ -3,6 +3,50 @@
 declare(strict_types=1);
 
 return [
+
+    'coupon_type' => [
+        'fixed' => 'Monto fijo',
+        'percentage' => 'Porcentaje',
+        'free_shipping' => 'Envío gratis',
+    ],
+
+    'customer_document_type' => [
+        'nit' => 'NIT',
+        'ruc' => 'RUC',
+        'dui' => 'DUI',
+        'pasaporte' => 'Pasaporte',
+        'otro' => 'Otro',
+    ],
+
+    'document_sequence_type' => [
+        'order' => 'Orden',
+        'payment' => 'Pago',
+    ],
+
+    'inventory_movement_type' => [
+        'sale' => 'Venta',
+        'restock' => 'Reposición',
+        'adjustment' => 'Ajuste',
+        'return' => 'Devolución',
+        'reservation' => 'Reserva',
+        'release' => 'Liberación',
+    ],
+
+    'order_history_axis' => [
+        'status' => 'Estado de la orden',
+        'payment' => 'Estado del pago',
+    ],
+
+    'order_status' => [
+        'pending' => 'Pendiente',
+        'processing' => 'En preparación',
+        'shipped' => 'Enviada',
+        'delivered' => 'Entregada',
+        'returned' => 'Devuelta',
+        'cancelled' => 'Cancelada',
+        'refunded' => 'Reembolsada',
+    ],
+
     'order_notifications' => [
 
         'table' => [
@@ -83,4 +127,60 @@ return [
         ],
 
     ],
+
+    'payment_method_type' => [
+        'online' => 'Pago en línea',
+        'offline' => 'Pago fuera de línea',
+    ],
+
+    'payment_record_status' => [
+        'pending' => 'Pendiente',
+        'processing' => 'Procesando',
+        'paid' => 'Pagado',
+        'failed' => 'Fallido',
+        'cancelled' => 'Cancelado',
+        'refunded' => 'Reembolsado',
+        'partially_refunded' => 'Reembolso parcial',
+    ],
+
+    'payment_status' => [
+        'unpaid' => 'Sin pagar',
+        'pending' => 'Pago pendiente',
+        'paid' => 'Pagada',
+        'failed' => 'Pago fallido',
+        'cancelled' => 'Pago cancelado',
+        'refunded' => 'Reembolsada',
+        'partially_refunded' => 'Reembolso parcial',
+    ],
+
+    'payment_transaction_status' => [
+        'pending' => 'Pendiente',
+        'approved' => 'Aprobada',
+        'rejected' => 'Rechazada',
+        'failed' => 'Fallida',
+    ],
+
+    'product_option_type' => [
+        'text' => 'Texto',
+        'select' => 'Selección',
+        'color' => 'Color',
+    ],
+
+    'product_status' => [
+        'draft' => 'Borrador',
+        'published' => 'Publicado',
+        'archived' => 'Archivado',
+    ],
+
+    'product_type' => [
+        'simple' => 'Producto simple',
+        'variable' => 'Producto con variantes',
+    ],
+
+    'shipping_method_type' => [
+        'flat_rate' => 'Tarifa fija',
+        'free' => 'Gratis',
+        'pickup' => 'Recoger en tienda',
+    ],
+
 ];

@@ -60,17 +60,12 @@ enum OrderStatus: string
 
     /**
      * A human readable label.
+     *
+     * The label comes from the language file of the package and not from the
+     * code, so it speaks the language of the application.
      */
     public function label(): string
     {
-        return match ($this) {
-            self::PENDING => 'Pendiente',
-            self::PROCESSING => 'En preparación',
-            self::SHIPPED => 'Enviada',
-            self::DELIVERED => 'Entregada',
-            self::RETURNED => 'Devuelta',
-            self::CANCELLED => 'Cancelada',
-            self::REFUNDED => 'Reembolsada',
-        };
+        return (string) __('sivarcart-core::messages.order_status.'.$this->value);
     }
 }

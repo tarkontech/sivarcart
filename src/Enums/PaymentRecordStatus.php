@@ -27,17 +27,12 @@ enum PaymentRecordStatus: string
 
     /**
      * A human readable label.
+     *
+     * The label comes from the language file of the package and not from the
+     * code, so it speaks the language of the application.
      */
     public function label(): string
     {
-        return match ($this) {
-            self::PENDING => 'Pendiente',
-            self::PROCESSING => 'Procesando',
-            self::PAID => 'Pagado',
-            self::FAILED => 'Fallido',
-            self::CANCELLED => 'Cancelado',
-            self::REFUNDED => 'Reembolsado',
-            self::PARTIALLY_REFUNDED => 'Reembolso parcial',
-        };
+        return (string) __('sivarcart-core::messages.payment_record_status.'.$this->value);
     }
 }

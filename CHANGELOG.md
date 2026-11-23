@@ -2,6 +2,22 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### Las etiquetas de los enums salen de los archivos de idioma
+
+- `label()` de los enums ya no escribe el texto dentro del código: lo busca con
+  `__('sivarcart-core::messages...')`, así que la etiqueta habla el idioma de la
+  aplicación. Los enums afectados son `CouponType`, `CustomerDocumentType`,
+  `DocumentSequenceType`, `InventoryMovementType`, `OrderHistoryAxis`, `OrderStatus`,
+  `PaymentMethodType`, `PaymentRecordStatus`, `PaymentStatus`,
+  `PaymentTransactionStatus`, `ProductOptionType`, `ProductStatus`, `ProductType` y
+  `ShippingMethodType`
+- el texto en español que los enums traían escrito se conserva como el valor por
+  defecto: vive en `lang/es/messages.php` y en `lang/es_SV/messages.php`, que ahora
+  tienen un grupo por enum (`order_status`, `payment_status`,
+  `inventory_movement_type`, ...) con una clave por caso
+- `lang/en/messages.php` gana el texto en inglés de las mismas etiquetas, para que una
+  aplicación en inglés no muestre las etiquetas en español
+
 ### El comprador recibe los correos de su orden
 
 - el paquete trae la capa de notificación: cada evento del ciclo de la orden dispara

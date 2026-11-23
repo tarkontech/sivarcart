@@ -15,13 +15,12 @@ enum CouponType: string
 
     /**
      * A human readable label.
+     *
+     * The label comes from the language file of the package and not from the
+     * code, so it speaks the language of the application.
      */
     public function label(): string
     {
-        return match ($this) {
-            self::FIXED => 'Monto fijo',
-            self::PERCENTAGE => 'Porcentaje',
-            self::FREE_SHIPPING => 'Envío gratis',
-        };
+        return (string) __('sivarcart-core::messages.coupon_type.'.$this->value);
     }
 }

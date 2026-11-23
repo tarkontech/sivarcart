@@ -18,12 +18,12 @@ enum ProductType: string
 
     /**
      * A human readable label.
+     *
+     * The label comes from the language file of the package and not from the
+     * code, so it speaks the language of the application.
      */
     public function label(): string
     {
-        return match ($this) {
-            self::SIMPLE => 'Producto simple',
-            self::VARIABLE => 'Producto con variantes',
-        };
+        return (string) __('sivarcart-core::messages.product_type.'.$this->value);
     }
 }

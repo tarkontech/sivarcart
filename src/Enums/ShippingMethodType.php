@@ -15,13 +15,12 @@ enum ShippingMethodType: string
 
     /**
      * A human readable label.
+     *
+     * The label comes from the language file of the package and not from the
+     * code, so it speaks the language of the application.
      */
     public function label(): string
     {
-        return match ($this) {
-            self::FLAT_RATE => 'Tarifa fija',
-            self::FREE => 'Gratis',
-            self::PICKUP => 'Recoger en tienda',
-        };
+        return (string) __('sivarcart-core::messages.shipping_method_type.'.$this->value);
     }
 }

@@ -292,6 +292,26 @@ $order->statusHistories()->forAxis(OrderHistoryAxis::STATUS)->get();  // el cicl
 $order->statusHistories()->forAxis(OrderHistoryAxis::PAYMENT)->get(); // el estado del pago
 ```
 
+**Las etiquetas de los enums salen de los archivos de idioma.** `label()` no escribe el texto
+dentro del código: lo busca en el archivo de idioma del paquete, así que el enum habla el
+idioma de la aplicación.
+
+```php
+app()->setLocale('en');
+
+OrderStatus::PENDING->label();   // Pending
+
+app()->setLocale('es');
+
+OrderStatus::PENDING->label();   // Pendiente
+```
+
+Cada enum tiene su grupo en `lang/en/messages.php` y `lang/es/messages.php` (y en
+`lang/es_SV/messages.php`), con una clave por caso: `order_status.pending`,
+`payment_status.unpaid`, `inventory_movement_type.sale`. El texto en español que los enums
+tenían escrito antes es el que sale por defecto, porque es el que vive en el archivo de
+español.
+
 ## Capa de dominio
 
 El paquete no es solo un esquema: es el comportamiento de la tienda. Los servicios viven
@@ -527,7 +547,8 @@ php artisan sivarcart-core:publish-mailables
 El comando publica las siete plantillas en
 `resources/views/vendor/sivarcart-core/mail`. Sin `--force` no pisa las que ya están
 publicadas; con `--force` las sobrescribe. El texto de los correos vive en los archivos
-de idioma (`lang/en/messages.php` y `lang/es/messages.php`), que también se publican.
+de idioma (`lang/en/messages.php` y `lang/es/messages.php`), que también se publican, y
+ahí viven también las etiquetas de los enums.
 
 ### Cancelar y reembolsar
 
