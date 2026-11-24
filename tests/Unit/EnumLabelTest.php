@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use SivarcartCore\SivarcartCore\Enums\CatalogSort;
 use SivarcartCore\SivarcartCore\Enums\CouponType;
 use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
 use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
@@ -27,6 +28,11 @@ use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
  * the English one is what an application in English shows instead.
  */
 $labels = [
+    [CatalogSort::class, 'recent', 'Más recientes', 'Most recent'],
+    [CatalogSort::class, 'price_asc', 'Precio de menor a mayor', 'Price from low to high'],
+    [CatalogSort::class, 'price_desc', 'Precio de mayor a menor', 'Price from high to low'],
+    [CatalogSort::class, 'name', 'Nombre', 'Name'],
+
     [CouponType::class, 'fixed', 'Monto fijo', 'Fixed amount'],
     [CouponType::class, 'percentage', 'Porcentaje', 'Percentage'],
     [CouponType::class, 'free_shipping', 'Envío gratis', 'Free shipping'],

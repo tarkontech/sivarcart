@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore;
 
 use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
@@ -25,6 +26,7 @@ class SivarcartCore
         private readonly OrderService $orders,
         private readonly PaymentService $payments,
         private readonly InventoryService $inventory,
+        private readonly CatalogService $catalog,
     ) {
         //
     }
@@ -67,5 +69,13 @@ class SivarcartCore
     public function inventory(): InventoryService
     {
         return $this->inventory;
+    }
+
+    /**
+     * The service that reads the catalog.
+     */
+    public function catalog(): CatalogService
+    {
+        return $this->catalog;
     }
 }

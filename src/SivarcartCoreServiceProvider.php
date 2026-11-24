@@ -33,6 +33,7 @@ use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
 use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
 use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CouponService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
@@ -102,6 +103,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
     private function registerServices(): void
     {
         foreach ([
+            CatalogService::class,
             StoreService::class,
             SequenceService::class,
             PricingService::class,

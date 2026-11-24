@@ -15,6 +15,7 @@ use SivarcartCore\SivarcartCore\Models\Cart;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Payments\WompiPaymentGateway;
 use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
@@ -88,7 +89,8 @@ it('registers the services of the domain', function () {
         ->and(app(CustomerService::class))->toBeInstanceOf(CustomerService::class)
         ->and(app(OrderService::class))->toBeInstanceOf(OrderService::class)
         ->and(app(PaymentService::class))->toBeInstanceOf(PaymentService::class)
-        ->and(app(InventoryService::class))->toBeInstanceOf(InventoryService::class);
+        ->and(app(InventoryService::class))->toBeInstanceOf(InventoryService::class)
+        ->and(app(CatalogService::class))->toBeInstanceOf(CatalogService::class);
 });
 
 it('resolves the shipping rate calculator of the package', function () {
@@ -101,7 +103,8 @@ it('resolves the payment gateway of the package', function () {
 
 it('resolves the same instance of every service', function () {
     expect(app(CartService::class))->toBe(app(CartService::class))
-        ->and(app(OrderService::class))->toBe(app(OrderService::class));
+        ->and(app(OrderService::class))->toBe(app(OrderService::class))
+        ->and(app(CatalogService::class))->toBe(app(CatalogService::class));
 });
 
 it('lets a module replace the shipping rate calculator', function () {

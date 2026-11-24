@@ -485,6 +485,7 @@ pedido siguiente se vuelve a leer: el comprador no la escribe otra vez.
 | Servicio | Qué hace |
 |---|---|
 | `CartService` | El carrito del comprador: sus líneas, sus totales y sus cupones. Los totales son una caché de lo que valen las líneas: se recalculan desde los productos, nunca se confían solos. |
+| `CatalogService` | La lectura del catálogo: filtra por categoría, marca, precio, disponibilidad y texto, ordena y pagina. El precio y el stock se miran en las variantes activas. |
 | `CustomerService` | La cuenta del comprador: el alta, el perfil, la contraseña, la verificación del correo, el restablecimiento y las direcciones guardadas. |
 | `PricingService` | Cuánto cuesta cada línea y cuánto cuesta el total. Redondea a dos decimales y siempre arma el total desde las partes ya redondeadas. |
 | `CouponService` | Valida los códigos de descuento y calcula lo que valen. El valor de un cupón porcentual **es** el porcentaje: 15 significa 15 %. |
@@ -494,6 +495,44 @@ pedido siguiente se vuelve a leer: el comprador no la escribe otra vez.
 | `SequenceService` | Numera los documentos: `SIV-2026-00001`, `PAY-2026-00001`. |
 | `StoreService` | Los ajustes de la tienda única de la instalación. |
 | `ShippingMethodRateCalculator` | Cuánto cuesta el envío según el método elegido. |
+
+### El catálogo
+
+El catálogo se lee con `CatalogService`: los filtros viven en `CatalogFilters` y el resultado es
+un paginador de productos.
+
+```php
+use SivarcartCore\SivarcartCore\Data\CatalogFilters;
+use SivarcartCore\SivarcartCore\Enums\CatalogSort;
+use SivarcartCore\SivarcartCore\Services\CatalogService;
+
+$products = app(CatalogService::class)->search(new CatalogFilters(
+    categoryId: 12,        // incluye los productos de sus subcategorías
+    brandId: 3,
+    minPrice: 10.00,
+    maxPrice: 100.00,
+    inStockOnly: true,
+    search: 'zapatilla',
+    sort: CatalogSort::PRICE_ASC,
+    perPage: 24,
+    page: 1,
+));
+
+$products->total();   // cuántos productos hay
+$products->items();   // los productos de la página
+```
+
+Tres cosas que conviene saber:
+
+- **El precio y el stock son de la variante.** El producto no tiene precio ni stock, así que los
+  filtros de precio y de disponibilidad miran sus variantes activas: un producto entra en el
+  resultado cuando tiene al menos una que cumple el filtro. Por eso un producto sin ninguna
+  variante activa nunca aparece, y solo se ven los que están publicados.
+- **El orden por precio usa la variante más barata.** Un producto con varias variantes se ordena
+  por el precio de la más barata, y ese criterio no cambia cuando el filtro de precio acota el
+  resultado.
+- **La búsqueda mira el nombre y el SKU**, no la descripción. El texto admite los comodines de
+  `LIKE` (`%` y `_`), y no distingue mayúsculas en MySQL y SQLite.
 
 ### El stock
 
@@ -754,6 +793,7 @@ SivarcartCore::customers();   // CustomerService
 SivarcartCore::orders();      // OrderService
 SivarcartCore::payments();    // PaymentService
 SivarcartCore::inventory();   // InventoryService
+SivarcartCore::catalog();     // CatalogService
 ```
 
 ## Configuration

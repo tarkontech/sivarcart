@@ -32,6 +32,13 @@ return [
 
     ],
 
+    'catalog_sort' => [
+        'recent' => 'Más recientes',
+        'price_asc' => 'Precio de menor a mayor',
+        'price_desc' => 'Precio de mayor a menor',
+        'name' => 'Nombre',
+    ],
+
     'coupon_type' => [
         'fixed' => 'Monto fijo',
         'percentage' => 'Porcentaje',
