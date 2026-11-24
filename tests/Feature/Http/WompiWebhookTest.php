@@ -23,7 +23,7 @@ beforeEach(function () {
 function wompiOrder(): Order
 {
     $method = PaymentMethod::factory()->wompi()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     return app(OrderService::class)->place($scenario->cart, $scenario->data);
 }

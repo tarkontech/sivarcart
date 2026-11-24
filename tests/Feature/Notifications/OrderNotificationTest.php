@@ -11,7 +11,7 @@ use SivarcartCore\SivarcartCore\Actions\MarkOrderAsPaid;
 use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
 use SivarcartCore\SivarcartCore\Actions\RefundOrder;
 use SivarcartCore\SivarcartCore\Actions\ShipOrder;
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
+use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Models\Order;
 use SivarcartCore\SivarcartCore\Models\PaymentMethod;
 use SivarcartCore\SivarcartCore\Notifications\OrderCancelledNotification;
@@ -30,7 +30,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\WompiPayload;
  */
 $placedOrder = function (): Order {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     return app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 };
@@ -38,14 +38,14 @@ $placedOrder = function (): Order {
 it('tells the buyer that the order was placed', function () {
     Notification::fake();
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
     Notification::assertSentOnDemand(
         OrderPlacedNotification::class,
         fn (OrderPlacedNotification $notification): bool => $notification->order->is($order)
-            && $notification->recipient === 'ana@example.test',
+            && $notification->recipient === $order->customer_email,
     );
 });
 
@@ -59,7 +59,7 @@ it('tells the buyer that the order was paid', function () use ($placedOrder) {
     Notification::assertSentOnDemand(
         OrderPaidNotification::class,
         fn (OrderPaidNotification $notification): bool => $notification->order->is($order)
-            && $notification->recipient === 'ana@example.test',
+            && $notification->recipient === $order->customer_email,
     );
 });
 
@@ -122,7 +122,7 @@ it('tells the buyer that the payment did not go through', function () {
     Notification::fake();
 
     $method = PaymentMethod::factory()->wompi()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -139,29 +139,23 @@ it('tells the buyer that the payment did not go through', function () {
 it('survives the trip through the queue', function () {
     Notification::fake()->serializeAndRestore();
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
     Notification::assertSentOnDemand(
         OrderPlacedNotification::class,
         fn (OrderPlacedNotification $notification): bool => $notification->order->is($order)
-            && $notification->recipient === 'ana@example.test',
+            && $notification->recipient === $order->customer_email,
     );
 });
 
 it('writes to nobody when the order has no address', function () {
     Notification::fake();
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::forCustomer(Customer::factory()->guest()->create());
 
-    $data = new CheckoutData(
-        customerName: 'Ana Guzmán',
-        customerEmail: null,
-        shippingAddress: $scenario->data->shippingAddress,
-    );
-
-    app(PlaceOrder::class)->execute($scenario->cart, $data);
+    app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
     Notification::assertNothingSent();
 });
@@ -175,7 +169,7 @@ it('keeps the order when the mailer is down', function () {
         }
     });
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 

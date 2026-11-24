@@ -23,7 +23,7 @@ $orderWaitingForPayment = function (?FakePaymentGateway $gateway = null): Order 
     }
 
     $method = PaymentMethod::factory()->create(['code' => 'wompi', 'driver' => 'fake']);
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     return app(OrderService::class)->place($scenario->cart, $scenario->data);
 };
@@ -117,7 +117,7 @@ it('creates the payment link with Wompi', function () {
     ]);
 
     $method = PaymentMethod::factory()->wompi()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
     $payment = $order->payments->first();
 

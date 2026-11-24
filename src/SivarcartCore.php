@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore;
 
 use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
@@ -20,6 +21,7 @@ class SivarcartCore
 {
     public function __construct(
         private readonly CartService $carts,
+        private readonly CustomerService $customers,
         private readonly OrderService $orders,
         private readonly PaymentService $payments,
         private readonly InventoryService $inventory,
@@ -33,6 +35,14 @@ class SivarcartCore
     public function carts(): CartService
     {
         return $this->carts;
+    }
+
+    /**
+     * The service that keeps the account of the buyers.
+     */
+    public function customers(): CustomerService
+    {
+        return $this->customers;
     }
 
     /**

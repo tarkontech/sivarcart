@@ -20,7 +20,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\WompiPayload;
  */
 $orderWaitingForWompi = function (): Order {
     $method = PaymentMethod::factory()->wompi()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     return app(OrderService::class)->place($scenario->cart, $scenario->data);
 };
@@ -61,7 +61,7 @@ it('records the transaction Wompi reported', function () use ($orderWaitingForWo
 
 it('turns the reserved units into a sale when the payment is applied', function () {
     $method = PaymentMethod::factory()->wompi()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -105,7 +105,7 @@ it('does not mark the order as paid when the transaction was only a test', funct
 
 it('keeps the reservation of an order whose payment failed', function () {
     $method = PaymentMethod::factory()->wompi()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

@@ -29,7 +29,6 @@ class Cart extends Model
      */
     protected $fillable = [
         'customer_id',
-        'session_id',
         'currency',
         'coupon_id',
         'subtotal',

@@ -16,7 +16,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 it('sends the notification when the store has no row saved', function () {
     Notification::fake();
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
@@ -31,7 +31,7 @@ it('does not send the notification the merchant turned off', function () {
         'is_enabled' => false,
     ]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
@@ -46,7 +46,7 @@ it('sends the notification the merchant turned on', function () {
         'is_enabled' => true,
     ]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
@@ -63,7 +63,7 @@ it('sends nothing when the package is turned off', function () {
         'is_enabled' => true,
     ]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
@@ -78,7 +78,7 @@ it('only turns off the notification the merchant turned off', function () {
         'is_enabled' => false,
     ]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 

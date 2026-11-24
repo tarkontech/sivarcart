@@ -14,7 +14,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 it('cancels the order', function () {
     Event::fake([OrderCancelled::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -27,7 +27,7 @@ it('cancels the order', function () {
 });
 
 it('gives the reserved units back to the stock', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -40,7 +40,7 @@ it('gives the reserved units back to the stock', function () {
 
 it('cancels the payment that was never settled', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -50,7 +50,7 @@ it('cancels the payment that was never settled', function () {
 });
 
 it('records the change of the status of the order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

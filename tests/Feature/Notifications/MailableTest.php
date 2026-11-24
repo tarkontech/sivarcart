@@ -16,7 +16,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
  * An order of a guest checkout.
  */
 $placedOrder = function (): Order {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     return app(OrderService::class)->place($scenario->cart, $scenario->data);
 };

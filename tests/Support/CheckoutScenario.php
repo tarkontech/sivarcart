@@ -24,14 +24,32 @@ final class CheckoutScenario
         public readonly Cart $cart,
         public readonly ProductVariant $variant,
         public readonly CheckoutData $data,
+        public readonly Customer $customer,
     ) {
         //
     }
 
     /**
-     * Build a scenario for a guest checkout.
+     * Build a scenario for a buyer that just signed up.
      */
-    public static function guest(
+    public static function buyer(
+        ?string $shippingMethodCode = null,
+        ?string $paymentMethodCode = null,
+        int $quantity = 1,
+    ): self {
+        return self::forCustomer(
+            Customer::factory()->create(),
+            $shippingMethodCode,
+            $paymentMethodCode,
+            $quantity,
+        );
+    }
+
+    /**
+     * Build a scenario for a buyer that already has an account.
+     */
+    public static function forCustomer(
+        Customer $customer,
         ?string $shippingMethodCode = null,
         ?string $paymentMethodCode = null,
         int $quantity = 1,
@@ -39,7 +57,7 @@ final class CheckoutScenario
         Store::factory()->create();
 
         $variant = Product::factory()->create()->defaultVariant();
-        $cart = Cart::factory()->create();
+        $cart = Cart::factory()->create(['customer_id' => $customer->getKey()]);
 
         app(CartService::class)->addItem($cart, $variant, $quantity);
 
@@ -48,8 +66,8 @@ final class CheckoutScenario
             variant: $variant,
             data: new CheckoutData(
                 customerName: 'Ana Guzmán',
-                customerEmail: 'ana@example.test',
-                customerPhone: '70000000',
+                customerEmail: $customer->email,
+                customerPhone: $customer->phone,
                 shippingAddress: [
                     'first_name' => 'Ana',
                     'last_name' => 'Guzmán',
@@ -60,27 +78,7 @@ final class CheckoutScenario
                 shippingMethodCode: $shippingMethodCode,
                 paymentMethodCode: $paymentMethodCode,
             ),
-        );
-    }
-
-    /**
-     * Build a scenario for a checkout of a customer.
-     */
-    public static function forCustomer(Customer $customer, int $quantity = 1): self
-    {
-        $scenario = self::guest(quantity: $quantity);
-
-        $scenario->cart->update(['customer_id' => $customer->getKey()]);
-
-        return new self(
-            cart: $scenario->cart->fresh(),
-            variant: $scenario->variant,
-            data: new CheckoutData(
-                customerName: 'Ana Guzmán',
-                customerEmail: $customer->email,
-                shippingAddress: $scenario->data->shippingAddress,
-                customerId: $customer->getKey(),
-            ),
+            customer: $customer,
         );
     }
 }

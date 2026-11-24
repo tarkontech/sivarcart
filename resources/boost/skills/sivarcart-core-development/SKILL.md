@@ -53,10 +53,10 @@ php artisan sivarcart-core:install
   points at the table `users` of the application, and the type of that column is derived
   from the user model
 
-### 3. Authenticate with the application
+### 3. Authenticate the staff with the application
 
-- the package does not authenticate anybody: the credentials, the sessions and the
-  password resets belong to the application that installs it
+- the package does not authenticate the **staff of the store**: their credentials, their
+  sessions and their password resets belong to the application that installs the package
 - the user model comes from the `users` provider of `config/auth.php` and the guard from
   its default guard; both can be overridden in the `auth` section of
   `config/sivarcart-core.php`
@@ -90,16 +90,54 @@ Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): 
   anybody, the application puts its own `auth` middleware in front of it
 - the application needs its own table of users before the migrations of the package run
 
-### 4. Sell
+### 4. Sell to buyers with an account
+
+- the **buyer** signs in with the guard of the package, not with the guard of the
+  application: the package registers its own guard, its own provider and its own password
+  broker when it boots, so the application does not touch its `config/auth.php`
+- the guard is `sivarcart` por defecto and the names come from the `buyers` section of
+  `config/sivarcart-core.php`
+- the buyer signs in and out with `CustomerService`:
+
+```php
+use SivarcartCore\SivarcartCore\Services\CustomerService;
+
+$customers = app(CustomerService::class);
+
+$customers->attempt('ana@example.com', 'su-contrasena');   // El comprador, o null.
+$customers->user();                                          // El comprador que entró, o null.
+$customers->logout();
+```
+
+- protect the routes of the buyer with the guard of the package:
+
+```php
+Route::middleware(['auth:sivarcart'])->group(function (): void {
+    Route::get('/mi-cuenta', AccountController::class)->name('account');
+});
+```
+
+- the package brings the whole account cycle: `register()`, `updateProfile()`,
+  `changePassword()`, `verifyEmail()`, `sendPasswordResetLink()` and `resetPassword()`
+- the emails of the account point at the routes the application declares:
+  `buyers.password_reset_route` and `buyers.email_verification_route`. The package does
+  not render those pages
+- the document of identity is checked against its type with the check digit of each one;
+  the rule `SivarcartCore\SivarcartCore\Rules\CustomerDocument` works in the forms and in
+  the domain
+
+### 5. Sell
 
 - the services in `SivarcartCore\SivarcartCore\Services` are the spine of the domain:
-  `CartService`, `OrderService`, `PaymentService` and `InventoryService` are the ones a
-  storefront needs
+  `CartService`, `CustomerService`, `OrderService`, `PaymentService` and
+  `InventoryService` are the ones a storefront needs
 - the totals of a cart are a cache of what its items are worth: they are recalculated
   from the items on every change and are never trusted on their own when the order is
   placed
 - place the order with the `PlaceOrder` action and a `CheckoutData`; it reserves the
   stock, freezes what was bought and closes the cart in a single transaction
+- **the cart belongs to a buyer**: `CartService::findOrCreate()` takes the id of the
+  buyer, and an order without a buyer is refused with `CustomerRequired`
 - the coupon of a cart is applied with `CartService::applyCoupon()`; the value of a
   percentage coupon **is** the percentage, so 15 means 15 %
 
@@ -116,7 +154,7 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 ));
 ```
 
-### 5. Collect the money with Wompi
+### 6. Collect the money with Wompi
 
 - the credentials of the gateway live in `sivarcart_payment_methods` and are stored
   encrypted; the package `rmirandasv/laravel-wompi` handles the OAuth2, the HMAC
@@ -133,7 +171,7 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 - the webhook is idempotent: `payment_transactions.idempotency_key` has a unique index,
   so a repeated delivery never charges or moves the stock twice
 
-### 6. Move the order
+### 7. Move the order
 
 - `MarkOrderAsPaid` confirms a payment the store collected on its own, like the cash of
   a delivery order. It only moves the payment axis: the order stays `pending` until the
@@ -154,7 +192,7 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
   `PaymentFailed` after the commit, so a listener never sees a state that can still be
   reverted
 
-### 7. Write to the buyer
+### 8. Write to the buyer
 
 - the package writes to the buyer when the order moves: every notification of
   `SivarcartCore\SivarcartCore\Enums\OrderNotification` delivers a markdown mailable, and
@@ -179,7 +217,7 @@ php artisan sivarcart-core:publish-mailables
 - the sender comes from `config('sivarcart-core.notifications.from')`, and when it is
   null the `mail.from` of the application is used
 
-### 8. Extend the store
+### 9. Extend the store
 
 - store module settings in `sivarcart_settings` instead of changing the schema
 - the shipping cost comes from the `ShippingRateCalculator` contract and the payment
@@ -222,7 +260,7 @@ use SivarcartCore\SivarcartCore\Services\CartService;
 
 $carts = app(CartService::class);
 
-$cart = $carts->findOrCreate($customer?->getKey(), $sessionId);
+$cart = $carts->findOrCreate($customer->getKey());
 $cart = $carts->addItem($cart, $variant, 2);
 $cart = $carts->applyCoupon($cart, 'BIENVENIDA');
 ```
@@ -298,6 +336,8 @@ NotificationSetting::query()->updateOrCreate(
 - do not put a price or a stock in `sivarcart_products`; it belongs to the variant
 - do not create a table of staff: the staff of the store are the users of the application,
   and the package relates them to the `users` provider of `config/auth.php`
+- do not place an order without a buyer: the buyer signs in with the guard of the
+  package, and the cart is what says who buys
 - do not mark an order as paid without checking `is_production`, a test transaction was
   never billed
 - do not publish the route of the `laravel-wompi` package; the package already registers

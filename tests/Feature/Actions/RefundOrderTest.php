@@ -19,7 +19,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
  */
 $paidOrder = function (): array {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

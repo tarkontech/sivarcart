@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
+use SivarcartCore\SivarcartCore\Data\CheckoutData;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
+use SivarcartCore\SivarcartCore\Exceptions\CustomerRequired;
 use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
 use SivarcartCore\SivarcartCore\Exceptions\InvalidCartState;
 use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
 use SivarcartCore\SivarcartCore\Models\Cart;
 use SivarcartCore\SivarcartCore\Models\Coupon;
 use SivarcartCore\SivarcartCore\Models\Customer;
+use SivarcartCore\SivarcartCore\Models\Department;
 use SivarcartCore\SivarcartCore\Models\PaymentMethod;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Services\CartService;
@@ -18,7 +21,7 @@ use SivarcartCore\SivarcartCore\Services\PaymentService;
 use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 
 it('turns a cart into an order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -32,7 +35,7 @@ it('turns a cart into an order', function () {
 });
 
 it('closes the cart it took the order from', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -40,7 +43,7 @@ it('closes the cart it took the order from', function () {
 });
 
 it('keeps a snapshot of what was bought in the order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -52,7 +55,7 @@ it('keeps a snapshot of what was bought in the order', function () {
 });
 
 it('does not change the price of an order when the catalog is edited', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -63,7 +66,7 @@ it('does not change the price of an order when the catalog is edited', function 
 });
 
 it('reserves the stock of the order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -73,7 +76,7 @@ it('reserves the stock of the order', function () {
 });
 
 it('refuses to place an order without stock', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
     $scenario->variant->update(['stock_quantity' => 0]);
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
@@ -81,7 +84,7 @@ it('refuses to place an order without stock', function () {
 });
 
 it('refuses to place the order of a cart that was already converted', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
     $orders = app(OrderService::class);
 
     $orders->place($scenario->cart, $scenario->data);
@@ -91,14 +94,25 @@ it('refuses to place the order of a cart that was already converted', function (
 });
 
 it('refuses to place the order of an empty cart', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
-    expect(fn () => app(OrderService::class)->place(Cart::factory()->create(), $scenario->data))
+    $empty = Cart::factory()->create(['customer_id' => $scenario->customer->getKey()]);
+
+    expect(fn () => app(OrderService::class)->place($empty, $scenario->data))
         ->toThrow(InvalidCartState::class, 'El carrito está vacío.');
 });
 
+it('refuses to place the order of a cart without a buyer', function () {
+    $scenario = CheckoutScenario::buyer();
+
+    $orphan = Cart::factory()->create();
+
+    expect(fn () => app(OrderService::class)->place($orphan, $scenario->data))
+        ->toThrow(CustomerRequired::class);
+});
+
 it('applies the coupon of the cart to the order', function () {
-    $scenario = CheckoutScenario::guest(quantity: 2);
+    $scenario = CheckoutScenario::buyer(quantity: 2);
     $coupon = Coupon::factory()->percentage(10)->create(['code' => 'DIEZ']);
     $carts = app(CartService::class);
 
@@ -114,7 +128,7 @@ it('applies the coupon of the cart to the order', function () {
 
 it('adds the cost of the shipping to the order', function () {
     $method = ShippingMethod::factory()->create(['code' => 'estandar', 'price' => 5]);
-    $scenario = CheckoutScenario::guest($method->code);
+    $scenario = CheckoutScenario::buyer($method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -124,7 +138,7 @@ it('adds the cost of the shipping to the order', function () {
 });
 
 it('refuses a shipping method that is not available', function () {
-    $scenario = CheckoutScenario::guest('inexistente');
+    $scenario = CheckoutScenario::buyer('inexistente');
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
         ->toThrow(SivarcartCoreException::class);
@@ -132,7 +146,7 @@ it('refuses a shipping method that is not available', function () {
 
 it('refuses a shipping method that does not apply to the amount of the order', function () {
     $method = ShippingMethod::factory()->create(['code' => 'grande', 'min_order_amount' => 100]);
-    $scenario = CheckoutScenario::guest($method->code);
+    $scenario = CheckoutScenario::buyer($method->code);
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
         ->toThrow(SivarcartCoreException::class);
@@ -140,7 +154,7 @@ it('refuses a shipping method that does not apply to the amount of the order', f
 
 it('creates the pending payment of the order', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -151,7 +165,7 @@ it('creates the pending payment of the order', function () {
 });
 
 it('refuses a payment method that is not available', function () {
-    $scenario = CheckoutScenario::guest(paymentMethodCode: 'inexistente');
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: 'inexistente');
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
         ->toThrow(SivarcartCoreException::class);
@@ -166,8 +180,51 @@ it('belongs the order to the customer of the checkout', function () {
     expect($order->customer_id)->toBe($customer->getKey());
 });
 
+it('writes the moment of the last order of the buyer', function () {
+    $scenario = CheckoutScenario::buyer();
+
+    expect($scenario->customer->last_order_at)->toBeNull();
+
+    app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    expect($scenario->customer->fresh()->last_order_at)->not->toBeNull();
+});
+
+it('saves the address of the buyer', function () {
+    $department = Department::factory()->create(['name' => 'San Salvador', 'code' => 'SS']);
+    $scenario = CheckoutScenario::buyer();
+
+    app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    $address = $scenario->customer->addresses()->firstOrFail();
+
+    expect($address->address_line1)->toBe('Calle 1')
+        ->and($address->municipality)->toBe('San Salvador')
+        ->and($address->department_id)->toBe($department->getKey())
+        ->and($address->is_default)->toBeTrue();
+});
+
+it('reads the saved address of the buyer in the next order', function () {
+    Department::factory()->create(['name' => 'San Salvador', 'code' => 'SS']);
+
+    $scenario = CheckoutScenario::buyer();
+
+    app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    $second = CheckoutScenario::forCustomer($scenario->customer);
+
+    $order = app(OrderService::class)->place(
+        $second->cart,
+        new CheckoutData(customerName: 'Ana Guzmán'),
+    );
+
+    expect($order->shipping_address['address_line1'])->toBe('Calle 1')
+        ->and($order->shipping_address['department'])->toBe('San Salvador')
+        ->and($scenario->customer->addresses()->count())->toBe(1);
+});
+
 it('marks an order as paid', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
     app(OrderService::class)->markPaid($order);
@@ -178,7 +235,7 @@ it('marks an order as paid', function () {
 });
 
 it('turns the reserved units into a sale when the order is paid', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
     app(OrderService::class)->convertReservationToSale($order);
@@ -189,7 +246,7 @@ it('turns the reserved units into a sale when the order is paid', function () {
 
 it('cancels an order and gives the reserved units back', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
     app(OrderService::class)->cancel($order, 'El comprador se arrepintió');
@@ -203,7 +260,7 @@ it('cancels an order and gives the reserved units back', function () {
 
 it('refunds an order and gives the units back to the stock', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
     $payment = $order->payments->first();
@@ -223,7 +280,7 @@ it('refunds an order and gives the units back to the stock', function () {
 
 it('refuses a refund bigger than what was paid', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -233,7 +290,7 @@ it('refuses a refund bigger than what was paid', function () {
 
 it('refuses a refund of no money', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -242,7 +299,7 @@ it('refuses a refund of no money', function () {
 });
 
 it('prepares an order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -252,7 +309,7 @@ it('prepares an order', function () {
 });
 
 it('ships an order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -263,7 +320,7 @@ it('ships an order', function () {
 });
 
 it('delivers an order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -275,7 +332,7 @@ it('delivers an order', function () {
 });
 
 it('registers the return of an order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -287,7 +344,7 @@ it('registers the return of an order', function () {
 });
 
 it('does not move the stock when the order is shipped', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

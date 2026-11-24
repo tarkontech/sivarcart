@@ -14,7 +14,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 it('starts the preparation of the order', function () {
     Event::fake([OrderPrepared::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -24,7 +24,7 @@ it('starts the preparation of the order', function () {
 });
 
 it('records the change of the status of the order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -41,7 +41,7 @@ it('records the change of the status of the order', function () {
 it('emits the event of the preparation', function () {
     Event::fake([OrderPrepared::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -51,7 +51,7 @@ it('emits the event of the preparation', function () {
 });
 
 it('does not prepare an order that was cancelled', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

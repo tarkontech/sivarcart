@@ -15,7 +15,7 @@ it('marks the order as paid', function () {
     Event::fake([OrderPaid::class]);
 
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -30,7 +30,7 @@ it('marks the order as paid', function () {
 
 it('marks the pending payment of the order as paid', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -42,7 +42,7 @@ it('marks the pending payment of the order as paid', function () {
 
 it('turns the reserved units into a sale', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -54,7 +54,7 @@ it('turns the reserved units into a sale', function () {
 
 it('marks a payment the store collected on its own as paid', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
     $payment = $order->payments->first();
@@ -66,7 +66,7 @@ it('marks a payment the store collected on its own as paid', function () {
 });
 
 it('marks an order without a payment as paid', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

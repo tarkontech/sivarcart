@@ -14,7 +14,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 it('registers the return of the order', function () {
     Event::fake([OrderReturned::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -31,7 +31,7 @@ it('registers the return of the order', function () {
 });
 
 it('returns an order that was delivered', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -44,7 +44,7 @@ it('returns an order that was delivered', function () {
 });
 
 it('records the change of the status of the order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -61,7 +61,7 @@ it('records the change of the status of the order', function () {
 });
 
 it('refunds an order that came back', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -73,7 +73,7 @@ it('refunds an order that came back', function () {
 });
 
 it('does not return an order that was not shipped', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

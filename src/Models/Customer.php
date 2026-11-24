@@ -4,21 +4,44 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore\Models;
 
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use SivarcartCore\SivarcartCore\Database\Factories\CustomerFactory;
 use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
 use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use SivarcartCore\SivarcartCore\Notifications\AccountEmailVerificationNotification;
+use SivarcartCore\SivarcartCore\Notifications\AccountPasswordResetNotification;
+use SivarcartCore\SivarcartCore\Support\Auth;
+use Throwable;
 
 /**
  * A shopper.
  *
- * A customer may be created without an email address or a password, which is
- * what makes guest checkout possible.
+ * The shopper signs in with the guard of the package, so a buyer is a user of
+ * the package and not of the application that installs it. The staff of the
+ * store are a different thing: they are the users of the application, and the
+ * package reads them through {@see Auth}.
+ *
+ * A customer without an email address or without a password is the buyer of an
+ * order that was placed before the package asked for an account: it keeps the
+ * history of those orders and can be promoted later.
  */
-class Customer extends Model
+class Customer extends Model implements AuthenticatableContract, CanResetPasswordContract, MustVerifyEmailContract
 {
+    use AuthenticatableTrait;
+    use CanResetPasswordTrait;
     use HasUuidColumn;
+    use MustVerifyEmailTrait;
+    use Notifiable;
     use SoftDeletes;
 
     /**
@@ -98,6 +121,63 @@ class Customer extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * The hash that proves a link of verification belongs to this buyer.
+     *
+     * The hash is tied to the key of the application, so a link that was
+     * written for one buyer does not verify another one.
+     */
+    public function emailVerificationHash(): string
+    {
+        return hash_hmac(
+            'sha256',
+            (string) $this->getEmailForVerification(),
+            (string) config('app.key'),
+        );
+    }
+
+    /**
+     * Write to the buyer.
+     *
+     * A mailer that is down never breaks the account: the error goes to the
+     * log and the account stays as it is. The same promise the notifications
+     * of the order keep.
+     */
+    public function notifyBuyer(Notification $notification): void
+    {
+        try {
+            $this->notify($notification);
+        } catch (Throwable $exception) {
+            Log::error('SivarCart Core could not send the notification to the buyer of the account.', [
+                'notification' => $notification::class,
+                'customer' => $this->uuid,
+                'exception' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Send the buyer the link that resets the password.
+     *
+     * The notification of the package is used and not the one of the
+     * framework, because the link points at the page the application declares
+     * and not at the one Laravel expects by name.
+     *
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notifyBuyer(new AccountPasswordResetNotification($this, $token));
+    }
+
+    /**
+     * Send the buyer the link that verifies the email address.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notifyBuyer(new AccountEmailVerificationNotification($this));
     }
 
     /**

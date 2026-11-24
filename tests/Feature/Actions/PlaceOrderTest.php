@@ -14,7 +14,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 it('places the order of a cart', function () {
     Event::fake([OrderPlaced::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
@@ -28,7 +28,7 @@ it('places the order of a cart', function () {
 it('reserves the stock of the order it places', function () {
     Event::fake([OrderPlaced::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     app(PlaceOrder::class)->execute($scenario->cart, $scenario->data);
 
@@ -39,7 +39,7 @@ it('reserves the stock of the order it places', function () {
 it('writes nothing when the order cannot be placed', function () {
     Event::fake([OrderPlaced::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
     $scenario->variant->update(['stock_quantity' => 0]);
 
     expect(fn () => app(PlaceOrder::class)->execute($scenario->cart, $scenario->data))
@@ -54,7 +54,7 @@ it('writes nothing when the order cannot be placed', function () {
 it('does not place the same order twice', function () {
     Event::fake([OrderPlaced::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
     $action = app(PlaceOrder::class);
 
     $action->execute($scenario->cart, $scenario->data);

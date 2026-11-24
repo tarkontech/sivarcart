@@ -48,8 +48,8 @@ final class NotificationService
     /**
      * The address the notification goes to.
      *
-     * A guest checkout may leave without an address, and then there is
-     * nobody to write to.
+     * An order placed before the package asked for an account may not have an
+     * address, and then there is nobody to write to.
      */
     public function recipient(Order $order): ?string
     {

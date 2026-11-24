@@ -4,10 +4,44 @@ declare(strict_types=1);
 
 return [
 
+    'account_notifications' => [
+
+        'welcome' => [
+            'subject' => 'Your :store account is ready',
+            'greeting' => 'Hello :name,',
+            'body' => 'Your :store account is ready. From now on you sign in with your email and your password, and your purchases are kept in your account.',
+            'cta' => 'Sign in to my account',
+            'footer' => 'If you did not create the account, reply to this email and we will take a look at it.',
+        ],
+
+        'verify_email' => [
+            'subject' => 'Verify your :store email',
+            'greeting' => 'Hello :name,',
+            'body' => 'Confirm this email and your :store account gets verified.',
+            'cta' => 'Verify my email',
+            'footer' => 'If you did not create the account, ignore this email.',
+        ],
+
+        'password_reset' => [
+            'subject' => 'Reset your :store password',
+            'greeting' => 'Hello :name,',
+            'body' => 'Somebody asked to reset the password of your :store account. Use the link below to choose a new one.',
+            'cta' => 'Reset my password',
+            'footer' => 'If it was not you, ignore this email: your password stays the same.',
+        ],
+
+    ],
+
     'coupon_type' => [
         'fixed' => 'Fixed amount',
         'percentage' => 'Percentage',
         'free_shipping' => 'Free shipping',
+    ],
+
+    'customer_document' => [
+        'invalid_format' => 'The ":type" document does not have the right format.',
+        'invalid_check_digit' => 'The check digit of the ":type" document does not match.',
+        'invalid_length' => 'The ":type" document does not have the right length.',
     ],
 
     'customer_document_type' => [

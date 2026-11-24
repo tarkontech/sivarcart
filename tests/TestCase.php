@@ -79,11 +79,31 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set('database.default', 'testing');
 
+        // The notifications of the package go through the queue, so the tests
+        // run them right away instead of leaving them in a table that does not
+        // exist. The mail of the buyer is really sent, the same way it leaves
+        // the store.
+        $app['config']->set('queue.default', 'sync');
+
         // The package does not own the users: the staff of the store are the
         // users of the host application. The tests play the role of that
         // application, so they point the "users" provider at the model of the
         // workbench, the same way a real application does.
         $app['config']->set('auth.providers.users.model', User::class);
+    }
+
+    /**
+     * Declare the routes the application declares for the account of the buyer.
+     *
+     * The links of the verification email and of the password reset point at
+     * the pages of the application, and the package does not render them, so
+     * the tests declare them the same way an application does.
+     */
+    protected function defineRoutes($router): void
+    {
+        $router->get('password/reset/{token}/{email}', fn (): string => 'ok')->name('password.reset');
+
+        $router->get('email/verify/{id}/{hash}', fn (): string => 'ok')->name('verification.verify');
     }
 
     /**

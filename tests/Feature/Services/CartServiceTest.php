@@ -22,24 +22,20 @@ it('creates the cart of a customer and reuses it', function () {
         ->and($carts->findOrCreate($customer->getKey())->is($cart))->toBeTrue();
 });
 
-it('creates the cart of a session and reuses it', function () {
+it('gives a cart of its own to every customer', function () {
     $carts = app(CartService::class);
 
-    $cart = $carts->findOrCreate(null, 'session-abc');
+    $first = $carts->findOrCreate(Customer::factory()->create()->getKey());
+    $second = $carts->findOrCreate(Customer::factory()->create()->getKey());
 
-    expect($cart->session_id)->toBe('session-abc')
-        ->and($carts->findOrCreate(null, 'session-abc')->is($cart))->toBeTrue();
-});
-
-it('refuses a cart without a customer and without a session', function () {
-    expect(fn () => app(CartService::class)->findOrCreate())
-        ->toThrow(SivarcartCoreException::class);
+    expect($first->is($second))->toBeFalse();
 });
 
 it('uses the currency of the store', function () {
     Store::factory()->create(['currency' => 'USD']);
+    $customer = Customer::factory()->create();
 
-    $cart = app(CartService::class)->findOrCreate(null, 'session-moneda');
+    $cart = app(CartService::class)->findOrCreate($customer->getKey());
 
     expect($cart->currency)->toBe('USD');
 });

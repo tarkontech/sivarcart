@@ -15,6 +15,7 @@ use SivarcartCore\SivarcartCore\Models\Cart;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Payments\WompiPaymentGateway;
 use SivarcartCore\SivarcartCore\Services\CartService;
+use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
@@ -84,6 +85,7 @@ it('does not load the migrations from the package', function () {
 
 it('registers the services of the domain', function () {
     expect(app(CartService::class))->toBeInstanceOf(CartService::class)
+        ->and(app(CustomerService::class))->toBeInstanceOf(CustomerService::class)
         ->and(app(OrderService::class))->toBeInstanceOf(OrderService::class)
         ->and(app(PaymentService::class))->toBeInstanceOf(PaymentService::class)
         ->and(app(InventoryService::class))->toBeInstanceOf(InventoryService::class);

@@ -86,10 +86,10 @@ Todas las tablas llevan el prefijo `sivarcart_`. Los modelos viven en
 | `sivarcart_store_role_user` | — | Pivote entre el personal y los roles. |
 
 El personal de la tienda son los usuarios de la aplicación: el paquete no tiene
-contraseñas, ni sesiones, ni recuperación de contraseña. La llave foránea del pivote
-apunta a la tabla `users` de la aplicación anfitriona, y su tipo de columna se deriva
-del modelo de usuario, así que una aplicación con llaves `uuid` o con otra tabla de
-usuarios no necesita ningún ajuste.
+contraseñas, ni sesiones, ni recuperación de contraseña **del personal**. La llave
+foránea del pivote apunta a la tabla `users` de la aplicación anfitriona, y su tipo de
+columna se deriva del modelo de usuario, así que una aplicación con llaves `uuid` o con
+otra tabla de usuarios no necesita ningún ajuste.
 
 #### Proteger las rutas con los permisos
 
@@ -127,6 +127,10 @@ lleva el trait de los roles recibe un **403**. El middleware no autentica a nadi
 aplicación pone su middleware `auth` delante del suyo.
 
 ### Autenticación
+
+El paquete **no autentica al personal de la tienda**: las credenciales, las sesiones y
+los reseteos de contraseña del personal pertenecen a la aplicación que instala el
+paquete, así que el personal de la tienda son los usuarios de la aplicación.
 
 El paquete usa la autenticación de Laravel. Toma el modelo de usuario del proveedor
 `users` de `config/auth.php`, que es `App\Models\User` por defecto:
@@ -178,12 +182,100 @@ asignar desde el pivote o desde el panel de administración. Un usuario cuyo mod
 lleva el trait no tiene ningún permiso, así que el middleware de los permisos le
 responde con un 403.
 
+### La cuenta del comprador
+
+El comprador es otra cosa: vive en el paquete y **se autentica con el guard del
+paquete**, no con el de la aplicación. El paquete registra su provider y su guard al
+arrancar, así que la aplicación no toca su `config/auth.php`:
+
+```php
+// El guard que el paquete registra.
+'auth.guards.sivarcart' => ['driver' => 'session', 'provider' => 'sivarcart'];
+
+// El provider que el paquete registra.
+'auth.providers.sivarcart' => ['driver' => 'eloquent', 'model' => Customer::class];
+```
+
+El comprador inicia sesión con el servicio de la cuenta:
+
+```php
+use SivarcartCore\SivarcartCore\Services\CustomerService;
+
+$customers = app(CustomerService::class);
+
+$customers->attempt('ana@example.com', 'su-contrasena');   // El comprador, o null.
+$customers->user();                                          // El comprador que entró, o null.
+$customers->logout();                                        // Cierra la sesión del comprador.
+```
+
+El comprador y el personal de la tienda viven en sesiones distintas: el primero en
+`login_sivarcart_*` y el segundo en `login_web_*`, así que pueden estar los dos dentro
+al mismo tiempo.
+
+La aplicación pone su propio middleware delante de las rutas que piden un comprador
+iniciado sesión:
+
+```php
+Route::middleware(['auth:sivarcart'])->group(function (): void {
+    Route::get('/mi-cuenta', AccountController::class)->name('account');
+});
+```
+
+El alta, la verificación del correo y el restablecimiento de la contraseña los trae
+el paquete:
+
+```php
+$customer = $customers->register([
+    'first_name' => 'Ana',
+    'email' => 'ana@example.com',
+    'password' => 'su-contrasena',
+]);
+
+$customers->sendPasswordResetLink('ana@example.com');   // Manda el enlace al correo.
+$customers->resetPassword('ana@example.com', $token, 'su-contrasena-nueva');
+```
+
+Los enlaces del correo apuntan a las rutas que declara la aplicación, que el paquete no
+renderiza:
+
+```php
+// config/sivarcart-core.php
+'buyers' => [
+    'password_reset_route' => 'password.reset',
+    'email_verification_route' => 'verification.verify',
+],
+```
+
+La tabla del token del restablecimiento es `sivarcart_password_reset_tokens`, que sale
+con las migraciones del paquete. Sin ella publicada, el restablecimiento no funciona.
+
+El documento de identidad del comprador se valida contra el tipo que declara, con el
+dígito verificador de cada uno: el DUI (módulo 10), el NIT y el RUC (módulo 11), el
+pasaporte y el resto. La regla está lista para usarla en los formularios:
+
+```php
+use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
+use SivarcartCore\SivarcartCore\Rules\CustomerDocument;
+
+'document_number' => [new CustomerDocument(CustomerDocumentType::DUI)],
+```
+
+El documento se valida como texto y nunca como número: el DUI empieza con el código
+del municipio y ese cero inicial es parte del documento.
+
+> **Ojo con el hasher.** La contraseña del comprador la hashea el cast `hashed` del
+> modelo, como hace Laravel. Ese cast lanza una excepción si el hash guardado no
+> cuadra con la configuración del hasher del momento, así que cambiar los rounds del
+> bcrypt después de tener compradores rompe el guardado de su cuenta hasta volver a
+> hashear las contraseñas.
+
 ### Compradores
 
 | Tabla | Modelo | Para qué sirve |
 |---|---|---|
-| `sivarcart_customers` | `Customer` | Los compradores. El correo y la contraseña son opcionales, lo que permite el checkout de invitado. |
-| `sivarcart_customer_addresses` | `CustomerAddress` | Las direcciones guardadas del cliente. |
+| `sivarcart_customers` | `Customer` | Los compradores. Son usuarios del paquete: se autentican con su guard y sin cuenta no pueden comprar. |
+| `sivarcart_customer_addresses` | `CustomerAddress` | Las direcciones guardadas del comprador. |
+| `sivarcart_password_reset_tokens` | — | Los tokens del restablecimiento de la contraseña. |
 
 ### Catálogo
 
@@ -224,7 +316,7 @@ $product->priceRange();               // ['min' => 10.0, 'max' => 25.0]
 
 | Tabla | Modelo | Para qué sirve |
 |---|---|---|
-| `sivarcart_carts` | `Cart` | Carritos de compra, con o sin cliente. |
+| `sivarcart_carts` | `Cart` | Carritos de compra. Siempre son de un comprador. |
 | `sivarcart_cart_items` | `CartItem` | Las líneas del carrito. Guardan una copia del precio y de las opciones. |
 | `sivarcart_coupons` | `Coupon` | Códigos de descuento: monto fijo, porcentaje o envío gratis. |
 
@@ -358,12 +450,15 @@ eventos; los modelos no llevan reglas de negocio.
 
 ### El flujo de una compra
 
+El comprador inicia sesión antes de comprar: el carrito es de un comprador y la orden
+sin comprador no existe.
+
 ```php
 use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
 use SivarcartCore\SivarcartCore\Data\CheckoutData;
 use SivarcartCore\SivarcartCore\Services\CartService;
 
-$cart = app(CartService::class)->findOrCreate($customer?->getKey(), $sessionId);
+$cart = app(CartService::class)->findOrCreate($customer->getKey());
 
 $cart = app(CartService::class)->addItem($cart, $variant, 2);
 $cart = app(CartService::class)->applyCoupon($cart, 'BIENVENIDA');
@@ -379,13 +474,18 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 
 Colocar la orden reserva el stock, congela lo comprado en la orden y cierra el carrito,
 todo en una sola transacción: si algo falla, no queda nada escrito. El carrito no se
-puede convertir dos veces; el segundo intento lanza `InvalidCartState`.
+puede convertir dos veces; el segundo intento lanza `InvalidCartState`. Un carrito sin
+comprador tampoco se convierte en una orden: lanza `CustomerRequired`.
+
+La dirección del checkout se guarda como `CustomerAddress` del comprador, y en el
+pedido siguiente se vuelve a leer: el comprador no la escribe otra vez.
 
 ### Los servicios
 
 | Servicio | Qué hace |
 |---|---|
 | `CartService` | El carrito del comprador: sus líneas, sus totales y sus cupones. Los totales son una caché de lo que valen las líneas: se recalculan desde los productos, nunca se confían solos. |
+| `CustomerService` | La cuenta del comprador: el alta, el perfil, la contraseña, la verificación del correo, el restablecimiento y las direcciones guardadas. |
 | `PricingService` | Cuánto cuesta cada línea y cuánto cuesta el total. Redondea a dos decimales y siempre arma el total desde las partes ya redondeadas. |
 | `CouponService` | Valida los códigos de descuento y calcula lo que valen. El valor de un cupón porcentual **es** el porcentaje: 15 significa 15 %. |
 | `InventoryService` | Mueve el stock y escribe el libro mayorista de cada movimiento. |
@@ -650,6 +750,7 @@ un comando.
 use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
 
 SivarcartCore::carts();       // CartService
+SivarcartCore::customers();   // CustomerService
 SivarcartCore::orders();      // OrderService
 SivarcartCore::payments();    // PaymentService
 SivarcartCore::inventory();   // InventoryService
@@ -659,7 +760,8 @@ SivarcartCore::inventory();   // InventoryService
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
 numeración de órdenes y pagos, la configuración de Wompi (ruta del webhook, ruta del
-redirect y las formas de pago habilitadas) y las dos claves de autenticación.
+redirect y las formas de pago habilitadas), las dos claves de autenticación del personal
+de la tienda y la sección `buyers` de la cuenta del comprador.
 
 Las claves de autenticación son `null` por defecto, y en ese caso el paquete lee el
 modelo del proveedor `users` y el guard por defecto de `config/auth.php`. Solo hay que
@@ -669,6 +771,21 @@ tocarlas cuando la aplicación usa otro modelo de usuario u otro guard:
 'auth' => [
     'model' => null,   // Por defecto: config('auth.providers.users.model').
     'guard' => null,   // Por defecto: config('auth.defaults.guard').
+],
+```
+
+La cuenta del comprador tiene su propia sección, con el guard que el paquete registra,
+el broker de las contraseñas y las rutas de la aplicación a las que apuntan los enlaces
+del correo:
+
+```php
+'buyers' => [
+    'guard' => 'sivarcart',              // El guard del comprador.
+    'provider' => 'sivarcart',           // El provider del comprador.
+    'password_reset_table' => 'sivarcart_password_reset_tokens',
+    'password_expire_minutes' => 60,     // La vida del token del restablecimiento.
+    'password_reset_route' => 'password.reset',
+    'email_verification_route' => 'verification.verify',
 ],
 ```
 

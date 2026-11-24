@@ -30,23 +30,14 @@ final class CartService
     }
 
     /**
-     * The cart of a customer or of a session, creating it when it is the first visit.
+     * The cart of a customer, creating it when it is the first visit.
+     *
+     * A cart always belongs to a buyer: the buyer signs in before buying, so
+     * there is no cart that belongs to a session.
      */
-    public function findOrCreate(?int $customerId = null, ?string $sessionId = null): Cart
+    public function findOrCreate(int $customerId): Cart
     {
-        if ($customerId === null && ($sessionId === null || $sessionId === '')) {
-            throw new SivarcartCoreException('Un carrito necesita un cliente o una sesión.');
-        }
-
-        $query = Cart::query();
-
-        if ($customerId !== null) {
-            $query->where('customer_id', $customerId);
-        } else {
-            $query->where('session_id', $sessionId);
-        }
-
-        $cart = $query->first();
+        $cart = Cart::query()->where('customer_id', $customerId)->first();
 
         if ($cart !== null) {
             return $cart;
@@ -54,7 +45,6 @@ final class CartService
 
         return Cart::query()->create([
             'customer_id' => $customerId,
-            'session_id' => $sessionId,
             'currency' => $this->stores->currency(),
         ]);
     }

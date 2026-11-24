@@ -14,7 +14,7 @@ use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 it('ships the order', function () {
     Event::fake([OrderShipped::class]);
 
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -27,7 +27,7 @@ it('ships the order', function () {
 });
 
 it('ships an order that was being prepared', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -39,7 +39,7 @@ it('ships an order that was being prepared', function () {
 });
 
 it('records the change of the status of the order', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -54,7 +54,7 @@ it('records the change of the status of the order', function () {
 });
 
 it('keeps the moment the order was fulfilled', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -68,7 +68,7 @@ it('keeps the moment the order was fulfilled', function () {
 });
 
 it('does not ship an order that was already delivered', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

@@ -4,10 +4,44 @@ declare(strict_types=1);
 
 return [
 
+    'account_notifications' => [
+
+        'welcome' => [
+            'subject' => 'Tu cuenta de :store está lista',
+            'greeting' => 'Hola :name,',
+            'body' => 'Tu cuenta de :store ya está lista. Desde ahora entras con tu correo y tu contraseña, y tus compras quedan guardadas en tu cuenta.',
+            'cta' => 'Entrar a mi cuenta',
+            'footer' => 'Si no fuiste tú quien creó la cuenta, responde a este correo y la revisamos.',
+        ],
+
+        'verify_email' => [
+            'subject' => 'Verifica tu correo de :store',
+            'greeting' => 'Hola :name,',
+            'body' => 'Confirma este correo y tu cuenta de :store queda verificada.',
+            'cta' => 'Verificar mi correo',
+            'footer' => 'Si no fuiste tú quien creó la cuenta, ignora este correo.',
+        ],
+
+        'password_reset' => [
+            'subject' => 'Restablece tu contraseña de :store',
+            'greeting' => 'Hola :name,',
+            'body' => 'Alguien pidió restablecer la contraseña de tu cuenta de :store. Usa el enlace de abajo para elegir una nueva.',
+            'cta' => 'Restablecer mi contraseña',
+            'footer' => 'Si no fuiste tú, ignora este correo: tu contraseña sigue siendo la misma.',
+        ],
+
+    ],
+
     'coupon_type' => [
         'fixed' => 'Monto fijo',
         'percentage' => 'Porcentaje',
         'free_shipping' => 'Envío gratis',
+    ],
+
+    'customer_document' => [
+        'invalid_format' => 'El documento de tipo ":type" no tiene el formato correcto.',
+        'invalid_check_digit' => 'El dígito verificador del documento de tipo ":type" no cuadra.',
+        'invalid_length' => 'El documento de tipo ":type" no tiene la longitud correcta.',
     ],
 
     'customer_document_type' => [

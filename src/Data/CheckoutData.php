@@ -6,12 +6,15 @@ namespace SivarcartCore\SivarcartCore\Data;
 
 /**
  * Everything the shopper provides when the order is placed.
+ *
+ * The buyer of the order is not part of the data: the cart carries it, and
+ * the cart always belongs to a buyer.
  */
 final class CheckoutData
 {
     /**
      * @param  string  $customerName  The name of the shopper, required for the receipt.
-     * @param  string|null  $customerEmail  The email of the shopper, optional for a guest checkout.
+     * @param  string|null  $customerEmail  The email of the shopper.
      * @param  string|null  $customerPhone  The phone of the shopper.
      * @param  array<string, mixed>  $shippingAddress  Where the order has to be delivered.
      * @param  array<string, mixed>|null  $billingAddress  Where the receipt has to be sent.
@@ -19,7 +22,6 @@ final class CheckoutData
      * @param  string|null  $paymentMethodCode  The code of the chosen payment method.
      * @param  string|null  $couponCode  The discount code the shopper typed.
      * @param  string|null  $customerNote  A note the shopper left for the store.
-     * @param  int|null  $customerId  The customer the order belongs to, null for a guest.
      */
     public function __construct(
         public readonly string $customerName,
@@ -31,7 +33,6 @@ final class CheckoutData
         public readonly ?string $paymentMethodCode = null,
         public readonly ?string $couponCode = null,
         public readonly ?string $customerNote = null,
-        public readonly ?int $customerId = null,
     ) {
         //
     }

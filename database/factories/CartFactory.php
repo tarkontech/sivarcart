@@ -28,7 +28,6 @@ class CartFactory extends Factory
     {
         return [
             'customer_id' => null,
-            'session_id' => null,
             'currency' => 'USD',
             'coupon_id' => null,
             'subtotal' => 0,

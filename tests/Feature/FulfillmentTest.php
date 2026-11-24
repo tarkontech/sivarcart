@@ -13,7 +13,7 @@ use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
 
 it('does not move the stock when the order is shipped', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -34,7 +34,7 @@ it('does not move the stock when the order is shipped', function () {
 });
 
 it('does not add a row to the ledger of the stock when the order is shipped', function () {
-    $scenario = CheckoutScenario::guest();
+    $scenario = CheckoutScenario::buyer();
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -47,7 +47,7 @@ it('does not add a row to the ledger of the stock when the order is shipped', fu
 
 it('ships an order that is not paid yet', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -59,7 +59,7 @@ it('ships an order that is not paid yet', function () {
 
 it('does not record anything when the order is marked as paid twice', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
@@ -72,7 +72,7 @@ it('does not record anything when the order is marked as paid twice', function (
 
 it('keeps the changes of both axes in the history of the order', function () {
     $method = PaymentMethod::factory()->cashOnDelivery()->create();
-    $scenario = CheckoutScenario::guest(paymentMethodCode: $method->code);
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
 
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 

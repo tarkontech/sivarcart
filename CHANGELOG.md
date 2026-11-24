@@ -2,6 +2,38 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### El comprador tiene cuenta y se autentica en el paquete
+
+- **el comprador ahora es un usuario del paquete**: `Customer` implementa
+  `Authenticatable`, `CanResetPassword` y `MustVerifyEmail`, así que inicia sesión con
+  el guard del paquete y no con el de la aplicación
+- el paquete registra su propio guard, su provider y su broker de contraseñas al
+  arrancar, así que la aplicación **no toca su `config/auth.php`**. Los nombres salen de
+  la sección `buyers` de la configuración del paquete
+- el comprador y el personal de la tienda viven en sesiones distintas: el primero
+  entra con `auth:sivarcart` y el segundo con el guard de la aplicación
+- **desaparece el checkout de invitado**: `OrderService::place()` exige un comprador y
+  lanza `CustomerRequired` cuando el carrito no tiene ninguno. `CartService::findOrCreate()`
+  ahora pide el id del comprador y `CheckoutData` ya no lleva `$customerId`: el carrito
+  es la única fuente de verdad de quién compra
+- la columna `session_id` de `sivarcart_carts` se borra con una migración publicada: sin
+  checkout de invitado no tiene consumidor
+- el paquete trae **todo el ciclo de la cuenta**: el alta, la verificación del correo y
+  el restablecimiento de la contraseña, con su broker, sus notificaciones y sus
+  plantillas markdown publicables
+- el nuevo `CustomerService` da de alta al comprador, actualiza su perfil, cambia su
+  contraseña, verifica su correo, adopta las órdenes que puso como invitado, escribe
+  `last_order_at`, guarda sus direcciones y lo inicia y cierra sesión
+- la dirección del checkout se guarda como `CustomerAddress` del comprador y en el
+  pedido siguiente se vuelve a leer: el comprador no la escribe otra vez
+- el documento de identidad se valida contra el tipo que declara, con el dígito
+  verificador de cada uno (DUI con módulo 10, NIT y RUC con módulo 11). La regla
+  `CustomerDocument` sirve para los formularios y para el dominio
+- las migraciones nuevas: `remember_token` en `sivarcart_customers` y la tabla
+  `sivarcart_password_reset_tokens`
+- la configuración gana la sección `buyers`, con el guard, el provider, el broker y las
+  rutas de la aplicación a las que apuntan los enlaces del correo
+
 ### Las etiquetas de los enums salen de los archivos de idioma
 
 - `label()` de los enums ya no escribe el texto dentro del código: lo busca con

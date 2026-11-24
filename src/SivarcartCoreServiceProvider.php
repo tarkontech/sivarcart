@@ -6,6 +6,7 @@ namespace SivarcartCore\SivarcartCore;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -29,9 +30,11 @@ use SivarcartCore\SivarcartCore\Listeners\SendOrderPlacedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderRefundedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderShippedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
+use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
 use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CouponService;
+use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\NotificationService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
@@ -53,8 +56,44 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $this->app->singleton(SivarcartCore::class);
 
+        $this->registerBuyersAuthentication();
         $this->registerServices();
         $this->registerContracts();
+    }
+
+    /**
+     * Register the guard, the provider and the broker of the buyers.
+     *
+     * The package does not touch the "config/auth.php" of the application: it
+     * writes its own guard and its own provider in the configuration, so the
+     * application signs the buyers in without registering anything.
+     *
+     * The provider names the driver of the framework, the same one it builds
+     * for the users of an application.
+     */
+    private function registerBuyersAuthentication(): void
+    {
+        $guard = (string) config('sivarcart-core.buyers.guard', 'sivarcart');
+        $provider = (string) config('sivarcart-core.buyers.provider', 'sivarcart');
+
+        Config::set('auth.providers.'.$provider, [
+            'driver' => 'eloquent',
+            'model' => Customer::class,
+        ]);
+
+        Config::set('auth.guards.'.$guard, [
+            'driver' => 'session',
+            'provider' => $provider,
+        ]);
+
+        Config::set('auth.passwords.'.$provider, [
+            'provider' => $provider,
+            'table' => (string) config(
+                'sivarcart-core.buyers.password_reset_table',
+                'sivarcart_password_reset_tokens',
+            ),
+            'expire' => (int) config('sivarcart-core.buyers.password_expire_minutes', 60),
+        ]);
     }
 
     /**
@@ -69,6 +108,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             CouponService::class,
             InventoryService::class,
             CartService::class,
+            CustomerService::class,
             OrderService::class,
             PaymentService::class,
             PaymentGatewayManager::class,

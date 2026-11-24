@@ -13,11 +13,13 @@ use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
+use SivarcartCore\SivarcartCore\Exceptions\CustomerRequired;
 use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
 use SivarcartCore\SivarcartCore\Exceptions\InvalidCartState;
 use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
 use SivarcartCore\SivarcartCore\Models\Cart;
 use SivarcartCore\SivarcartCore\Models\CartItem;
+use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Models\Order;
 use SivarcartCore\SivarcartCore\Models\PaymentMethod;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
@@ -37,6 +39,7 @@ final class OrderService
     public function __construct(
         private readonly CartService $carts,
         private readonly CouponService $coupons,
+        private readonly CustomerService $customers,
         private readonly PricingService $pricing,
         private readonly InventoryService $inventory,
         private readonly PaymentService $payments,
@@ -53,6 +56,10 @@ final class OrderService
      * The stock is reserved, the order and its items are created with the
      * snapshot of what was bought and the cart is closed.
      *
+     * The buyer of the order is the one of the cart: a cart without a buyer
+     * cannot become an order, because the buyer signs in before buying.
+     *
+     * @throws CustomerRequired
      * @throws InvalidCartState
      * @throws SivarcartCoreException
      */
@@ -66,6 +73,8 @@ final class OrderService
         if ($locked->isConverted()) {
             throw InvalidCartState::alreadyConverted($locked);
         }
+
+        $customer = $this->buyer($locked);
 
         $items = $locked->items()->get();
 
@@ -86,10 +95,12 @@ final class OrderService
 
         $discount = $coupon === null ? 0.0 : $this->coupons->discountFor($coupon, $subtotal);
 
+        $shippingAddress = $this->shippingAddress($customer, $data);
+
         $shippingMethod = $this->shippingMethod($data, $subtotal);
         $shipping = $shippingMethod === null
             ? new ShippingQuote(0.0)
-            : $this->shipping->quote($shippingMethod, $locked, $data->shippingAddress);
+            : $this->shipping->quote($shippingMethod, $locked, $shippingAddress);
 
         $shippingDiscount = $coupon === null
             ? 0.0
@@ -103,10 +114,10 @@ final class OrderService
                 DocumentSequenceType::ORDER,
                 $this->stores->orderNumberPrefix(),
             ),
-            'customer_id' => $data->customerId ?? $locked->customer_id,
+            'customer_id' => $customer->getKey(),
             'customer_name' => $data->customerName,
-            'customer_email' => $data->customerEmail,
-            'customer_phone' => $data->customerPhone,
+            'customer_email' => $data->customerEmail ?? $customer->email,
+            'customer_phone' => $data->customerPhone ?? $customer->phone,
             'status' => OrderStatus::PENDING,
             'payment_status' => PaymentStatus::UNPAID,
             'currency' => $locked->currency,
@@ -117,7 +128,7 @@ final class OrderService
             'total' => $totals->total,
             'tax_inclusive' => $totals->taxInclusive,
             'coupon_code' => $coupon?->code,
-            'shipping_address' => $data->shippingAddress,
+            'shipping_address' => $shippingAddress,
             'billing_address' => $data->billingAddress,
             'shipping_method_code' => $shippingMethod?->code,
             'shipping_method_name' => $shippingMethod?->name,
@@ -144,7 +155,52 @@ final class OrderService
             $coupon->increment('used_count');
         }
 
+        $this->customers->recordOrder($customer);
+
         return $order;
+    }
+
+    /**
+     * The buyer of the order.
+     *
+     * @throws CustomerRequired
+     */
+    private function buyer(Cart $cart): Customer
+    {
+        $customerId = $cart->customer_id;
+
+        if ($customerId === null) {
+            throw CustomerRequired::forCart($cart);
+        }
+
+        $customer = Customer::query()->find($customerId);
+
+        if ($customer === null) {
+            throw CustomerRequired::forCart($cart);
+        }
+
+        return $customer;
+    }
+
+    /**
+     * Where the order has to be delivered.
+     *
+     * The address of the checkout is saved for the buyer, so the next order
+     * starts from the address the buyer already has.
+     *
+     * @return array<string, mixed>
+     */
+    private function shippingAddress(Customer $customer, CheckoutData $data): array
+    {
+        if ($data->shippingAddress === []) {
+            $saved = $this->customers->defaultAddress($customer);
+
+            return $saved === null ? [] : $this->customers->addressToArray($saved);
+        }
+
+        $this->customers->saveAddress($customer, $data->shippingAddress);
+
+        return $data->shippingAddress;
     }
 
     /**
