@@ -18,10 +18,7 @@
     ],
     "require": {
         "php": "^8.3.36",
-        "illuminate/auth": "^12.0||^13.0",
-        "illuminate/database": "^12.0||^13.0",
-        "illuminate/notifications": "^12.0||^13.0",
-        "illuminate/support": "^12.0||^13.0",
+        "laravel/framework": "^12.0||^13.0",
         "rmirandasv/laravel-wompi": "^2.0"
     },
     "require-dev": {

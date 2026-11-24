@@ -85,6 +85,11 @@ abstract class TestCase extends Orchestra
         // the store.
         $app['config']->set('queue.default', 'sync');
 
+        // The limiter of the store API counts the requests of the buyers, so
+        // the tests keep the count in memory instead of in a table that does
+        // not exist.
+        $app['config']->set('cache.default', 'array');
+
         // The package does not own the users: the staff of the store are the
         // users of the host application. The tests play the role of that
         // application, so they point the "users" provider at the model of the

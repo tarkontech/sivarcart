@@ -32,6 +32,14 @@ return [
 
     ],
 
+    'api' => [
+        'invalid_credentials' => 'The credentials do not match.',
+        'password_link_sent' => 'If the account exists, the password reset link is on its way.',
+        'password_changed' => 'The password was changed.',
+        'wrong_password' => 'The current password does not match.',
+        'logged_out' => 'The session was closed.',
+    ],
+
     'catalog_sort' => [
         'recent' => 'Most recent',
         'price_asc' => 'Price from low to high',

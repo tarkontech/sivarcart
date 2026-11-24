@@ -7,6 +7,7 @@ namespace SivarcartCore\SivarcartCore\Services;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\PasswordBroker;
 use Illuminate\Support\Facades\Auth as AuthFacade;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
@@ -119,6 +120,17 @@ final class CustomerService
         $customer->save();
 
         return $customer;
+    }
+
+    /**
+     * Whether the password is the one of the buyer.
+     *
+     * The method is the way an application asks for the password of a buyer
+     * before changing it, so the check does not live in a controller.
+     */
+    public function verifyPassword(Customer $customer, string $password): bool
+    {
+        return Hash::check($password, (string) $customer->password);
     }
 
     /**

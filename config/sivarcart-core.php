@@ -128,6 +128,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | API
+    |--------------------------------------------------------------------------
+    |
+    | The store API of the package. The prefix is configurable, so the
+    | application can mount the API wherever it wants, and the middleware
+    | group is the one of the application: "api" by default, which already
+    | comes with the bindings of the routes.
+    |
+    | The rate limit counts the requests of every buyer on its own, and the
+    | requests of the buyers that are not signed in by IP.
+    |
+    */
+
+    'api' => [
+        'enabled' => true,
+        'prefix' => 'api/sivarcart',
+        'middleware' => ['api'],
+        'rate_limit' => 60,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Notifications
     |--------------------------------------------------------------------------
     |

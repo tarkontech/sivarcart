@@ -119,6 +119,14 @@ it('changes the password of a buyer', function () {
         ->and(Hash::check('secreto123', $updated->password))->toBeFalse();
 });
 
+it('verifies the password of a buyer', function () {
+    $customer = Customer::factory()->create(['password' => 'secreto123']);
+    $customers = app(CustomerService::class);
+
+    expect($customers->verifyPassword($customer, 'secreto123'))->toBeTrue()
+        ->and($customers->verifyPassword($customer, 'otracosa'))->toBeFalse();
+});
+
 it('verifies the email of a buyer', function () {
     $customer = Customer::factory()->create(['email_verified_at' => null]);
 

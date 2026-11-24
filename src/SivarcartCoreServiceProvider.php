@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +28,10 @@ use SivarcartCore\SivarcartCore\Events\OrderPlaced;
 use SivarcartCore\SivarcartCore\Events\OrderRefunded;
 use SivarcartCore\SivarcartCore\Events\OrderShipped;
 use SivarcartCore\SivarcartCore\Events\PaymentFailed;
+use SivarcartCore\SivarcartCore\Http\ApiExceptionRenderer;
+use SivarcartCore\SivarcartCore\Http\Middleware\EnsureBuyer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
+use SivarcartCore\SivarcartCore\Http\Middleware\StorefrontApi;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderCancelledNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderDeliveredNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderPaidNotification;
@@ -38,13 +45,16 @@ use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CouponService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
+use SivarcartCore\SivarcartCore\Services\DepartmentService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\NotificationService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
+use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
 use SivarcartCore\SivarcartCore\Services\PricingService;
 use SivarcartCore\SivarcartCore\Services\SequenceService;
 use SivarcartCore\SivarcartCore\Services\ShippingMethodRateCalculator;
+use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
 use SivarcartCore\SivarcartCore\Services\StoreService;
 use SivarcartCore\SivarcartCore\Support\Auth;
 
@@ -113,8 +123,11 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             InventoryService::class,
             CartService::class,
             CustomerService::class,
+            DepartmentService::class,
             OrderService::class,
             PaymentService::class,
+            PaymentMethodService::class,
+            ShippingMethodService::class,
             PaymentGatewayManager::class,
             NotificationService::class,
         ] as $service) {
@@ -168,6 +181,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->registerNotificationListeners();
 
         $this->registerStorePermissions();
+
+        $this->registerStoreApi();
 
         if (! $this->app->runningInConsole()) {
             return;
@@ -256,5 +271,66 @@ class SivarcartCoreServiceProvider extends ServiceProvider
                 return Auth::hasStorePermission($user, $permission);
             });
         }
+    }
+
+    /**
+     * Register the store API of the package.
+     *
+     * The routes are registered by the package, so the application does not
+     * have to publish them. The middleware of the API is registered with an
+     * alias, and the rate limiter is registered with the name "sivarcart"
+     * (the framework does not define an "api" limiter).
+     */
+    private function registerStoreApi(): void
+    {
+        Route::aliasMiddleware('sivarcart.api', StorefrontApi::class);
+        Route::aliasMiddleware('sivarcart.buyer', EnsureBuyer::class);
+
+        $this->registerApiRateLimiter();
+
+        $this->registerApiExceptionRenderer();
+
+        if (! (bool) config('sivarcart-core.api.enabled', true)) {
+            return;
+        }
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+    }
+
+    /**
+     * Count the requests of every buyer on its own.
+     *
+     * The buyers that are not signed in share the limit of their IP.
+     */
+    private function registerApiRateLimiter(): void
+    {
+        RateLimiter::for('sivarcart', function (Request $request): Limit {
+            $buyer = $this->app->make(CustomerService::class)->user();
+
+            $key = $buyer instanceof Customer
+                ? 'buyer:'.$buyer->getKey()
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('sivarcart-core.api.rate_limit', 60))->by($key);
+        });
+    }
+
+    /**
+     * Answer the errors of the domain with JSON.
+     *
+     * The renderer is registered in the handler of the application, so the
+     * routes of the package answer with the same shape as the rest of the
+     * API of the host application.
+     */
+    private function registerApiExceptionRenderer(): void
+    {
+        /** @var object $handler */
+        $handler = $this->app->make(ExceptionHandler::class);
+
+        if (! method_exists($handler, 'renderable')) {
+            return;
+        }
+
+        $handler->renderable(new ApiExceptionRenderer);
     }
 }

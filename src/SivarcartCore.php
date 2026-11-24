@@ -9,7 +9,9 @@ use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
+use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
+use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
 
 /**
  * The entry point of the package.
@@ -27,6 +29,8 @@ class SivarcartCore
         private readonly PaymentService $payments,
         private readonly InventoryService $inventory,
         private readonly CatalogService $catalog,
+        private readonly PaymentMethodService $paymentMethods,
+        private readonly ShippingMethodService $shippingMethods,
     ) {
         //
     }
@@ -77,5 +81,21 @@ class SivarcartCore
     public function catalog(): CatalogService
     {
         return $this->catalog;
+    }
+
+    /**
+     * The service that reads the payment methods of the store.
+     */
+    public function paymentMethods(): PaymentMethodService
+    {
+        return $this->paymentMethods;
+    }
+
+    /**
+     * The service that reads the shipping methods of the store.
+     */
+    public function shippingMethods(): ShippingMethodService
+    {
+        return $this->shippingMethods;
     }
 }

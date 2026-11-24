@@ -74,7 +74,7 @@ Todas las tablas llevan el prefijo `sivarcart_`. Los modelos viven en
 |---|---|---|
 | `sivarcart_stores` | `Store` | Perfil y ajustes de la tienda: nombre, NIT, logo, moneda, zona horaria, IVA por defecto. |
 | `sivarcart_settings` | `Setting` | Ajustes libres en clave y valor. Es el punto de extensión de los módulos opcionales. |
-| `sivarcart_notification_settings` | `NotificationSetting` | Qué correos al comprador salen y cuáles no. El panel de administración la edita. |
+| `sivarcart_notification_settings` | `NotificationSetting` | Qué correos al comprador salen y cuáles no. La aplicación que instala el paquete la edita. |
 | `sivarcart_departments` | `Department` | Los 14 departamentos de El Salvador. |
 | `sivarcart_document_sequences` | `DocumentSequence` | Contadores por tipo y periodo para numerar órdenes y pagos sin colisiones. |
 
@@ -178,9 +178,9 @@ Auth::guard();    // El nombre del guard.
 ```
 
 El trait es opcional: sin él, el paquete sigue funcionando y los roles se pueden
-asignar desde el pivote o desde el panel de administración. Un usuario cuyo modelo no
-lleva el trait no tiene ningún permiso, así que el middleware de los permisos le
-responde con un 403.
+asignar desde el pivote o desde el panel de la aplicación que instala el paquete. Un
+usuario cuyo modelo no lleva el trait no tiene ningún permiso, así que el middleware de
+los permisos le responde con un 403.
 
 ### La cuenta del comprador
 
@@ -811,14 +811,107 @@ SivarcartCore::orders();      // OrderService
 SivarcartCore::payments();    // PaymentService
 SivarcartCore::inventory();   // InventoryService
 SivarcartCore::catalog();     // CatalogService
+SivarcartCore::paymentMethods();  // PaymentMethodService
+SivarcartCore::shippingMethods(); // ShippingMethodService
 ```
+
+## La API de tienda
+
+El núcleo expone la **API de tienda**: el catálogo, el carrito, el checkout, las órdenes del
+comprador y la cuenta del comprador. El **panel de administración no vive en el núcleo**: es
+de la aplicación que instala el paquete, que ya tiene el personal, los permisos y sus propias
+pantallas.
+
+Las rutas las registra el paquete: la aplicación no tiene que publicarlas. Viven bajo el
+prefijo de la sección `api` de la configuración (`api/sivarcart` por defecto) y se pueden
+apagar con `api.enabled`.
+
+| Método | Ruta | Qué hace | Sesión |
+|---|---|---|---|
+| `GET` | `/products` | El catálogo, con los filtros de `CatalogFilters`. | — |
+| `GET` | `/products/{uuid}` | Un producto con sus variantes y sus imágenes. | — |
+| `GET` | `/categories` | Las categorías del catálogo. | — |
+| `GET` | `/brands` | Las marcas del catálogo. | — |
+| `POST` | `/account/register` | Crea la cuenta del comprador y lo deja dentro. | — |
+| `POST` | `/account/login` | Entra el comprador. | — |
+| `POST` | `/account/logout` | Sale el comprador. | — |
+| `POST` | `/account/password/email` | Manda el enlace que restablece la contraseña. | — |
+| `GET` | `/account` | La cuenta del comprador. | ✔ |
+| `PATCH` | `/account` | Actualiza el perfil del comprador. | ✔ |
+| `PUT` | `/account/password` | Cambia la contraseña del comprador. | ✔ |
+| `GET` | `/account/addresses` | Las direcciones guardadas del comprador. | ✔ |
+| `GET` | `/cart` | El carrito del comprador. | ✔ |
+| `POST` | `/cart/items` | Pone una variante en el carrito. | ✔ |
+| `PATCH` | `/cart/items/{id}` | Cambia las unidades de una línea. | ✔ |
+| `DELETE` | `/cart/items/{id}` | Saca una línea del carrito. | ✔ |
+| `POST` | `/cart/coupon` | Aplica un código de descuento. | ✔ |
+| `DELETE` | `/cart/coupon` | Quita el código de descuento. | ✔ |
+| `DELETE` | `/cart` | Vacía el carrito. | ✔ |
+| `GET` | `/checkout/options` | Los métodos de pago, los de envío, los departamentos y la tienda. | ✔ |
+| `POST` | `/checkout/shipping-quote` | Cuánto cuesta el envío de un método. | ✔ |
+| `POST` | `/checkout` | Coloca la orden del carrito. | ✔ |
+| `GET` | `/orders` | Las órdenes del comprador. | ✔ |
+| `GET` | `/orders/{uuid}` | Una orden del comprador. | ✔ |
+| `POST` | `/orders/{uuid}/payment` | El enlace para pagar la orden. | ✔ |
+
+```bash
+# El catálogo es público.
+curl "http://localhost/api/sivarcart/products?sort=price_asc&per_page=24"
+
+# El comprador entra y su carrito lo espera.
+curl -c cookies.txt -X POST http://localhost/api/sivarcart/account/login \
+    -H "Content-Type: application/json" \
+    -d '{"email":"ana@example.com","password":"su-contrasena"}'
+
+curl -b cookies.txt -X POST http://localhost/api/sivarcart/cart/items \
+    -H "Content-Type: application/json" \
+    -d '{"variant_id":12,"quantity":2}'
+
+curl -b cookies.txt -X POST http://localhost/api/sivarcart/checkout \
+    -H "Content-Type: application/json" \
+    -d '{"customer_name":"Ana Guzmán","shipping_address":{"address_line1":"Calle 1","municipality":"San Salvador","department":"San Salvador"}}'
+```
+
+El comprador se autentica con el guard que el paquete registra (`sivarcart`), así que la
+sesión es una **cookie**: la API sirve para una tienda de mismo origen o para una Single Page
+Application servida por la misma aplicación. Una aplicación de otro origen necesita que la
+aplicación configure CORS con credenciales, y una aplicación móvil necesitaría tokens, que el
+paquete no trae.
+
+> **El panel de administración es de la aplicación.** El núcleo expone la API de tienda y el
+> dominio; las pantallas del personal, los permisos y los ajustes de la tienda son de la
+> aplicación que instala el paquete.
+
+### Los errores de la API
+
+Los errores del dominio salen con el código que los distingue y con el estado que les
+corresponde:
+
+```json
+{ "message": "El cupón \"BIENVENIDA\" no existe.", "code": "coupon_not_applicable" }
+```
+
+| Error | Estado | `code` |
+|---|---|---|
+| El comprador no ha iniciado sesión | 401 | `customer_required` |
+| El correo ya está en uso | 409 | `customer_already_exists` |
+| El carrito no sirve para la operación | 409 | `invalid_cart_state` |
+| El cupón no existe o no se puede aplicar | 422 | `coupon_not_applicable` |
+| No hay unidades disponibles | 422 | `insufficient_stock` |
+| El documento no tiene el formato de su tipo | 422 | `invalid_document` |
+| La pasarela de pago falló | 502 | `payment_gateway_failed` |
+| Cualquier otro error del dominio | 422 | `sivarcart_core_exception` |
+
+Los errores de validación los responde Laravel: un **422** con la lista de los campos que no
+cuadran, en el idioma de la aplicación.
 
 ## Configuration
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
-numeración de órdenes y pagos, la vida del carrito, la configuración de Wompi (ruta del webhook,
-ruta del redirect y las formas de pago habilitadas), las dos claves de autenticación del personal
-de la tienda y la sección `buyers` de la cuenta del comprador.
+numeración de órdenes y pagos, la vida del carrito, la sección `api` de la API de tienda, la
+configuración de Wompi (ruta del webhook, ruta del redirect y las formas de pago
+habilitadas), las dos claves de autenticación del personal de la tienda y la sección `buyers`
+de la cuenta del comprador.
 
 Las claves de autenticación son `null` por defecto, y en ese caso el paquete lee el
 modelo del proveedor `users` y el guard por defecto de `config/auth.php`. Solo hay que
@@ -871,13 +964,29 @@ El carrito tiene fecha de caducidad, y su vida sale de aquí:
 Un carrito que caducó no se le vuelve a dar al comprador: se le crea uno nuevo, y el viejo lo
 borra el comando `sivarcart:prune-carts`, que el paquete programa una vez al día.
 
+La API de tienda se monta con la sección `api`:
+
+```php
+'api' => [
+    'enabled' => true,            // Apaga la API sin desinstalar el paquete.
+    'prefix' => 'api/sivarcart',  // Donde viven las rutas de la API.
+    'middleware' => ['api'],      // El grupo de middleware de la aplicación.
+    'rate_limit' => 60,           // Peticiones por minuto y comprador.
+],
+```
+
+El limitador cuenta las peticiones de cada comprador por separado, y las de los que no han
+iniciado sesión por IP. La API **siempre** responde JSON, así que un cliente que no manda la
+cabecera `Accept: application/json` recibe un error en JSON y no una página.
+
 Las credenciales de Wompi se guardan cifradas en `sivarcart_payment_methods.credentials`,
 de modo que el comerciante puede tener una cuenta por tienda. Cuando el método de pago
 no tiene credenciales propias, se usan las del paquete `rmirandasv/laravel-wompi`
 (`WOMPI_CLIENT_ID` y `WOMPI_CLIENT_SECRET`).
 
 Los ajustes que el comerciante cambia seguido, como el nombre, el logo, el IVA o el
-horario, viven en la tabla `sivarcart_stores` y se editan desde el panel de administración.
+horario, viven en la tabla `sivarcart_stores` y se editan desde el panel de la aplicación
+que instala el paquete.
 
 ## Changelog
 

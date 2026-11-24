@@ -6,9 +6,11 @@ namespace SivarcartCore\SivarcartCore\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use SivarcartCore\SivarcartCore\Data\CatalogFilters;
 use SivarcartCore\SivarcartCore\Enums\CatalogSort;
+use SivarcartCore\SivarcartCore\Models\Brand;
 use SivarcartCore\SivarcartCore\Models\Category;
 use SivarcartCore\SivarcartCore\Models\Product;
 use SivarcartCore\SivarcartCore\Models\ProductVariant;
@@ -66,6 +68,37 @@ final class CatalogService
             'page',
             max(1, $filters->page),
         );
+    }
+
+    /**
+     * The categories a shopper can browse.
+     *
+     * The categories come flat, with the id of the parent, so the client can
+     * build the tree it needs.
+     *
+     * @return Collection<int, Category>
+     */
+    public function categories(): Collection
+    {
+        return Category::query()
+            ->where('is_active', true)
+            ->orderBy('position')
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * The brands of the catalog.
+     *
+     * @return Collection<int, Brand>
+     */
+    public function brands(): Collection
+    {
+        return Brand::query()
+            ->where('is_active', true)
+            ->orderBy('position')
+            ->orderBy('name')
+            ->get();
     }
 
     /**

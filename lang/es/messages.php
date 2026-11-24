@@ -32,6 +32,14 @@ return [
 
     ],
 
+    'api' => [
+        'invalid_credentials' => 'Las credenciales no coinciden.',
+        'password_link_sent' => 'Si la cuenta existe, el enlace para restablecer la contraseña ya va en camino.',
+        'password_changed' => 'La contraseña se cambió.',
+        'wrong_password' => 'La contraseña actual no coincide.',
+        'logged_out' => 'La sesión se cerró.',
+    ],
+
     'catalog_sort' => [
         'recent' => 'Más recientes',
         'price_asc' => 'Precio de menor a mayor',

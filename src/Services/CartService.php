@@ -39,11 +39,16 @@ final class CartService
      * A cart that ran out of time is not handed back: the buyer gets a new
      * one and the old one is left for the pruning command to remove it. A cart
      * without an expiration date never runs out of time.
+     *
+     * A cart that already became an order is not handed back either: the
+     * buyer that comes back to the store gets a new cart, and the old one is
+     * left for the pruning command to remove it.
      */
     public function findOrCreate(int $customerId): Cart
     {
         $cart = Cart::query()
             ->where('customer_id', $customerId)
+            ->whereNull('converted_at')
             ->where(function (Builder $query): void {
                 $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })

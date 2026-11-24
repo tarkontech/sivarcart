@@ -84,6 +84,20 @@ it('keeps a cart that never expires', function () {
     expect(app(CartService::class)->findOrCreate($customer->getKey())->is($cart))->toBeTrue();
 });
 
+it('does not hand back a cart that already became an order', function () {
+    $customer = Customer::factory()->create();
+    $converted = Cart::factory()->create([
+        'customer_id' => $customer->getKey(),
+        'converted_at' => now(),
+    ]);
+
+    $cart = app(CartService::class)->findOrCreate($customer->getKey());
+
+    expect($cart->is($converted))->toBeFalse()
+        ->and($cart->customer_id)->toBe($customer->getKey())
+        ->and(Cart::query()->whereKey($converted->getKey())->exists())->toBeTrue();
+});
+
 it('gives the most recent cart when the buyer has more than one', function () {
     $customer = Customer::factory()->create();
     $older = Cart::factory()->create([

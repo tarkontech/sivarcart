@@ -2,6 +2,32 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### El núcleo expone la API de tienda
+
+- **la capa HTTP del núcleo es una API de tienda**: el catálogo, el carrito, el cupón, el
+  checkout, las órdenes del comprador y la cuenta del comprador. Las rutas las registra el
+  paquete (no hay que publicarlas) y viven bajo el prefijo de la sección `api` de la
+  configuración (`api/sivarcart` por defecto)
+- el **panel de administración no entra en el núcleo**: vive en la aplicación que instala el
+  paquete, y el README ya no lo promete. La API sí expone el catálogo, el carrito, el
+  checkout y los correos del comprador
+- la cuenta del comprador también está en la API: el alta, el login, el logout, el perfil, el
+  cambio de contraseña y las direcciones guardadas
+- los errores del dominio salen como JSON con un **código estable** (`coupon_not_applicable`,
+  `invalid_cart_state`, `insufficient_stock`, `customer_required`, …) y con el estado que les
+  corresponde (401, 409, 422 o 502)
+- la API **siempre responde JSON**, así que un cliente sin la cabecera `Accept:
+  application/json` recibe un error en JSON y no un redirect a un login que puede no existir
+- el limitador de peticiones lo registra el paquete (`RateLimiter::for('sivarcart')`) y cuenta
+  las peticiones de cada comprador por separado, no por IP
+- la configuración gana la sección `api`, con `enabled`, `prefix`, `middleware` y `rate_limit`
+- el comprador que ya compró recibe un **carrito nuevo**: `CartService::findOrCreate()` ya no
+  devuelve el carrito que se convirtió en una orden, así que puede volver a comprar
+- `CustomerService::verifyPassword()` deja que la aplicación (y la API) pidan la contraseña
+  actual antes de cambiar la otra
+- el paquete declara `laravel/framework` en sus dependencias, porque ya usa Form Requests de
+  Laravel
+
 ### El comprador tiene cuenta y se autentica en el paquete
 
 - **el comprador ahora es un usuario del paquete**: `Customer` implementa

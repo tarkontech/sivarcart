@@ -12,17 +12,22 @@ use Illuminate\Support\ServiceProvider;
 use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
 use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
 use SivarcartCore\SivarcartCore\Data\ShippingQuote;
+use SivarcartCore\SivarcartCore\Http\Middleware\EnsureBuyer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
+use SivarcartCore\SivarcartCore\Http\Middleware\StorefrontApi;
 use SivarcartCore\SivarcartCore\Models\Cart;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Payments\WompiPaymentGateway;
 use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
+use SivarcartCore\SivarcartCore\Services\DepartmentService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
+use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
 use SivarcartCore\SivarcartCore\Services\ShippingMethodRateCalculator;
+use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
 use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
 
 it('publishes the migrations under the documented tag', function () {
@@ -92,7 +97,10 @@ it('registers the services of the domain', function () {
         ->and(app(OrderService::class))->toBeInstanceOf(OrderService::class)
         ->and(app(PaymentService::class))->toBeInstanceOf(PaymentService::class)
         ->and(app(InventoryService::class))->toBeInstanceOf(InventoryService::class)
-        ->and(app(CatalogService::class))->toBeInstanceOf(CatalogService::class);
+        ->and(app(CatalogService::class))->toBeInstanceOf(CatalogService::class)
+        ->and(app(PaymentMethodService::class))->toBeInstanceOf(PaymentMethodService::class)
+        ->and(app(ShippingMethodService::class))->toBeInstanceOf(ShippingMethodService::class)
+        ->and(app(DepartmentService::class))->toBeInstanceOf(DepartmentService::class);
 });
 
 it('resolves the shipping rate calculator of the package', function () {
@@ -129,6 +137,18 @@ it('registers the route of the webhook of Wompi', function () {
 
 it('registers the middleware of the permissions of the store', function () {
     expect(app('router')->getMiddleware())->toHaveKey('store.permission', EnsureStorePermission::class);
+});
+
+it('registers the middleware of the store API', function () {
+    expect(app('router')->getMiddleware())->toHaveKey('sivarcart.api', StorefrontApi::class)
+        ->and(app('router')->getMiddleware())->toHaveKey('sivarcart.buyer', EnsureBuyer::class);
+});
+
+it('merges the section of the API into the configuration of the application', function () {
+    expect(config('sivarcart-core.api.enabled'))->toBeTrue()
+        ->and(config('sivarcart-core.api.prefix'))->toBe('api/sivarcart')
+        ->and(config('sivarcart-core.api.middleware'))->toBe(['api'])
+        ->and(config('sivarcart-core.api.rate_limit'))->toBe(60);
 });
 
 it('registers the command that prunes the carts', function () {
