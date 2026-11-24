@@ -316,9 +316,12 @@ $product->priceRange();               // ['min' => 10.0, 'max' => 25.0]
 
 | Tabla | Modelo | Para qué sirve |
 |---|---|---|
-| `sivarcart_carts` | `Cart` | Carritos de compra. Siempre son de un comprador. |
+| `sivarcart_carts` | `Cart` | Carritos de compra. Siempre son de un comprador. Caducan a los `cart.ttl_days` días. |
 | `sivarcart_cart_items` | `CartItem` | Las líneas del carrito. Guardan una copia del precio y de las opciones. |
 | `sivarcart_coupons` | `Coupon` | Códigos de descuento: monto fijo, porcentaje o envío gratis. |
+
+El carrito caducado no se le vuelve a dar al comprador: se le crea uno nuevo, y el viejo lo
+borra la poda (ver *La caducidad del carrito*).
 
 ### Envío
 
@@ -479,6 +482,20 @@ comprador tampoco se convierte en una orden: lanza `CustomerRequired`.
 
 La dirección del checkout se guarda como `CustomerAddress` del comprador, y en el
 pedido siguiente se vuelve a leer: el comprador no la escribe otra vez.
+
+### La caducidad del carrito
+
+El carrito tiene fecha de caducidad: vive `cart.ttl_days` días (30 por defecto) desde que se
+crea. Un carrito caducado no se le vuelve a dar al comprador — se le crea uno nuevo — y el
+viejo queda en la base de datos hasta que la poda lo borra.
+
+```bash
+php artisan sivarcart:prune-carts
+```
+
+El comando borra los carritos vencidos y sus líneas, e informa cuántos borró. El paquete lo
+programa solo una vez al día, así que la aplicación no tiene que hacer nada: si la tienda no
+quiere la poda automática, basta con quitar la tarea del `Schedule` de la aplicación.
 
 ### Los servicios
 
@@ -799,8 +816,8 @@ SivarcartCore::catalog();     // CatalogService
 ## Configuration
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
-numeración de órdenes y pagos, la configuración de Wompi (ruta del webhook, ruta del
-redirect y las formas de pago habilitadas), las dos claves de autenticación del personal
+numeración de órdenes y pagos, la vida del carrito, la configuración de Wompi (ruta del webhook,
+ruta del redirect y las formas de pago habilitadas), las dos claves de autenticación del personal
 de la tienda y la sección `buyers` de la cuenta del comprador.
 
 Las claves de autenticación son `null` por defecto, y en ese caso el paquete lee el
@@ -842,6 +859,17 @@ comprador*), y la configuración solo pone el valor por defecto:
     'from' => null,
 ],
 ```
+
+El carrito tiene fecha de caducidad, y su vida sale de aquí:
+
+```php
+'cart' => [
+    'ttl_days' => 30,   // Los días que vive un carrito antes de caducar.
+],
+```
+
+Un carrito que caducó no se le vuelve a dar al comprador: se le crea uno nuevo, y el viejo lo
+borra el comando `sivarcart:prune-carts`, que el paquete programa una vez al día.
 
 Las credenciales de Wompi se guardan cifradas en `sivarcart_payment_methods.credentials`,
 de modo que el comerciante puede tener una cuenta por tienda. Cuando el método de pago

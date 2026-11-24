@@ -40,6 +40,65 @@ it('uses the currency of the store', function () {
     expect($cart->currency)->toBe('USD');
 });
 
+it('gives the new cart an expiration date', function () {
+    $customer = Customer::factory()->create();
+
+    $cart = app(CartService::class)->findOrCreate($customer->getKey());
+
+    expect($cart->expires_at)->not->toBeNull()
+        ->and($cart->expires_at->isAfter(now()))->toBeTrue();
+});
+
+it('reads how long a cart lives from the configuration', function () {
+    config()->set('sivarcart-core.cart.ttl_days', 7);
+
+    $this->travelTo(now()->addDay());
+
+    $customer = Customer::factory()->create();
+
+    $cart = app(CartService::class)->findOrCreate($customer->getKey());
+
+    expect($cart->expires_at->toDateTimeString())->toBe(now()->addDays(7)->toDateTimeString());
+});
+
+it('does not hand back a cart that expired', function () {
+    $customer = Customer::factory()->create();
+    $expired = Cart::factory()->create([
+        'customer_id' => $customer->getKey(),
+        'expires_at' => now()->subDay(),
+    ]);
+
+    $cart = app(CartService::class)->findOrCreate($customer->getKey());
+
+    expect($cart->is($expired))->toBeFalse()
+        ->and(Cart::query()->whereKey($expired->getKey())->exists())->toBeTrue();
+});
+
+it('keeps a cart that never expires', function () {
+    $customer = Customer::factory()->create();
+    $cart = Cart::factory()->create([
+        'customer_id' => $customer->getKey(),
+        'expires_at' => null,
+    ]);
+
+    expect(app(CartService::class)->findOrCreate($customer->getKey())->is($cart))->toBeTrue();
+});
+
+it('gives the most recent cart when the buyer has more than one', function () {
+    $customer = Customer::factory()->create();
+    $older = Cart::factory()->create([
+        'customer_id' => $customer->getKey(),
+        'expires_at' => now()->addDay(),
+    ]);
+    $newer = Cart::factory()->create([
+        'customer_id' => $customer->getKey(),
+        'expires_at' => now()->addDays(2),
+    ]);
+
+    expect(app(CartService::class)->findOrCreate($customer->getKey())->is($newer))->toBeTrue()
+        ->and($older->is($newer))->toBeFalse();
+});
+
 it('adds the units of a variant that is already in the cart', function () {
     $variant = Product::factory()->create()->defaultVariant();
     $cart = Cart::factory()->create();

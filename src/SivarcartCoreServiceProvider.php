@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
+use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCorePublishMailablesCommand;
 use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
@@ -198,7 +200,22 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->commands([
             SivarcartCoreInstallCommand::class,
             SivarcartCorePublishMailablesCommand::class,
+            PruneCartsCommand::class,
         ]);
+
+        $this->schedulePruneCarts();
+    }
+
+    /**
+     * Remove the carts that expired, once a day.
+     *
+     * The task is scheduled by the package so the application does not have to
+     * schedule it. It is registered in the console only, so it never touches a
+     * web request.
+     */
+    private function schedulePruneCarts(): void
+    {
+        Schedule::command('sivarcart:prune-carts')->daily();
     }
 
     /**

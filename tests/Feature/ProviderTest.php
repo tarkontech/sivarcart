@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Console\Scheduling\Event;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
@@ -127,6 +129,18 @@ it('registers the route of the webhook of Wompi', function () {
 
 it('registers the middleware of the permissions of the store', function () {
     expect(app('router')->getMiddleware())->toHaveKey('store.permission', EnsureStorePermission::class);
+});
+
+it('registers the command that prunes the carts', function () {
+    expect(Artisan::all())->toHaveKey('sivarcart:prune-carts');
+});
+
+it('schedules the pruning of the carts once a day', function () {
+    $pruning = collect(app(Schedule::class)->events())
+        ->first(fn (Event $event): bool => str_contains((string) $event->command, 'sivarcart:prune-carts'));
+
+    expect($pruning)->not->toBeNull()
+        ->and($pruning->getExpression())->toBe('0 0 * * *');
 });
 
 it('defines the ability of the permissions of the store', function () {

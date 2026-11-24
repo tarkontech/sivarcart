@@ -113,6 +113,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Cart
+    |--------------------------------------------------------------------------
+    |
+    | How long a cart lives. A cart that ran out of time is not handed back to
+    | the buyer: a new one is created, and the old one is removed by the
+    | "sivarcart:prune-carts" command.
+    |
+    */
+
+    'cart' => [
+        'ttl_days' => 30,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Notifications
     |--------------------------------------------------------------------------
     |

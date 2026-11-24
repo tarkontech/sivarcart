@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore\Services;
 
+use Illuminate\Database\Eloquent\Builder;
 use SivarcartCore\SivarcartCore\Exceptions\CouponNotApplicable;
 use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
 use SivarcartCore\SivarcartCore\Models\Cart;
@@ -34,10 +35,20 @@ final class CartService
      *
      * A cart always belongs to a buyer: the buyer signs in before buying, so
      * there is no cart that belongs to a session.
+     *
+     * A cart that ran out of time is not handed back: the buyer gets a new
+     * one and the old one is left for the pruning command to remove it. A cart
+     * without an expiration date never runs out of time.
      */
     public function findOrCreate(int $customerId): Cart
     {
-        $cart = Cart::query()->where('customer_id', $customerId)->first();
+        $cart = Cart::query()
+            ->where('customer_id', $customerId)
+            ->where(function (Builder $query): void {
+                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->orderByDesc('id')
+            ->first();
 
         if ($cart !== null) {
             return $cart;
@@ -46,6 +57,7 @@ final class CartService
         return Cart::query()->create([
             'customer_id' => $customerId,
             'currency' => $this->stores->currency(),
+            'expires_at' => now()->addDays($this->ttlDays()),
         ]);
     }
 
@@ -222,6 +234,14 @@ final class CartService
         $cart->save();
 
         return $this->recalculate($cart);
+    }
+
+    /**
+     * How many days a cart lives before it expires.
+     */
+    private function ttlDays(): int
+    {
+        return (int) config('sivarcart-core.cart.ttl_days', 30);
     }
 
     /**
