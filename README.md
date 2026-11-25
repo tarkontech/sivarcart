@@ -60,6 +60,19 @@ php artisan migrate
 php artisan db:seed --class="SivarcartCore\\SivarcartCore\\Database\\Seeders\\DatabaseSeeder"
 ```
 
+### Dar de alta al personal
+
+El seeder deja los **roles** de la tienda (`owner`, `manager` y `staff`), pero no las personas:
+el personal de la tienda son los usuarios de la aplicación. El comando `sivarcart-core:create-admin`
+crea el primero y le da su rol:
+
+```bash
+php artisan sivarcart-core:create-admin --name="Dueño" --email="dueno@mitienda.test" --role=owner
+```
+
+Pregunta lo que no le digas por opción (incluida la contraseña, que no se muestra), y el rol
+viene por defecto en `owner`, que es el que tiene todos los permisos.
+
 ### Publicar los demás recursos
 
 ```bash

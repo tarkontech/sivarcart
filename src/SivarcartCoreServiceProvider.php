@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use SivarcartCore\SivarcartCore\Admin\AdminPanel;
+use SivarcartCore\SivarcartCore\Console\Commands\CreateAdminCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\RestockCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
@@ -267,6 +268,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->commands([
             SivarcartCoreInstallCommand::class,
             SivarcartCorePublishMailablesCommand::class,
+            CreateAdminCommand::class,
             PruneCartsCommand::class,
             RestockCommand::class,
         ]);

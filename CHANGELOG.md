@@ -21,6 +21,10 @@
   y lo sirve el propio paquete, y los colores son variables CSS que salen de la sección
   `admin.theme` de la configuración
 - el paquete depende ahora de `livewire/livewire` (`^3.8|^4.0`)
+- **el comando `sivarcart-core:create-admin`** crea al primer miembro del personal de la tienda
+  y le da su rol (`owner` por defecto). El seeder dejaba los roles, pero no las personas: el
+  personal de la tienda son los usuarios de la aplicación, y sin una persona con rol el panel
+  no tenía a quién mostrarle nada
 
 ### El pago de la orden sigue a su pago
 
