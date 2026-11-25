@@ -27,6 +27,26 @@
 - el stock y su movimiento se escriben en la misma transacción, así que los dos siempre
   quedan de acuerdo
 
+### El núcleo ya no declara nada sin uso
+
+- **la tabla `sivarcart_settings` desaparece**, junto con el modelo `Setting`: ningún
+  servicio, comando o API la leía o la escribía. La migración que la creaba sale del
+  paquete y la nueva `2026_01_01_000038_drop_sivarcart_settings_table` limpia la base de
+  las instalaciones que ya la tenían publicada
+- **la nota interna de la orden (`orders.admin_note`) también desaparece**: las notas de
+  una orden viven en el historial de sus cambios. La migración
+  `2026_01_01_000039_drop_admin_note_from_sivarcart_orders_table` la borra, y su `down()`
+  la vuelve a crear
+- `Store::meta` sale del `fillable` del modelo: la columna y el cast se quedan, pero el
+  modelo ya no acepta escribirlos
+- **el permiso `reports.*` sale del rol `manager`**: la capa de reportes no entra en el
+  núcleo, así que el permiso protegía algo que no existe. Un permiso que no protege nada
+  engaña al personal de la tienda
+- las zonas de envío por departamento **se quedan en un módulo opcional**, como ya decía
+  el README: el contrato `ShippingRateCalculator` es el punto de extensión real
+- una prueba nueva comprueba el vocabulario sembrado de los permisos, para que ningún
+  permiso vuelva a proteger una función que el núcleo no tiene
+
 ### La tienda sube, valida y miniatura sus imágenes
 
 - **el paquete ya sabe guardar imágenes**: el `MediaService` sube las fotos de los

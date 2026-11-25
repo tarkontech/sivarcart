@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Schema;
 it('creates every table of the data model', function () {
     $tables = [
         'sivarcart_stores',
-        'sivarcart_settings',
         'sivarcart_departments',
         'sivarcart_document_sequences',
         'sivarcart_store_roles',
@@ -41,7 +40,15 @@ it('creates every table of the data model', function () {
         expect(Schema::hasTable($table))->toBeTrue("The table [{$table}] was not created.");
     }
 
-    expect($tables)->toHaveCount(29);
+    expect($tables)->toHaveCount(28);
+});
+
+it('does not keep the table of the free form settings', function () {
+    expect(Schema::hasTable('sivarcart_settings'))->toBeFalse();
+});
+
+it('does not keep the note of the staff in the order', function () {
+    expect(Schema::hasColumn('sivarcart_orders', 'admin_note'))->toBeFalse();
 });
 
 it('stores money with two decimals and tax rates with four', function () {

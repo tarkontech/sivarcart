@@ -270,7 +270,8 @@ $media->delete($image);
 
 ### 10. Extend the store
 
-- store module settings in `sivarcart_settings` instead of changing the schema
+- a module keeps its own settings in its own table: the package does not have a table
+  of free form settings
 - the shipping cost comes from the `ShippingRateCalculator` contract and the payment
   from the `PaymentGateway` contract; both can be replaced without touching the package
 - another gateway is registered as a driver of the payment gateway manager:

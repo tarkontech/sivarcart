@@ -60,7 +60,6 @@ class OrderFactory extends Factory
             'shipping_method_code' => 'standard',
             'shipping_method_name' => 'Envío estándar',
             'customer_note' => null,
-            'admin_note' => null,
             'placed_at' => now(),
             'paid_at' => null,
             'cancelled_at' => null,

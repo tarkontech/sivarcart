@@ -82,7 +82,6 @@ Todas las tablas llevan el prefijo `sivarcart_`. Los modelos viven en
 | Tabla | Modelo | Para qué sirve |
 |---|---|---|
 | `sivarcart_stores` | `Store` | Perfil y ajustes de la tienda: nombre, NIT, logo, moneda, zona horaria, IVA por defecto. |
-| `sivarcart_settings` | `Setting` | Ajustes libres en clave y valor. Es el punto de extensión de los módulos opcionales. |
 | `sivarcart_notification_settings` | `NotificationSetting` | Qué correos al comprador salen y cuáles no. La aplicación que instala el paquete la edita. |
 | `sivarcart_departments` | `Department` | Los 14 departamentos de El Salvador. |
 | `sivarcart_document_sequences` | `DocumentSequence` | Contadores por tipo y periodo para numerar órdenes y pagos sin colisiones. |
@@ -119,7 +118,7 @@ El permiso sale del parámetro del middleware y, cuando no hay, del parámetro
 `permission` de la ruta:
 
 ```php
-Route::get('/reportes/{permission}', ReportController::class)
+Route::get('/pedidos/{permission}', OrderController::class)
     ->middleware('store.permission');
 ```
 

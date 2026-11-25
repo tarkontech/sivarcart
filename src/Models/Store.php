@@ -52,7 +52,6 @@ class Store extends Model implements HasMedia
         'low_stock_threshold',
         'order_number_prefix',
         'payment_number_prefix',
-        'meta',
         'is_active',
     ];
 

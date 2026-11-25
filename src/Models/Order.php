@@ -56,7 +56,6 @@ class Order extends Model
         'shipping_method_code',
         'shipping_method_name',
         'customer_note',
-        'admin_note',
         'placed_at',
         'paid_at',
         'cancelled_at',

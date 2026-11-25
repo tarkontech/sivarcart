@@ -34,7 +34,6 @@ class StoreRoleSeeder extends Seeder
                     'customers.*',
                     'payments.*',
                     'shipping.*',
-                    'reports.*',
                     'settings.view',
                 ],
             ],

@@ -15,7 +15,7 @@ use SivarcartCore\SivarcartCore\Support\Auth;
  * none, from the "permission" parameter of the route:
  *
  *     Route::get('/orders', ...)->middleware('store.permission:orders.view');
- *     Route::get('/reports/{permission}', ...)->middleware('store.permission');
+ *     Route::get('/orders/{permission}', ...)->middleware('store.permission');
  *
  * The request goes through when the user of the application holds the
  * permission in one of the roles of the store. A request without a permission,

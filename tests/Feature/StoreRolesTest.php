@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use SivarcartCore\SivarcartCore\Database\Seeders\StoreRoleSeeder;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Models\InventoryMovement;
 use SivarcartCore\SivarcartCore\Models\Order;
@@ -129,6 +130,41 @@ it('takes a role away from the user', function () {
     $user->revokeStoreRole('manager');
 
     expect($user->fresh()->storeRoles)->toHaveCount(0);
+});
+
+it('seeds the vocabulary of the permissions of the store', function () {
+    $this->seed(StoreRoleSeeder::class);
+
+    expect(StoreRole::query()->where('slug', 'owner')->firstOrFail()->permissions)->toBe(['*'])
+        ->and(StoreRole::query()->where('slug', 'manager')->firstOrFail()->permissions)->toBe([
+            'catalog.*',
+            'orders.*',
+            'customers.*',
+            'payments.*',
+            'shipping.*',
+            'settings.view',
+        ])
+        ->and(StoreRole::query()->where('slug', 'staff')->firstOrFail()->permissions)->toBe([
+            'catalog.view',
+            'orders.view',
+            'orders.update',
+            'customers.view',
+        ]);
+});
+
+it('does not seed a permission that protects nothing', function () {
+    $this->seed(StoreRoleSeeder::class);
+
+    $groups = StoreRole::query()
+        ->get()
+        ->flatMap(fn (StoreRole $role): array => $role->permissions ?? [])
+        ->filter(fn (mixed $permission): bool => is_string($permission) && $permission !== '*')
+        ->map(fn (string $permission): string => explode('.', $permission)[0])
+        ->unique()
+        ->values()
+        ->all();
+
+    expect($groups)->toBe(['catalog', 'orders', 'customers', 'payments', 'shipping', 'settings']);
 });
 
 it('reads the user that is authenticated right now', function () {
