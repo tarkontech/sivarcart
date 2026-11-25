@@ -671,6 +671,23 @@ venta: **el stock disponible no cambia** al pagar.
 ninguno es "enviar": preparar, enviar y entregar solo describen la realidad física de
 la orden. Las unidades vuelven al stock cuando la orden se cancela o se reembolsa.
 
+**Reponer el stock lo hace un comando.** El personal de la tienda repone lo que llegó del
+proveedor y corrige los conteos con `sivarcart:restock`, y cada movimiento queda escrito en
+el libro mayorista como los del checkout:
+
+```bash
+# Sumar unidades al stock de una variante.
+php artisan sivarcart:restock SKU-123 10 --reason="Llegó del proveedor"
+
+# Fijar la cantidad exacta que tiene la variante.
+php artisan sivarcart:restock SKU-123 --stock=25
+```
+
+El primero suma las unidades y deja un movimiento `restock`; el segundo fija la cantidad y
+deja un movimiento `adjustment`, que es la forma de explicar una diferencia de inventario.
+El comando escribe el stock y su movimiento en la misma transacción, así que los dos
+siempre quedan de acuerdo.
+
 ### El despacho de la orden
 
 El despacho es la mitad física del ciclo de vida de la orden, y lo maneja el personal de

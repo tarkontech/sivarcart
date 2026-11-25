@@ -158,6 +158,10 @@ it('registers the command that prunes the carts', function () {
     expect(Artisan::all())->toHaveKey('sivarcart:prune-carts');
 });
 
+it('registers the command that restocks a variant', function () {
+    expect(Artisan::all())->toHaveKey('sivarcart:restock');
+});
+
 it('schedules the pruning of the carts once a day', function () {
     $pruning = collect(app(Schedule::class)->events())
         ->first(fn (Event $event): bool => str_contains((string) $event->command, 'sivarcart:prune-carts'));

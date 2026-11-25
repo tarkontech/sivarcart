@@ -159,6 +159,14 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 ));
 ```
 
+- the staff of the store restock a variant and correct a count with the
+  `sivarcart:restock` command, which writes the movement in the stock ledger:
+
+```bash
+php artisan sivarcart:restock SKU-123 10 --reason="Llegó del proveedor"
+php artisan sivarcart:restock SKU-123 --stock=25
+```
+
 ### 6. Collect the money with Wompi
 
 - the credentials of the gateway live in `sivarcart_payment_methods` and are stored

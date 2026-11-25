@@ -17,6 +17,16 @@
 - las transiciones del pago están protegidas: una orden ya pagada no vuelve a `failed`
   cuando llega un webhook tardío, y el webhook no se pierde
 
+### El personal de la tienda repone el stock
+
+- **el comando `sivarcart:restock`** pone unidades de vuelta en el stock de una variante
+  y deja el movimiento escrito en el libro mayorista, como los del checkout
+- con la cantidad suma unidades (movimiento `restock`) y con `--stock` fija la cantidad
+  exacta (movimiento `adjustment`), que es la forma de explicar una diferencia de
+  inventario
+- el stock y su movimiento se escriben en la misma transacción, así que los dos siempre
+  quedan de acuerdo
+
 ### La tienda sube, valida y miniatura sus imágenes
 
 - **el paquete ya sabe guardar imágenes**: el `MediaService` sube las fotos de los

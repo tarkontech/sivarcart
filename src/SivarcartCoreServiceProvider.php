@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
 use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
+use SivarcartCore\SivarcartCore\Console\Commands\RestockCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCorePublishMailablesCommand;
 use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
@@ -241,6 +242,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             SivarcartCoreInstallCommand::class,
             SivarcartCorePublishMailablesCommand::class,
             PruneCartsCommand::class,
+            RestockCommand::class,
         ]);
 
         $this->schedulePruneCarts();
