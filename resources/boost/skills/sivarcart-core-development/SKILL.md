@@ -95,7 +95,41 @@ Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): 
   anybody, the application puts its own `auth` middleware in front of it
 - the application needs its own table of users before the migrations of the package run
 
-### 4. Sell to buyers with an account
+### 4. Use the administration panel of the package
+
+- the package brings the **administration panel of the staff**: the dashboard, the orders, the
+  catalog, the customers, the settings of the store and the roles of the staff. It is mounted
+  under `sivarcart/admin` (the `admin.prefix` of the configuration) and it is turned off with
+  `admin.enabled`
+- the panel **does not authenticate anybody**: it uses the users, the guard and the session of
+  the application, so the `HasStoreRoles` trait of the section above is required. Without it the
+  panel shows its setup screen
+- every screen asks for the permissions the package already seeds (`orders.view`,
+  `catalog.view`, `customers.view`, `settings.view`)
+- to change a screen, write the file in `resources/views/vendor/sivarcart-core/admin/`: the copy
+  of the application wins over the copy of the package, with nothing to publish and nothing to
+  configure
+- to edit the original instead of writing on top of it, publish the views with the tag
+  `sivarcart-core-views`
+- to add a screen of its own, register it in the panel and it appears in the navigation with the
+  permission it needs:
+
+```php
+use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
+
+SivarcartCore::admin()->page(
+    key: 'quick-view',
+    label: 'Vista rapida',
+    permission: 'orders.view',
+    component: QuickView::class,
+);
+```
+
+- the panel brings its own stylesheet and **does not ask the application for Tailwind**: the
+  colors are CSS variables and come from the `admin.theme` section of the configuration, so a
+  merchant re-themes it without compiling anything
+
+### 5. Sell to buyers with an account
 
 - the **buyer** signs in with the guard of the package, not with the guard of the
   application: the package registers its own guard, its own provider and its own password
@@ -131,7 +165,7 @@ Route::middleware(['auth:sivarcart'])->group(function (): void {
   the rule `SivarcartCore\SivarcartCore\Rules\CustomerDocument` works in the forms and in
   the domain
 
-### 5. Sell
+### 6. Sell
 
 - the services in `SivarcartCore\SivarcartCore\Services` are the spine of the domain:
   `CartService`, `CustomerService`, `OrderService`, `PaymentService` and
@@ -167,7 +201,7 @@ php artisan sivarcart:restock SKU-123 10 --reason="Llegó del proveedor"
 php artisan sivarcart:restock SKU-123 --stock=25
 ```
 
-### 6. Collect the money with Wompi
+### 7. Collect the money with Wompi
 
 - the credentials of the gateway live in `sivarcart_payment_methods` and are stored
   encrypted; the package `rmirandasv/laravel-wompi` handles the OAuth2, the HMAC
@@ -184,7 +218,7 @@ php artisan sivarcart:restock SKU-123 --stock=25
 - the webhook is idempotent: `payment_transactions.idempotency_key` has a unique index,
   so a repeated delivery never charges or moves the stock twice
 
-### 7. Move the order
+### 8. Move the order
 
 - `MarkOrderAsPaid` confirms a payment the store collected on its own, like the cash of
   a delivery order. It only moves the payment axis: the order stays `pending` until the
@@ -211,7 +245,7 @@ php artisan sivarcart:restock SKU-123 --stock=25
   `failed`, and `CancelOrder` leaves it `cancelled`. A gateway that fails leaves the
   payment `unpaid`, so the buyer can ask for the link again
 
-### 8. Write to the buyer
+### 9. Write to the buyer
 
 - the package writes to the buyer when the order moves: every notification of
   `SivarcartCore\SivarcartCore\Enums\OrderNotification` delivers a markdown mailable, and
@@ -236,7 +270,7 @@ php artisan sivarcart-core:publish-mailables
 - the sender comes from `config('sivarcart-core.notifications.from')`, and when it is
   null the `mail.from` of the application is used
 
-### 9. Keep the images of the store
+### 10. Keep the images of the store
 
 - the images of the products, of the variants, of the brands and of the store are stored with
   Spatie Media Library, but in the table of the package (`sivarcart_product_images`), so every
@@ -268,7 +302,7 @@ $media->delete($image);
 - the store API returns the images with their path, their disk and their text, and also
   with `url` and `thumbnail_url`
 
-### 10. Extend the store
+### 11. Extend the store
 
 - a module keeps its own settings in its own table: the package does not have a table
   of free form settings
@@ -290,7 +324,8 @@ Read before executing:
 
 - `README.md` — the table by table data model, the install flow and the domain layer
 - `config/sivarcart-core.php` — store defaults, numbering prefixes, the Wompi settings, the
-  notifications of the buyer, the media of the store and the model and guard of the users
+  notifications of the buyer, the media of the store, the model and guard of the users and
+  the `admin` section of the administration panel
 
 ## Examples
 
@@ -409,4 +444,8 @@ NotificationSetting::query()->updateOrCreate(
   thumbnail and the columns of the domain stay together
 - do not publish the migration of the media library; the package keeps the files in its own
   table of images and the `media` table would stay empty
+- do not build a second administration panel before using the one of the package: it already
+  brings the orders, the catalog, the customers, the settings and the roles
+- do not edit the views of the package in place; write them in
+  `resources/views/vendor/sivarcart-core/` so the customization survives an update
 - do not document the columns of a table as public API; the models and the enums are

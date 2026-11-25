@@ -2,6 +2,26 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### El panel de administración entra en el núcleo
+
+- **el paquete trae el panel del personal de la tienda**: el tablero, los pedidos (lista y
+  detalle, con el ciclo de vida de la orden), el catálogo, los clientes, los ajustes de la
+  tienda y los roles. Vive bajo `sivarcart/admin` y se apaga con `admin.enabled`
+- el panel **no autentica a nadie**: usa los usuarios, el guard y la sesión de la
+  aplicación, así que el modelo del usuario tiene que llevar el trait `HasStoreRoles`. Sin
+  él, el panel abre su pantalla de instalación y explica qué hacer
+- **las pantallas se sobrescriben como las de cualquier paquete**: el archivo que el
+  comerciante pone en `resources/views/vendor/sivarcart-core/admin/` gana sobre el del
+  paquete, sin publicar nada y sin tocar la configuración. `vendor:publish --tag=sivarcart-core-views`
+  publica los originales para editarlos
+- **la aplicación registra sus propias pantallas**: `SivarcartCore::admin()->page()` mete una
+  página en la navegación con el permiso que necesita, y `SivarcartCore::admin()->widget()`
+  mete un widget en el tablero
+- el panel trae su propia hoja de estilo y **no pide Tailwind**: el CSS viaja con el paquete
+  y lo sirve el propio paquete, y los colores son variables CSS que salen de la sección
+  `admin.theme` de la configuración
+- el paquete depende ahora de `livewire/livewire` (`^3.8|^4.0`)
+
 ### El pago de la orden sigue a su pago
 
 - **el eje del pago de la orden deja de ser decorativo**: `PaymentStatus::PENDING`,

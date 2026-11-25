@@ -7,6 +7,7 @@ namespace SivarcartCore\SivarcartCore\Tests;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Rmirandasv\Wompi\WompiServiceProvider;
 use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
@@ -52,6 +53,7 @@ abstract class TestCase extends Orchestra
             // own observer, so the provider has to be loaded before the
             // package sets the model of the media.
             MediaLibraryServiceProvider::class,
+            LivewireServiceProvider::class,
             SivarcartCoreServiceProvider::class,
             WompiServiceProvider::class,
         ];
@@ -81,6 +83,16 @@ abstract class TestCase extends Orchestra
         $this->prepareTemporaryBasePath();
 
         $app->setBasePath($this->temporaryBasePath);
+
+        /*
+        | The views of the application come from the temporary base path too,
+        | so the views the merchant publishes in
+        | "resources/views/vendor/sivarcart-core" are found the same way they
+        | are found in a real application.
+        */
+        $app['config']->set('view.paths', [
+            $this->temporaryBasePath.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'views',
+        ]);
 
         $app['config']->set('database.default', 'testing');
 
@@ -121,10 +133,23 @@ abstract class TestCase extends Orchestra
      *
      * Blade reads the composer.json of the base path to guess the namespace
      * of a component, so the directory needs one.
+     *
+     * The directory of the views the merchant publishes is created too, and it
+     * is created before the application starts: Laravel looks for it when it
+     * registers the views of the package, so a file that appears later would
+     * not be found.
      */
     private function prepareTemporaryBasePath(): void
     {
         File::ensureDirectoryExists($this->temporaryBasePath.DIRECTORY_SEPARATOR.'app');
+
+        File::ensureDirectoryExists(
+            $this->temporaryBasePath
+            .DIRECTORY_SEPARATOR.'resources'
+            .DIRECTORY_SEPARATOR.'views'
+            .DIRECTORY_SEPARATOR.'vendor'
+            .DIRECTORY_SEPARATOR.'sivarcart-core',
+        );
 
         File::put(
             $this->temporaryBasePath.DIRECTORY_SEPARATOR.'composer.json',

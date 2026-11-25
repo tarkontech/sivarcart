@@ -47,6 +47,11 @@ personal, la tienda, los métodos de pago y los métodos de envío.
 > los usuarios de la aplicación, así que la migración que crea la tabla `users` tiene que
 > existir antes de correr las migraciones del paquete.
 
+> **El modelo del usuario tiene que llevar el trait `HasStoreRoles`.** El panel de
+> administración y el middleware de permisos leen los roles del personal de ahí. Sin el trait,
+> el panel abre su pantalla de instalación y te dice qué hacer (ver *El panel de
+> administración*).
+
 Si prefieres hacerlo paso a paso:
 
 ```bash
@@ -935,9 +940,9 @@ SivarcartCore::media();       // MediaService
 ## La API de tienda
 
 El núcleo expone la **API de tienda**: el catálogo, el carrito, el checkout, las órdenes del
-comprador y la cuenta del comprador. El **panel de administración no vive en el núcleo**: es
-de la aplicación que instala el paquete, que ya tiene el personal, los permisos y sus propias
-pantallas.
+comprador y la cuenta del comprador. El **panel de administración del personal también vive en
+el núcleo**: son componentes de Livewire y vistas de Blade que el comerciante sobrescribe cuando
+lo necesita.
 
 Las rutas las registra el paquete: la aplicación no tiene que publicarlas. Viven bajo el
 prefijo de la sección `api` de la configuración (`api/sivarcart` por defecto) y se pueden
@@ -995,9 +1000,9 @@ Application servida por la misma aplicación. Una aplicación de otro origen nec
 aplicación configure CORS con credenciales, y una aplicación móvil necesitaría tokens, que el
 paquete no trae.
 
-> **El panel de administración es de la aplicación.** El núcleo expone la API de tienda y el
-> dominio; las pantallas del personal, los permisos y los ajustes de la tienda son de la
-> aplicación que instala el paquete.
+> **La tienda del comprador es de la aplicación.** El núcleo expone la API de tienda, el
+> dominio y el panel del personal; la tienda que ve el comprador (la que le vende al público)
+> la arma la aplicación que instala el paquete, con el framework que prefiera.
 
 ### Los errores de la API
 
@@ -1022,13 +1027,127 @@ corresponde:
 Los errores de validación los responde Laravel: un **422** con la lista de los campos que no
 cuadran, en el idioma de la aplicación.
 
+## El panel de administración
+
+El paquete trae el **panel del personal de la tienda**: el tablero, los pedidos, el catálogo, los
+clientes, los ajustes de la tienda y los roles del personal. Vive bajo el prefijo de la sección
+`admin` de la configuración (`sivarcart/admin` por defecto) y se puede apagar con
+`admin.enabled`.
+
+El panel **no autentica a nadie**: usa los usuarios, el guard y la sesión de la aplicación. La
+pantalla de entrada del panel es solo la pantalla de ese guard.
+
+> **El modelo del usuario tiene que llevar el trait de los roles.** Sin
+> `HasStoreRoles` el panel no sabe qué permisos tiene el personal, así que manda a su pantalla
+> de instalación, que explica qué hacer.
+
+```php
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreRoles;
+
+class User extends Authenticatable
+{
+    use HasStoreRoles;
+}
+```
+
+Cada pantalla pide el permiso que le corresponde (`orders.view`, `catalog.view`,
+`customers.view`, `settings.view`), así que el vocabulario de permisos que ya trae el paquete
+también gobierna el panel.
+
+### Sobrescribir las pantallas
+
+El panel se sobrescribe como cualquier otra vista de un paquete de Laravel: el archivo que el
+comerciante pone en `resources/views/vendor/sivarcart-core/` **gana sobre el del paquete**, sin
+publicar nada y sin tocar la configuración.
+
+```
+resources/views/vendor/sivarcart-core/admin/pages/orders/index.blade.php   # la lista de pedidos
+resources/views/vendor/sivarcart-core/admin/layout.blade.php                # el esqueleto del panel
+resources/views/vendor/sivarcart-core/admin/components/card.blade.php       # un componente
+```
+
+Los componentes de Blade del panel se usan así y se sobrescriben igual:
+
+```blade
+<x-sivarcart-core::card title="Pedidos de hoy">
+    ...
+</x-sivarcart-core::card>
+```
+
+Si lo que quieres es editar el original en vez de escribir encima, publícalo:
+
+```bash
+php artisan vendor:publish --tag="sivarcart-core-views"
+```
+
+> **`vendor:publish` nunca sobrescribe un archivo que ya existe**, así que una personalización
+> sobrevive a una actualización del paquete.
+
+### Agregar pantallas propias
+
+El panel tiene un registro de páginas. La aplicación registra las suyas y el panel las pone en la
+navegación, con el permiso que necesitan:
+
+```php
+use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
+
+// app/Providers/AppServiceProvider.php
+SivarcartCore::admin()->page(
+    key: 'quick-view',
+    label: 'Vista rápida',
+    permission: 'orders.view',
+    component: QuickView::class,   // un componente de Livewire
+);
+```
+
+La página queda en `/sivarcart/admin/quick-view` y el enlace aparece en la barra lateral. Si lo
+que quieres es una ruta de tu aplicación, pasa la ruta y el paquete solo pone el enlace:
+
+```php
+SivarcartCore::admin()->page(
+    key: 'quick-view',
+    label: 'Vista rápida',
+    route: 'mi.quick-view',
+);
+```
+
+El tablero también acepta widgets, que se renderizan en una rejilla debajo de los contadores:
+
+```php
+SivarcartCore::admin()->widget('ventas-de-hoy', VentasDeHoy::class);
+```
+
+### El tema
+
+El panel trae su propia hoja de estilo y **no le pide a nadie que instale Tailwind**: el CSS
+viaja con el paquete y lo sirve el propio paquete, así que nunca queda desactualizado. Los
+colores son variables CSS, y se cambian en la configuración:
+
+```php
+'admin' => [
+    'theme' => [
+        'primary' => '#1d4ed8',
+        'radius' => '0.5rem',
+    ],
+],
+```
+
+La hoja de estilo del paquete se sirve en `/sivarcart/admin/assets/admin.css`. Si tu aplicación
+tiene sus propias hojas, se cargan después con `admin.stylesheets`, así que ganan.
+
+### Lo que el panel todavía no trae
+
+El catálogo y los clientes son **de lectura**. El alta y la edición de productos, variantes,
+categorías, marcas, métodos de envío y métodos de pago todavía no están: son la fase siguiente,
+y son la capa de escritura del catálogo.
+
 ## Configuration
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
 numeración de órdenes y pagos, la vida del carrito, la sección `api` de la API de tienda, la
-configuración de Wompi (ruta del webhook, ruta del redirect y las formas de pago
-habilitadas), las dos claves de autenticación del personal de la tienda y la sección `buyers`
-de la cuenta del comprador.
+sección `admin` del panel de administración, la configuración de Wompi (ruta del webhook, ruta
+del redirect y las formas de pago habilitadas), las dos claves de autenticación del personal de
+la tienda y la sección `buyers` de la cuenta del comprador.
 
 Las claves de autenticación son `null` por defecto, y en ese caso el paquete lee el
 modelo del proveedor `users` y el guard por defecto de `config/auth.php`. Solo hay que
@@ -1080,6 +1199,35 @@ El carrito tiene fecha de caducidad, y su vida sale de aquí:
 
 Un carrito que caducó no se le vuelve a dar al comprador: se le crea uno nuevo, y el viejo lo
 borra el comando `sivarcart:prune-carts`, que el paquete programa una vez al día.
+
+El panel de administración se monta con la sección `admin`:
+
+```php
+'admin' => [
+    'enabled' => true,
+    'prefix' => 'sivarcart/admin',
+    'middleware' => ['web'],
+
+    // El guard del personal. Con null gana el guard por defecto de la aplicación.
+    'guard' => null,
+
+    'login' => [
+        'enabled' => true,   // El panel trae su propia pantalla de entrada.
+        'route' => null,     // O la ruta de entrada de la aplicación.
+    ],
+
+    // El tema del panel. Los valores son variables CSS.
+    'theme' => [
+        'primary' => '#1d4ed8',
+        'radius' => '0.5rem',
+    ],
+
+    // Hojas de estilo de la aplicación. Se cargan después de la del panel.
+    'stylesheets' => [],
+
+    'per_page' => 25,
+],
+```
 
 La API de tienda se monta con la sección `api`:
 

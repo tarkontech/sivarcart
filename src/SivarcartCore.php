@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore;
 
+use SivarcartCore\SivarcartCore\Admin\AdminPanel;
 use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
@@ -24,6 +25,7 @@ use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
 class SivarcartCore
 {
     public function __construct(
+        private readonly AdminPanel $admin,
         private readonly CartService $carts,
         private readonly CustomerService $customers,
         private readonly OrderService $orders,
@@ -35,6 +37,23 @@ class SivarcartCore
         private readonly MediaService $media,
     ) {
         //
+    }
+
+    /**
+     * The registry of the administration panel.
+     *
+     * The host application registers its own pages and widgets here:
+     *
+     *     SivarcartCore::admin()->page(
+     *         key: 'quick-view',
+     *         label: 'Vista rápida',
+     *         permission: 'orders.view',
+     *         component: QuickView::class,
+     *     );
+     */
+    public function admin(): AdminPanel
+    {
+        return $this->admin;
     }
 
     /**

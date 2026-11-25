@@ -205,6 +205,81 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Administration panel
+    |--------------------------------------------------------------------------
+    |
+    | The panel of the staff of the store lives in the package. It is a set of
+    | Livewire components and Blade views that the merchant overrides in
+    | "resources/views/vendor/sivarcart-core", the same way every package of
+    | Laravel does it.
+    |
+    | The panel does not authenticate the staff: it uses the users, the guard
+    | and the session of the host application.
+    |
+    */
+
+    'admin' => [
+        'enabled' => true,
+
+        /*
+        | Where the panel is mounted. Its routes are registered by the package,
+        | so the application does not have to publish them.
+        */
+        'prefix' => 'sivarcart/admin',
+
+        /*
+        | The middleware of the panel. The "web" group brings the session and
+        | the CSRF. The package adds its own middleware, which sends the staff
+        | to the sign in screen of the panel and checks that the model of the
+        | user carries the trait of the roles of the store.
+        */
+        'middleware' => ['web'],
+
+        /*
+        | The guard that holds the session of the staff. When it is null the
+        | default guard of "config/auth.php" is used.
+        */
+        'guard' => null,
+
+        'login' => [
+            /*
+            | Whether the package renders the sign in screen of the panel. When
+            | it is false the application sends the staff to its own sign in.
+            */
+            'enabled' => true,
+
+            /*
+            | The route of the application that signs the staff in. When it is
+            | null the package uses the one of the panel.
+            */
+            'route' => null,
+        ],
+
+        /*
+        | The theme of the panel. These values become CSS custom properties,
+        | so the merchant changes them without compiling anything.
+        */
+        'theme' => [
+            'primary' => '#1d4ed8',
+            'primary_hover' => '#1e40af',
+            'danger' => '#b91c1c',
+            'success' => '#15803d',
+            'warning' => '#b45309',
+            'radius' => '0.5rem',
+            'font' => 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        ],
+
+        /*
+        | Extra stylesheets of the application. They load after the stylesheet
+        | of the panel, so they win.
+        */
+        'stylesheets' => [],
+
+        'per_page' => 25,
+    ],
+
     'notifications' => [
         'enabled' => true,
 

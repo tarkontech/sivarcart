@@ -20,11 +20,15 @@ class DatabaseSeeder extends Seeder
     {
         // UserFactory::new()->times(10)->create();
 
-        UserFactory::new()->create([
+        $this->call(SivarcartCoreSeeder::class);
+
+        $user = UserFactory::new()->createOne([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
-        $this->call(SivarcartCoreSeeder::class);
+        // The user of the workbench is the owner of the store, so it can open
+        // every screen of the administration panel while developing.
+        $user->assignStoreRole('owner');
     }
 }

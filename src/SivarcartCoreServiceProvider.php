@@ -9,13 +9,17 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+use SivarcartCore\SivarcartCore\Admin\AdminPanel;
 use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\RestockCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
@@ -31,6 +35,7 @@ use SivarcartCore\SivarcartCore\Events\OrderShipped;
 use SivarcartCore\SivarcartCore\Events\PaymentFailed;
 use SivarcartCore\SivarcartCore\Http\ApiExceptionRenderer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureBuyer;
+use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStoreAdmin;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
 use SivarcartCore\SivarcartCore\Http\Middleware\StorefrontApi;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderCancelledNotification;
@@ -40,9 +45,20 @@ use SivarcartCore\SivarcartCore\Listeners\SendOrderPlacedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderRefundedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderShippedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Catalog\ProductList;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Customers\CustomerList;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Dashboard;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Orders\OrderList;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Orders\OrderShow;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Roles\RoleList;
+use SivarcartCore\SivarcartCore\Livewire\Admin\Settings\StoreSettings;
 use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Models\ProductImage;
 use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
+use SivarcartCore\SivarcartCore\Services\Admin\CustomerService as AdminCustomerService;
+use SivarcartCore\SivarcartCore\Services\Admin\OrderService as AdminOrderService;
+use SivarcartCore\SivarcartCore\Services\Admin\ProductService as AdminProductService;
+use SivarcartCore\SivarcartCore\Services\Admin\StatsService;
 use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CouponService;
@@ -77,6 +93,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->registerMediaLibrary();
         $this->registerServices();
         $this->registerContracts();
+
+        $this->registerAdminPages();
     }
 
     /**
@@ -156,9 +174,15 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             PaymentGatewayManager::class,
             NotificationService::class,
             MediaService::class,
+            StatsService::class,
+            AdminProductService::class,
+            AdminCustomerService::class,
+            AdminOrderService::class,
         ] as $service) {
             $this->app->singleton($service);
         }
+
+        $this->app->singleton(AdminPanel::class);
     }
 
     /**
@@ -209,6 +233,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->registerStorePermissions();
 
         $this->registerStoreApi();
+
+        $this->registerAdminPanel();
 
         if (! $this->app->runningInConsole()) {
             return;
@@ -322,6 +348,159 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         }
 
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+    }
+
+    /**
+     * Register the administration panel of the staff of the store.
+     *
+     * The panel is made of Livewire components and Blade views, and the
+     * merchant overrides them in "resources/views/vendor/sivarcart-core", the
+     * same way every package of Laravel does it.
+     *
+     * The panel does not authenticate the staff: it uses the users, the guard
+     * and the session of the host application.
+     */
+    private function registerAdminPanel(): void
+    {
+        if (! (bool) config('sivarcart-core.admin.enabled', true)) {
+            return;
+        }
+
+        Route::aliasMiddleware('sivarcart.admin', EnsureStoreAdmin::class);
+
+        Blade::componentNamespace('SivarcartCore\SivarcartCore\View\Components', 'sivarcart-core');
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/admin.php');
+
+        $this->registerAdminViewComposer();
+
+        /*
+        | The component of the order is told to Livewire when the application
+        | is booted, because the provider of Livewire registers itself after
+        | the providers of the application do.
+        */
+        $this->app->booted(function (): void {
+            Livewire::component('sivarcart.orders.show', OrderShow::class);
+        });
+    }
+
+    /**
+     * Register the pages the panel brings.
+     *
+     * The pages are registered in "register()" and not in "boot()", so the
+     * application can replace one of them by registering a page with the same
+     * key.
+     *
+     * The label of a page is the key of its translation, so the panel speaks
+     * the language of the application. The label of a page the host registers
+     * is the text the host wants.
+     */
+    private function registerAdminPages(): void
+    {
+        if (! (bool) config('sivarcart-core.admin.enabled', true)) {
+            return;
+        }
+
+        $panel = $this->app->make(AdminPanel::class);
+
+        $panel->page(
+            key: 'dashboard',
+            label: 'sivarcart-core::admin.dashboard.title',
+            component: Dashboard::class,
+            order: 10,
+        );
+
+        $panel->page(
+            key: 'orders',
+            label: 'sivarcart-core::admin.orders.title',
+            component: OrderList::class,
+            permission: 'orders.view',
+            order: 20,
+        );
+
+        $panel->page(
+            key: 'products',
+            label: 'sivarcart-core::admin.products.title',
+            component: ProductList::class,
+            permission: 'catalog.view',
+            order: 30,
+        );
+
+        $panel->page(
+            key: 'customers',
+            label: 'sivarcart-core::admin.customers.title',
+            component: CustomerList::class,
+            permission: 'customers.view',
+            order: 40,
+        );
+
+        $panel->page(
+            key: 'settings',
+            label: 'sivarcart-core::admin.settings.title',
+            component: StoreSettings::class,
+            permission: 'settings.view',
+            order: 50,
+        );
+
+        $panel->page(
+            key: 'roles',
+            label: 'sivarcart-core::admin.roles.title',
+            component: RoleList::class,
+            permission: 'roles.view',
+            order: 60,
+        );
+    }
+
+    /**
+     * Give the views of the panel the data they need.
+     */
+    private function registerAdminViewComposer(): void
+    {
+        View::composer([
+            'sivarcart-core::admin.layout',
+            'sivarcart-core::admin.login',
+            'sivarcart-core::admin.setup',
+        ], function (\Illuminate\View\View $view): void {
+            $route = request()->route();
+
+            $currentPage = 'dashboard';
+
+            if ($route instanceof \Illuminate\Routing\Route) {
+                $parameter = $route->parameter('page');
+
+                if (is_string($parameter) && $parameter !== '') {
+                    $currentPage = $parameter;
+                }
+            }
+
+            $view->with([
+                'adminPages' => $this->app->make(AdminPanel::class)->visiblePages(),
+                'adminStore' => $this->app->make(StoreService::class)->current(),
+                'adminTheme' => (array) config('sivarcart-core.admin.theme', []),
+                'adminAssetVersion' => $this->adminAssetVersion(),
+                'adminCurrentPage' => $currentPage,
+            ]);
+        });
+    }
+
+    /**
+     * The version of the stylesheet of the panel.
+     *
+     * The stylesheet travels with the package, so it is the one that goes with
+     * the version the merchant installed. The number tells the browser that it
+     * changed.
+     */
+    private function adminAssetVersion(): string
+    {
+        $path = __DIR__.'/../resources/dist/admin.css';
+
+        if (! is_file($path)) {
+            return '1';
+        }
+
+        $time = filemtime($path);
+
+        return $time === false ? '1' : (string) $time;
     }
 
     /**

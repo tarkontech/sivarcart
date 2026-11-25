@@ -24,6 +24,33 @@ final class StoreService
     }
 
     /**
+     * Save the settings of the store.
+     *
+     * The store is created when the package is installed, so the settings are
+     * written on the row that is already there. When it is not there yet, it
+     * is created with the defaults of the configuration file.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function update(array $attributes): Store
+    {
+        $store = $this->current();
+
+        if (! $store instanceof Store) {
+            $store = new Store;
+
+            $store->fill([
+                'name' => (string) config('sivarcart-core.store.name', 'SivarCart'),
+                'slug' => (string) config('sivarcart-core.store.slug', 'sivarcart'),
+            ]);
+        }
+
+        $store->fill($attributes)->save();
+
+        return $store;
+    }
+
+    /**
      * The currency the prices are expressed in.
      */
     public function currency(): string
