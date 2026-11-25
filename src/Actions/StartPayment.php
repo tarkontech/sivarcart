@@ -6,6 +6,7 @@ namespace SivarcartCore\SivarcartCore\Actions;
 
 use SivarcartCore\SivarcartCore\Data\PaymentLinkResult;
 use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
+use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
 use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
 use SivarcartCore\SivarcartCore\Models\Order;
@@ -17,6 +18,10 @@ use Throwable;
  *
  * The call to the gateway is never made inside a transaction: the order and
  * its reservation survive a failure, so the shopper can pay later.
+ *
+ * Once the link exists the payment of the order is pending, because the
+ * shopper has not paid yet. A gateway that fails leaves the payment unpaid,
+ * so the shopper can ask for the link again.
  */
 final class StartPayment
 {
@@ -47,6 +52,8 @@ final class StartPayment
         $url = is_string($meta['payment_link_url'] ?? null) ? $meta['payment_link_url'] : null;
 
         if ($payment->gateway_reference !== null && $payment->gateway_reference !== '') {
+            $this->markPaymentAsPending($order);
+
             return new PaymentLinkResult($payment->gateway_reference, $url, $meta);
         }
 
@@ -67,6 +74,25 @@ final class StartPayment
         ]);
         $payment->save();
 
+        $this->markPaymentAsPending($order);
+
         return $result;
+    }
+
+    /**
+     * The link of the payment exists and the shopper has not paid yet, so the
+     * payment of the order is pending.
+     *
+     * The payment is an axis of its own, so the transition is only made when
+     * the axis allows it: a link of an order that was already paid does not
+     * change what happened to it.
+     */
+    private function markPaymentAsPending(Order $order): void
+    {
+        if (! $order->payment_status->canTransitionTo(PaymentStatus::PENDING)) {
+            return;
+        }
+
+        $order->transitionPaymentTo(PaymentStatus::PENDING);
     }
 }

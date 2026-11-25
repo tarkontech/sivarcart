@@ -2,6 +2,21 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### El pago de la orden sigue a su pago
+
+- **el eje del pago de la orden deja de ser decorativo**: `PaymentStatus::PENDING`,
+  `::FAILED` y `::CANCELLED` ya no son casos sin consumidor. Cada uno lo pone la acción
+  que atiende el dinero, y el cambio queda en el historial de la orden
+- `StartPayment` deja la orden en `pending` cuando ya hay enlace de pago, y **una
+  pasarela que falla la deja en `unpaid`**: el comprador puede pedir el enlace otra vez
+- el webhook de Wompi deja la orden en `failed` cuando la pasarela no aprueba la
+  transacción, y el cambio se escribe junto al del pago, en la misma transacción
+- `CancelOrder` deja la orden en `cancelled`, **salvo que ya estuviera pagada**: una
+  orden que cobró y luego se cancela conserva `paid`, porque devolver el dinero es el
+  camino del reembolso
+- las transiciones del pago están protegidas: una orden ya pagada no vuelve a `failed`
+  cuando llega un webhook tardío, y el webhook no se pierde
+
 ### La tienda sube, valida y miniatura sus imágenes
 
 - **el paquete ya sabe guardar imágenes**: el `MediaService` sube las fotos de los

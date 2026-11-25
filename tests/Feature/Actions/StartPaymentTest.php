@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use SivarcartCore\SivarcartCore\Actions\StartPayment;
+use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
+use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
 use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
 use SivarcartCore\SivarcartCore\Models\Order;
@@ -86,6 +88,54 @@ it('keeps the order and its reservation when the gateway fails', function () use
 
     expect($order->fresh()->status->value)->toBe('pending')
         ->and($order->payments->first()->fresh()->attempt_count)->toBe(1);
+});
+
+it('leaves the payment unpaid when the gateway fails', function () use ($orderWaitingForPayment) {
+    $gateway = new FakePaymentGateway;
+    $gateway->failing = true;
+    $order = $orderWaitingForPayment($gateway);
+
+    try {
+        app(StartPayment::class)->execute($order);
+    } catch (PaymentGatewayFailed) {
+        // The shopper can ask for the link again.
+    }
+
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::UNPAID);
+});
+
+it('leaves the payment of the order pending when the link is created', function () use ($orderWaitingForPayment) {
+    $gateway = new FakePaymentGateway;
+    $order = $orderWaitingForPayment($gateway);
+
+    app(StartPayment::class)->execute($order);
+
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::PENDING);
+});
+
+it('leaves the payment of the order pending when the link already exists', function () use ($orderWaitingForPayment) {
+    $gateway = new FakePaymentGateway;
+    $order = $orderWaitingForPayment($gateway);
+
+    app(StartPayment::class)->execute($order);
+
+    $order->update(['payment_status' => PaymentStatus::UNPAID]);
+
+    app(StartPayment::class)->execute($order->fresh());
+
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::PENDING);
+});
+
+it('records the change of the payment in the history of the order', function () use ($orderWaitingForPayment) {
+    $gateway = new FakePaymentGateway;
+    $order = $orderWaitingForPayment($gateway);
+
+    app(StartPayment::class)->execute($order);
+
+    $history = $order->fresh()->statusHistories()->forAxis(OrderHistoryAxis::PAYMENT)->first();
+
+    expect($history->payment_status)->toBe(PaymentStatus::PENDING)
+        ->and($history->previous_payment_status)->toBe(PaymentStatus::UNPAID);
 });
 
 it('refuses an order without a pending payment', function () use ($orderWaitingForPayment) {

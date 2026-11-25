@@ -188,7 +188,9 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
 - dispatching **does not move the stock**: the units were reserved when the order was
   placed and they become a sale when the order is paid
 - `CancelOrder` gives the reserved units back to the stock and cancels the payment that
-  was never settled
+  was never settled. The payment axis of the order becomes `cancelled` too, **unless the
+  order was already paid**: that one keeps `paid`, because giving the money back is the
+  job of the refund
 - `RefundOrder` registers a refund: the Wompi API does not offer a way to refund a
   payment, so the core records the refund, gives the units back and closes the order,
   and the merchant applies the money back on the Wompi dashboard
@@ -196,6 +198,10 @@ $order = app(PlaceOrder::class)->execute($cart, new CheckoutData(
   `OrderDelivered`, `OrderReturned`, `OrderCancelled`, `OrderRefunded` and
   `PaymentFailed` after the commit, so a listener never sees a state that can still be
   reverted
+- the payment axis of the order follows its own payment: `StartPayment` leaves it
+  `pending` once the payment link exists, the webhook of Wompi leaves it `paid` or
+  `failed`, and `CancelOrder` leaves it `cancelled`. A gateway that fails leaves the
+  payment `unpaid`, so the buyer can ask for the link again
 
 ### 8. Write to the buyer
 

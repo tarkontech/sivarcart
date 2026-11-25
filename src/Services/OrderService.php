@@ -294,6 +294,9 @@ final class OrderService
 
     /**
      * Cancel an order and give the reserved units back.
+     *
+     * The payment of the order is cancelled with it, unless the money was
+     * already collected.
      */
     public function cancel(Order $order, ?string $reason = null): Order
     {
@@ -321,7 +324,25 @@ final class OrderService
             }
         }
 
+        $this->markPaymentAsCancelled($order);
+
         return $order;
+    }
+
+    /**
+     * The payment of a cancelled order is cancelled too.
+     *
+     * An order that was paid keeps its paid payment: the money was collected,
+     * and giving it back is the job of the refund. The transition is only
+     * made when the axis of the payment allows it.
+     */
+    private function markPaymentAsCancelled(Order $order): void
+    {
+        if (! $order->payment_status->canTransitionTo(PaymentStatus::CANCELLED)) {
+            return;
+        }
+
+        $order->transitionPaymentTo(PaymentStatus::CANCELLED);
     }
 
     /**

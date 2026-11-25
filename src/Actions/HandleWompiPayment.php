@@ -8,8 +8,10 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rmirandasv\Wompi\Webhooks\WompiWebhook;
+use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Events\OrderPaid;
 use SivarcartCore\SivarcartCore\Events\PaymentFailed;
+use SivarcartCore\SivarcartCore\Models\Order;
 use SivarcartCore\SivarcartCore\Models\Payment;
 use SivarcartCore\SivarcartCore\Models\PaymentTransaction;
 use SivarcartCore\SivarcartCore\Services\OrderService;
@@ -21,6 +23,9 @@ use SivarcartCore\SivarcartCore\Services\PaymentService;
  * Wompi delivers the same webhook more than once when it does not get an
  * answer, so the delivery is identified by the idempotency key of the
  * transaction: the second delivery of the same payment is ignored.
+ *
+ * The payment of the order follows the payment that was reported: the order
+ * is paid when the transaction was approved and failed when it was not.
  */
 final class HandleWompiPayment
 {
@@ -91,6 +96,8 @@ final class HandleWompiPayment
 
                 $this->payments->markFailed($payment, $reason);
 
+                $this->markPaymentAsFailed($order);
+
                 DB::afterCommit(fn () => event(new PaymentFailed($order, $payment, $reason)));
             });
         } catch (UniqueConstraintViolationException) {
@@ -110,5 +117,22 @@ final class HandleWompiPayment
         }
 
         return 'La transacción fue una prueba y nunca se cobró al comprador.';
+    }
+
+    /**
+     * The payment of the order failed.
+     *
+     * The payment is an axis of its own and it does not go back: an order that
+     * was already paid keeps its paid payment, because the money arrived. The
+     * guard leaves the order alone when the axis does not allow the
+     * transition, so a webhook that arrives late does not break the delivery.
+     */
+    private function markPaymentAsFailed(Order $order): void
+    {
+        if (! $order->payment_status->canTransitionTo(PaymentStatus::FAILED)) {
+            return;
+        }
+
+        $order->transitionPaymentTo(PaymentStatus::FAILED);
     }
 }

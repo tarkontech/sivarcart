@@ -423,6 +423,21 @@ Las transiciones que no están permitidas lanzan `InvalidOrderStatusTransition`.
 `InvalidPaymentStatusTransition`, y no hacen nada cuando el pago ya está en ese estado:
 el mismo pago se puede confirmar dos veces.
 
+**El pago de la orden sigue a su pago, no al revés.** Los estados del eje del pago los
+mueven las acciones que atienden el dinero:
+
+| Estado | Lo pone | Cuándo |
+|---|---|---|
+| `unpaid` | el checkout | La orden se acaba de colocar y el comprador todavía no paga. |
+| `pending` | `StartPayment` | Ya hay enlace de pago y el comprador todavía no paga. |
+| `paid` | `MarkOrderAsPaid` y el webhook de Wompi | El dinero llegó. |
+| `failed` | el webhook de Wompi | La pasarela no aprobó la transacción. |
+| `cancelled` | `CancelOrder` | La orden se canceló y su pago nunca se cobró. |
+
+Una pasarela que falla **deja el pago `unpaid`**: el comprador puede pedir el enlace otra
+vez. Y una orden que ya se pagó y luego se cancela **conserva `paid`**: el dinero se cobró,
+y devolverlo es el camino del reembolso, no el de la cancelación.
+
 El historial de la orden guarda **un renglón por eje**, y la columna `axis` los
 distingue:
 

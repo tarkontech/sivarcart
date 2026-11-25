@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
 use SivarcartCore\SivarcartCore\Actions\HandleWompiPayment;
+use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
+use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Events\OrderPaid;
 use SivarcartCore\SivarcartCore\Events\PaymentFailed;
 use SivarcartCore\SivarcartCore\Models\Order;
@@ -97,10 +99,44 @@ it('does not mark the order as paid when the transaction was only a test', funct
     expect($payment->fresh()->status)->toBe(PaymentRecordStatus::FAILED)
         ->and($payment->fresh()->failure_reason)->toContain('prueba')
         ->and($order->fresh()->status)->toBe(OrderStatus::PENDING)
-        ->and($order->fresh()->payment_status->value)->toBe('unpaid');
+        ->and($order->fresh()->payment_status)->toBe(PaymentStatus::FAILED);
 
     Event::assertDispatched(PaymentFailed::class);
     Event::assertNotDispatched(OrderPaid::class);
+});
+
+it('leaves the payment of the order failed when the payment was rejected', function () use ($orderWaitingForWompi) {
+    $order = $orderWaitingForWompi();
+
+    app(HandleWompiPayment::class)->execute(WompiPayload::rejected($order->payments->first()->reference));
+
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::FAILED);
+});
+
+it('records the failure of the payment in the history of the order', function () use ($orderWaitingForWompi) {
+    $order = $orderWaitingForWompi();
+
+    app(HandleWompiPayment::class)->execute(WompiPayload::rejected($order->payments->first()->reference));
+
+    $history = $order->fresh()->statusHistories()->forAxis(OrderHistoryAxis::PAYMENT)->first();
+
+    expect($history->payment_status)->toBe(PaymentStatus::FAILED)
+        ->and($history->previous_payment_status)->toBe(PaymentStatus::UNPAID);
+});
+
+it('does not fail the payment of an order that was already paid', function () use ($orderWaitingForWompi) {
+    $order = $orderWaitingForWompi();
+
+    app(HandleWompiPayment::class)->execute(WompiPayload::approved($order->payments->first()->reference));
+
+    app(HandleWompiPayment::class)->execute(
+        WompiPayload::rejected($order->payments->first()->reference),
+    );
+
+    // The payment of the order does not go back: the money arrived. The
+    // delivery is still applied, so the webhook is not lost.
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::PAID)
+        ->and(PaymentTransaction::query()->count())->toBe(2);
 });
 
 it('keeps the reservation of an order whose payment failed', function () {

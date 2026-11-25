@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
 use SivarcartCore\SivarcartCore\Actions\CancelOrder;
+use SivarcartCore\SivarcartCore\Actions\MarkOrderAsPaid;
+use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
+use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
 use SivarcartCore\SivarcartCore\Events\OrderCancelled;
 use SivarcartCore\SivarcartCore\Models\PaymentMethod;
 use SivarcartCore\SivarcartCore\Services\OrderService;
@@ -49,6 +52,42 @@ it('cancels the payment that was never settled', function () {
     expect($order->payments->first()->fresh()->status)->toBe(PaymentRecordStatus::CANCELLED);
 });
 
+it('cancels the payment of the order', function () {
+    $scenario = CheckoutScenario::buyer();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    app(CancelOrder::class)->execute($order);
+
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::CANCELLED);
+});
+
+it('records the cancellation of the payment in the history of the order', function () {
+    $scenario = CheckoutScenario::buyer();
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    app(CancelOrder::class)->execute($order);
+
+    $history = $order->fresh()->statusHistories()->forAxis(OrderHistoryAxis::PAYMENT)->first();
+
+    expect($history->payment_status)->toBe(PaymentStatus::CANCELLED)
+        ->and($history->previous_payment_status)->toBe(PaymentStatus::UNPAID);
+});
+
+it('keeps the payment of an order that was already paid', function () {
+    $method = PaymentMethod::factory()->cashOnDelivery()->create();
+    $scenario = CheckoutScenario::buyer(paymentMethodCode: $method->code);
+
+    $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
+
+    app(MarkOrderAsPaid::class)->execute($order);
+
+    app(CancelOrder::class)->execute($order);
+
+    expect($order->fresh()->payment_status)->toBe(PaymentStatus::PAID);
+});
+
 it('records the change of the status of the order', function () {
     $scenario = CheckoutScenario::buyer();
 
@@ -56,7 +95,11 @@ it('records the change of the status of the order', function () {
 
     app(CancelOrder::class)->execute($order, 'Sin stock');
 
-    expect($order->fresh()->statusHistories)->toHaveCount(1)
-        ->and($order->fresh()->statusHistories->first()->status)->toBe(OrderStatus::CANCELLED)
-        ->and($order->fresh()->statusHistories->first()->note)->toBe('Sin stock');
+    $history = $order->fresh()->statusHistories()->forAxis(OrderHistoryAxis::STATUS)->first();
+
+    // The order has one row per axis: the status of the order and the state
+    // of its payment.
+    expect($order->fresh()->statusHistories)->toHaveCount(2)
+        ->and($history->status)->toBe(OrderStatus::CANCELLED)
+        ->and($history->note)->toBe('Sin stock');
 });
