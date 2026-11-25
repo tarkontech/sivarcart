@@ -29,7 +29,18 @@ final class BrandResource extends JsonResource
             'slug' => $brand->slug,
             'description' => $brand->description,
             'logo_path' => $brand->logo_path,
+            'logo_url' => $brand->logo_path === null ? null : $this->urlOf($brand),
             'position' => (int) $brand->position,
         ];
+    }
+
+    /**
+     * The address of the logo of the brand.
+     */
+    private function urlOf(Brand $brand): ?string
+    {
+        $logo = $brand->getFirstMedia('logo');
+
+        return $logo?->getUrl();
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use SivarcartCore\SivarcartCore\Models\Product;
 use SivarcartCore\SivarcartCore\Models\ProductImage;
+use SivarcartCore\SivarcartCore\Support\Media;
 
 /**
  * A product of the catalog, as the store API shows it.
@@ -50,8 +51,27 @@ final class ProductResource extends JsonResource
                     'alt' => $image->alt,
                     'position' => (int) $image->position,
                     'is_primary' => (bool) $image->is_primary,
+                    'url' => $image->getUrl(),
+                    'thumbnail_url' => $image->getUrl($this->thumbnailOf($image)),
                 ])
                 ->all()),
         ];
+    }
+
+    /**
+     * The name of the smallest thumbnail of the store.
+     *
+     * When the store has no thumbnails, the original file is the one the
+     * shopper sees.
+     */
+    private function thumbnailOf(ProductImage $image): string
+    {
+        $thumbnail = Media::firstThumbnailName();
+
+        if ($thumbnail === null || ! $image->hasGeneratedConversion($thumbnail)) {
+            return '';
+        }
+
+        return $thumbnail;
     }
 }

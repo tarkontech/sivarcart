@@ -128,6 +128,47 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Media
+    |--------------------------------------------------------------------------
+    |
+    | The images of the products, of the brands and of the store. The files
+    | live on the disk of the "disk" key and the thumbnails are the ones of
+    | the "thumbnails" map: each one says how wide and how tall the derived
+    | image is.
+    |
+    | The package stores the media with Spatie Media Library, so the store
+    | needs the "exif" extension of PHP and, for the thumbnails, the "gd" one.
+    |
+    */
+
+    'media' => [
+        'disk' => 'public',
+
+        /*
+        | How big a file may be, in kilobytes.
+        */
+        'max_size' => 10240,
+
+        /*
+        | The kinds of file the store accepts.
+        */
+        'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
+
+        /*
+        | Whether the thumbnails are built in the background. When it is false
+        | they are built while the file is being uploaded, so the store does
+        | not need a worker of the queue.
+        */
+        'queue_conversions' => false,
+
+        'thumbnails' => [
+            'thumb' => ['width' => 300, 'height' => 300],
+            'medium' => ['width' => 800, 'height' => 800],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | API
     |--------------------------------------------------------------------------
     |

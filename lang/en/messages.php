@@ -81,6 +81,11 @@ return [
         'release' => 'Release',
     ],
 
+    'media' => [
+        'invalid_type' => 'The file is not an image of a kind the store accepts.',
+        'too_big' => 'The file is bigger than the :size KB the store accepts.',
+    ],
+
     'order_history_axis' => [
         'status' => 'Order status',
         'payment' => 'Payment status',

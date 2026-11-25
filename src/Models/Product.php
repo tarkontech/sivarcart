@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use SivarcartCore\SivarcartCore\Database\Factories\ProductFactory;
 use SivarcartCore\SivarcartCore\Enums\ProductStatus;
 use SivarcartCore\SivarcartCore\Enums\ProductType;
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
 use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * A product of the catalog.
@@ -23,8 +25,9 @@ use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
  * product always owns at least one variant: a simple product owns exactly one
  * variant without option values.
  */
-class Product extends Model
+class Product extends Model implements HasMedia
 {
+    use HasStoreMedia;
     use HasUuidColumn;
     use SoftDeletes;
 
@@ -95,6 +98,18 @@ class Product extends Model
                 'is_active' => true,
             ]);
         });
+    }
+
+    /**
+     * The media collections of the product.
+     *
+     * The images of the product live in the collection "images", and so do
+     * the images of its variants: the gallery of a product is the one the
+     * shopper sees.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images');
     }
 
     /**

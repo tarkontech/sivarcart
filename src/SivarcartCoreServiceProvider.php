@@ -40,6 +40,7 @@ use SivarcartCore\SivarcartCore\Listeners\SendOrderRefundedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderShippedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
 use SivarcartCore\SivarcartCore\Models\Customer;
+use SivarcartCore\SivarcartCore\Models\ProductImage;
 use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
 use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CatalogService;
@@ -47,6 +48,7 @@ use SivarcartCore\SivarcartCore\Services\CouponService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\DepartmentService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\MediaService;
 use SivarcartCore\SivarcartCore\Services\NotificationService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
@@ -57,6 +59,7 @@ use SivarcartCore\SivarcartCore\Services\ShippingMethodRateCalculator;
 use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
 use SivarcartCore\SivarcartCore\Services\StoreService;
 use SivarcartCore\SivarcartCore\Support\Auth;
+use SivarcartCore\SivarcartCore\Support\Media;
 
 class SivarcartCoreServiceProvider extends ServiceProvider
 {
@@ -70,8 +73,29 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->app->singleton(SivarcartCore::class);
 
         $this->registerBuyersAuthentication();
+        $this->registerMediaLibrary();
         $this->registerServices();
         $this->registerContracts();
+    }
+
+    /**
+     * Tell the media library of Spatie how the package stores its files.
+     *
+     * The settings are written here and not in "boot()", because the media
+     * library reads the model of the media when it boots: it has to find the
+     * model of this package and not the one that comes by default.
+     *
+     * The package does not use the table of the media library: its own table
+     * of images is the one that holds the media, so the migration of the
+     * media library does not have to be published.
+     */
+    private function registerMediaLibrary(): void
+    {
+        Config::set('media-library.media_model', ProductImage::class);
+        Config::set('media-library.disk_name', Media::disk());
+        Config::set('media-library.max_file_size', Media::maxSize() * 1024);
+        Config::set('media-library.allowed_extensions', Media::allowedMimes());
+        Config::set('media-library.queue_conversions_by_default', Media::queuesConversions());
     }
 
     /**
@@ -130,6 +154,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             ShippingMethodService::class,
             PaymentGatewayManager::class,
             NotificationService::class,
+            MediaService::class,
         ] as $service) {
             $this->app->singleton($service);
         }

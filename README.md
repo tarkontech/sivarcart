@@ -34,6 +34,15 @@ El comando publica las migraciones en `database/migrations`, las ejecuta y siemb
 datos base: los 14 departamentos de El Salvador, las categorías de IVA, los roles del
 personal, la tienda, los métodos de pago y los métodos de envío.
 
+> **El servidor necesita la extensión `exif` de PHP.** El paquete guarda las imágenes
+> con [Spatie Media Library](https://github.com/spatie/laravel-medialibrary), y esa
+> librería la exige: sin `exif`, Composer no instala el paquete. Para las miniaturas
+> hace falta además la extensión `gd`.
+>
+> La migración de la librería **no se publica**: el paquete guarda los archivos en su
+> propia tabla de imágenes, así que no hace falta la tabla `media` de la librería. No
+> publiques el tag `media-library-migrations`.
+
 > **La aplicación necesita su propia tabla de usuarios.** El personal de la tienda son
 > los usuarios de la aplicación, así que la migración que crea la tabla `users` tiene que
 > existir antes de correr las migraciones del paquete.
@@ -290,7 +299,7 @@ del municipio y ese cero inicial es parte del documento.
 | `sivarcart_product_option_values` | `ProductOptionValue` | Los valores que acepta cada opción. |
 | `sivarcart_product_variants` | `ProductVariant` | La unidad vendible: precio, SKU y stock. |
 | `sivarcart_product_variant_values` | — | Pivote entre variantes y valores de opción. |
-| `sivarcart_product_images` | `ProductImage` | Imágenes del producto o de una variante. |
+| `sivarcart_product_images` | `ProductImage` | Las imágenes de un producto o de una de sus variantes. También es la tabla donde el paquete guarda los archivos: la media library de Spatie los escribe aquí. |
 
 Todo producto tiene **al menos una variante**. Un producto simple tiene exactamente una
 variante sin valores de opción, así el precio, el descuento y el stock siempre pasan por
@@ -550,6 +559,82 @@ Tres cosas que conviene saber:
   resultado.
 - **La búsqueda mira el nombre y el SKU**, no la descripción. El texto admite los comodines de
   `LIKE` (`%` y `_`), y no distingue mayúsculas en MySQL y SQLite.
+
+### Los medios
+
+Las imágenes de los productos, de las marcas y de la tienda se guardan con
+[Spatie Media Library](https://github.com/spatie/laravel-medialibrary), pero **en la tabla
+del propio paquete** (`sivarcart_product_images`): así todas las tablas siguen llevando el
+prefijo `sivarcart_` y la migración de la librería no hay que publicarla.
+
+El `MediaService` es el dueño del dominio de los medios: valida el archivo, decide de qué
+producto es la imagen y cuál es la principal.
+
+```php
+use SivarcartCore\SivarcartCore\Services\MediaService;
+
+$media = app(MediaService::class);
+
+$media->storeProductImage($product, $request->file('foto'), 'Una foto del producto');
+$media->storeVariantImage($variant, $request->file('foto'));
+$media->storeBrandLogo($brand, $request->file('logo'));
+$media->storeStoreLogo($store, $request->file('logo'));
+$media->storeStoreFavicon($store, $request->file('favicon'));
+
+$media->makePrimary($image);   // La imagen principal del producto.
+$media->delete($image);         // Borra la imagen y su archivo.
+```
+
+Un archivo que la tienda no acepta lanza `InvalidMediaFile`, y **no deja nada atrás**: ni
+fila en la base ni archivo en el disco.
+
+Cada modelo que guarda medios declara sus colecciones, y el logo de una marca o de la
+tienda es siempre un archivo solo: el nuevo reemplaza al viejo.
+
+| Modelo | Colecciones | Conversiones |
+|---|---|---|
+| `Product` | `images` | `thumb`, `medium` |
+| `ProductVariant` | `images` | `thumb`, `medium` |
+| `Brand` | `logo` | `thumb`, `medium` |
+| `Store` | `logo`, `favicon` | `thumb`, `medium` |
+
+La imagen de una variante **es también del producto**: la galería del producto la muestra,
+y las imágenes de la galería se numeran en el mismo orden.
+
+Los tamaños de las miniaturas, el disco, el tamaño máximo y los tipos de archivo que
+acepta la tienda salen de la sección `media` de la configuración:
+
+```php
+// config/sivarcart-core.php
+'media' => [
+    'disk' => 'public',
+    'max_size' => 10240,                 // KB
+    'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
+    'queue_conversions' => false,         // Las miniaturas se hacen al subir el archivo.
+    'thumbnails' => [
+        'thumb' => ['width' => 300, 'height' => 300],
+        'medium' => ['width' => 800, 'height' => 800],
+    ],
+],
+```
+
+> **El servidor necesita la extensión `exif` de PHP** y, para las miniaturas, la `gd`.
+> Sin `exif` el paquete ni siquiera se instala, porque la media library la exige.
+
+La API de tienda devuelve las imágenes con su ruta, su disco y su texto, y además la
+dirección del archivo y la de su miniatura:
+
+```json
+{
+  "path": "12/foto.jpg",
+  "disk": "public",
+  "alt": "Una foto del producto",
+  "position": 1,
+  "is_primary": true,
+  "url": "/storage/12/foto.jpg",
+  "thumbnail_url": "/storage/12/conversions/foto-thumb.jpg"
+}
+```
 
 ### El stock
 
@@ -813,6 +898,7 @@ SivarcartCore::inventory();   // InventoryService
 SivarcartCore::catalog();     // CatalogService
 SivarcartCore::paymentMethods();  // PaymentMethodService
 SivarcartCore::shippingMethods(); // ShippingMethodService
+SivarcartCore::media();       // MediaService
 ```
 
 ## La API de tienda
@@ -978,6 +1064,22 @@ La API de tienda se monta con la sección `api`:
 El limitador cuenta las peticiones de cada comprador por separado, y las de los que no han
 iniciado sesión por IP. La API **siempre** responde JSON, así que un cliente que no manda la
 cabecera `Accept: application/json` recibe un error en JSON y no una página.
+
+Las imágenes de la tienda se guardan con la sección `media`, que dice dónde viven los
+archivos y cómo son las miniaturas (ver *Los medios*):
+
+```php
+'media' => [
+    'disk' => 'public',
+    'max_size' => 10240,                 // El tamaño máximo de un archivo, en KB.
+    'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
+    'queue_conversions' => false,         // Las miniaturas se hacen al subir el archivo.
+    'thumbnails' => [
+        'thumb' => ['width' => 300, 'height' => 300],
+        'medium' => ['width' => 800, 'height' => 800],
+    ],
+],
+```
 
 Las credenciales de Wompi se guardan cifradas en `sivarcart_payment_methods.credentials`,
 de modo que el comerciante puede tener una cuenta por tienda. Cuando el método de pago

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Rmirandasv\Wompi\WompiServiceProvider;
 use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
+use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 use Workbench\App\Models\User;
 
 abstract class TestCase extends Orchestra
@@ -47,6 +48,10 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
+            // The media library of Spatie brings its own configuration and its
+            // own observer, so the provider has to be loaded before the
+            // package sets the model of the media.
+            MediaLibraryServiceProvider::class,
             SivarcartCoreServiceProvider::class,
             WompiServiceProvider::class,
         ];

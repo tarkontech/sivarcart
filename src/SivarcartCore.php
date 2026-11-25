@@ -8,6 +8,7 @@ use SivarcartCore\SivarcartCore\Services\CartService;
 use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\MediaService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
@@ -31,6 +32,7 @@ class SivarcartCore
         private readonly CatalogService $catalog,
         private readonly PaymentMethodService $paymentMethods,
         private readonly ShippingMethodService $shippingMethods,
+        private readonly MediaService $media,
     ) {
         //
     }
@@ -97,5 +99,13 @@ class SivarcartCore
     public function shippingMethods(): ShippingMethodService
     {
         return $this->shippingMethods;
+    }
+
+    /**
+     * The service that keeps the images of the store.
+     */
+    public function media(): MediaService
+    {
+        return $this->media;
     }
 }

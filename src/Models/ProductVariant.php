@@ -10,15 +10,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use SivarcartCore\SivarcartCore\Database\Factories\ProductVariantFactory;
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
 use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * A sellable unit of a product.
  *
  * This is where the price, the SKU and the stock live.
  */
-class ProductVariant extends Model
+class ProductVariant extends Model implements HasMedia
 {
+    use HasStoreMedia;
     use HasUuidColumn;
     use SoftDeletes;
 
@@ -69,6 +72,17 @@ class ProductVariant extends Model
             'position' => 'integer',
             'meta' => 'array',
         ];
+    }
+
+    /**
+     * The media collections of the variant.
+     *
+     * The images of a variant belong to the product too, so the gallery of
+     * the product holds them as well.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images');
     }
 
     /**

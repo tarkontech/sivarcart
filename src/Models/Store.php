@@ -6,13 +6,16 @@ namespace SivarcartCore\SivarcartCore\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use SivarcartCore\SivarcartCore\Database\Factories\StoreFactory;
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
 use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * The profile and the settings of the single store this installation serves.
  */
-class Store extends Model
+class Store extends Model implements HasMedia
 {
+    use HasStoreMedia;
     use HasUuidColumn;
 
     /**
@@ -66,6 +69,18 @@ class Store extends Model
             'meta' => 'array',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * The media collections of the store.
+     *
+     * The logo and the favicon of the store live in their own collections,
+     * and each one of them is always a single file.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('logo')->singleFile();
+        $this->addMediaCollection('favicon')->singleFile();
     }
 
     /**

@@ -81,6 +81,11 @@ return [
         'release' => 'Liberación',
     ],
 
+    'media' => [
+        'invalid_type' => 'El archivo no es una imagen de un tipo que la tienda acepte.',
+        'too_big' => 'El archivo pesa más que los :size KB que la tienda acepta.',
+    ],
+
     'order_history_axis' => [
         'status' => 'Estado de la orden',
         'payment' => 'Estado del pago',

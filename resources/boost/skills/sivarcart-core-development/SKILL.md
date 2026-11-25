@@ -31,6 +31,11 @@ php artisan sivarcart-core:install
 
 - the command accepts `--no-seed` to skip the base data and `--force` to overwrite
   the migrations that were already published
+- the server needs the **`exif` extension of PHP** and, for the thumbnails, the `gd` one:
+  the package stores the images with Spatie Media Library and that library requires `exif`,
+  so without it Composer does not even install the package
+- do not publish the migration of the media library (`media-library-migrations`): the
+  package keeps the files in its own table of images, so the `media` table is never used
 
 ### 2. Read the model
 
@@ -217,7 +222,39 @@ php artisan sivarcart-core:publish-mailables
 - the sender comes from `config('sivarcart-core.notifications.from')`, and when it is
   null the `mail.from` of the application is used
 
-### 9. Extend the store
+### 9. Keep the images of the store
+
+- the images of the products, of the variants, of the brands and of the store are stored with
+  Spatie Media Library, but in the table of the package (`sivarcart_product_images`), so every
+  table keeps the `sivarcart_` prefix and the migration of the library is never published
+- upload them with the `MediaService`: it validates the file, decides which product the image
+  belongs to and which one is the main image, and it leaves nothing behind when it refuses a
+  file (no row and no file on the disk)
+
+```php
+use SivarcartCore\SivarcartCore\Services\MediaService;
+
+$media = app(MediaService::class);
+
+$media->storeProductImage($product, $request->file('foto'), 'Una foto del producto');
+$media->storeVariantImage($variant, $request->file('foto'));
+$media->storeBrandLogo($brand, $request->file('logo'));
+$media->storeStoreLogo($store, $request->file('logo'));
+$media->storeStoreFavicon($store, $request->file('favicon'));
+
+$media->makePrimary($image);
+$media->delete($image);
+```
+
+- a file the store does not accept raises `InvalidMediaFile`, and nothing is written
+- the image of a variant **belongs to the product too**: the gallery of a product holds them
+  and numbers them in the same order
+- the disk, the maximum size, the kinds of file and the map of thumbnails come from the
+  `media` section of `config/sivarcart-core.php`
+- the store API returns the images with their path, their disk and their text, and also
+  with `url` and `thumbnail_url`
+
+### 10. Extend the store
 
 - store module settings in `sivarcart_settings` instead of changing the schema
 - the shipping cost comes from the `ShippingRateCalculator` contract and the payment
@@ -238,7 +275,7 @@ Read before executing:
 
 - `README.md` — the table by table data model, the install flow and the domain layer
 - `config/sivarcart-core.php` — store defaults, numbering prefixes, the Wompi settings, the
-  notifications of the buyer and the model and guard of the users
+  notifications of the buyer, the media of the store and the model and guard of the users
 
 ## Examples
 
@@ -353,4 +390,8 @@ NotificationSetting::query()->updateOrCreate(
   history stays consistent and the change is idempotent
 - do not move the stock when an order is dispatched; the reservation becomes a sale when
   the order is paid
+- do not write an image of the catalog by hand; use the `MediaService`, so the file, the
+  thumbnail and the columns of the domain stay together
+- do not publish the migration of the media library; the package keeps the files in its own
+  table of images and the `media` table would stay empty
 - do not document the columns of a table as public API; the models and the enums are

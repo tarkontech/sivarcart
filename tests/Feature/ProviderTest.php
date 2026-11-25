@@ -16,6 +16,7 @@ use SivarcartCore\SivarcartCore\Http\Middleware\EnsureBuyer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
 use SivarcartCore\SivarcartCore\Http\Middleware\StorefrontApi;
 use SivarcartCore\SivarcartCore\Models\Cart;
+use SivarcartCore\SivarcartCore\Models\ProductImage;
 use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Payments\WompiPaymentGateway;
 use SivarcartCore\SivarcartCore\Services\CartService;
@@ -23,6 +24,7 @@ use SivarcartCore\SivarcartCore\Services\CatalogService;
 use SivarcartCore\SivarcartCore\Services\CustomerService;
 use SivarcartCore\SivarcartCore\Services\DepartmentService;
 use SivarcartCore\SivarcartCore\Services\InventoryService;
+use SivarcartCore\SivarcartCore\Services\MediaService;
 use SivarcartCore\SivarcartCore\Services\OrderService;
 use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
 use SivarcartCore\SivarcartCore\Services\PaymentService;
@@ -35,6 +37,7 @@ it('publishes the migrations under the documented tag', function () {
 
     expect(File::exists(database_path('migrations').'/2026_01_01_000001_create_sivarcart_departments_table.php'))->toBeTrue();
     expect(File::exists(database_path('migrations').'/2026_01_01_000030_create_sivarcart_payment_transactions_table.php'))->toBeTrue();
+    expect(File::exists(database_path('migrations').'/2026_01_01_000037_add_media_columns_to_sivarcart_product_images_table.php'))->toBeTrue();
 });
 
 it('never overwrites a migration the merchant already published', function () {
@@ -165,4 +168,27 @@ it('schedules the pruning of the carts once a day', function () {
 
 it('defines the ability of the permissions of the store', function () {
     expect(Gate::has('store-permission'))->toBeTrue();
+});
+
+it('merges the section of the media into the configuration of the application', function () {
+    expect(config('sivarcart-core.media.disk'))->toBe('public')
+        ->and(config('sivarcart-core.media.max_size'))->toBe(10240)
+        ->and(config('sivarcart-core.media.mimes'))->toBe(['jpg', 'jpeg', 'png', 'webp'])
+        ->and(config('sivarcart-core.media.queue_conversions'))->toBeFalse()
+        ->and(config('sivarcart-core.media.thumbnails'))->toBe([
+            'thumb' => ['width' => 300, 'height' => 300],
+            'medium' => ['width' => 800, 'height' => 800],
+        ]);
+});
+
+it('tells the media library how the package stores its files', function () {
+    expect(config('media-library.media_model'))->toBe(ProductImage::class)
+        ->and(config('media-library.disk_name'))->toBe('public')
+        ->and(config('media-library.max_file_size'))->toBe(10240 * 1024)
+        ->and(config('media-library.allowed_extensions'))->toBe(['jpg', 'jpeg', 'png', 'webp'])
+        ->and(config('media-library.queue_conversions_by_default'))->toBeFalse();
+});
+
+it('registers the service of the media', function () {
+    expect(app(MediaService::class))->toBe(app(MediaService::class));
 });

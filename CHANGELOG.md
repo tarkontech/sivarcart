@@ -2,6 +2,36 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### La tienda sube, valida y miniatura sus imágenes
+
+- **el paquete ya sabe guardar imágenes**: el `MediaService` sube las fotos de los
+  productos, de las variantes, de las marcas y de la tienda, valida el tipo y el tamaño del
+  archivo, y escribe las columnas del dominio
+- las imágenes se guardan con [Spatie Media Library](https://github.com/spatie/laravel-medialibrary),
+  pero **en la tabla del propio paquete** (`sivarcart_product_images`): así todas las
+  tablas siguen llevando el prefijo `sivarcart_` y la migración de la librería no hay que
+  publicarla
+- la nueva migración `2026_01_01_000037_add_media_columns_to_sivarcart_product_images_table`
+  **solo agrega columnas**: una instalación que ya tenía el paquete no pierde ni una fila
+  ni un archivo. La columna `product_id` pasa a admitir nulos, porque el logo de una marca
+  y el de la tienda no son de ningún producto
+- **el `MediaService` no deja nada a medias**: un archivo que la tienda no acepta lanza
+  `InvalidMediaFile` (422, código `invalid_media_file`) y no deja ni fila ni archivo
+- las imágenes de una variante **son también del producto**, y la galería del producto las
+  muestra y las numera en el mismo orden
+- cada modelo declara sus colecciones: `Product` y `ProductVariant` tienen `images`, `Brand`
+  tiene `logo` y `Store` tiene `logo` y `favicon`. Los logos son de un archivo solo: el
+  nuevo reemplaza al viejo
+- las miniaturas salen de la sección `media` de la configuración: el disco, el tamaño
+  máximo, los tipos de archivo y el mapa de miniaturas
+- `Brand::logo_path`, `Store::logo_path`, `Store::favicon_path` y `Product::thumbnail_path`
+  por fin tienen un escritor: antes se leían y nadie los escribía
+- la API de tienda devuelve las imágenes con `url` y `thumbnail_url` además de los campos
+  de siempre, y la marca devuelve `logo_url`
+- el paquete declara `spatie/laravel-medialibrary` como dependencia, así que **el servidor
+  necesita la extensión `exif` de PHP** (y `gd` para las miniaturas)
+- la CI instala `exif` y `gd` para que la matriz siga en verde en Linux y en Windows
+
 ### El núcleo expone la API de tienda
 
 - **la capa HTTP del núcleo es una API de tienda**: el catálogo, el carrito, el cupón, el

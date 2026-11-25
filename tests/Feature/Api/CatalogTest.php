@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use SivarcartCore\SivarcartCore\Models\Brand;
 use SivarcartCore\SivarcartCore\Models\Category;
 use SivarcartCore\SivarcartCore\Models\Product;
 use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use SivarcartCore\SivarcartCore\Services\MediaService;
 
 it('lists the products of the catalog', function () {
     $product = Product::factory()->create(['name' => 'ZapatillaRunner']);
@@ -132,6 +135,27 @@ it('does not show a product that is not published', function () {
     $this->getJson('/api/sivarcart/products/'.$product->uuid)->assertNotFound();
 });
 
+it('shows the images of a product', function (): void {
+    Storage::fake('public');
+
+    $product = Product::factory()->create();
+
+    $image = app(MediaService::class)->storeProductImage(
+        $product,
+        UploadedFile::fake()->image('foto.jpg', 400, 300),
+        'Una foto del producto',
+    );
+
+    $this->getJson('/api/sivarcart/products/'.$product->uuid)
+        ->assertOk()
+        ->assertJsonPath('data.images.0.path', $image->path)
+        ->assertJsonPath('data.images.0.disk', 'public')
+        ->assertJsonPath('data.images.0.alt', 'Una foto del producto')
+        ->assertJsonPath('data.images.0.position', 1)
+        ->assertJsonPath('data.images.0.is_primary', false)
+        ->assertJsonPath('data.images.0.url', $image->getUrl())
+        ->assertJsonPath('data.images.0.thumbnail_url', $image->getUrl('thumb'));
+});
 it('answers with a 404 for a product that does not exist', function () {
     $this->getJson('/api/sivarcart/products/00000000-0000-0000-0000-000000000000')
         ->assertNotFound();

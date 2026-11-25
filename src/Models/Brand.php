@@ -6,12 +6,16 @@ namespace SivarcartCore\SivarcartCore\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use SivarcartCore\SivarcartCore\Database\Factories\BrandFactory;
+use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * A brand of the catalog.
  */
-class Brand extends Model
+class Brand extends Model implements HasMedia
 {
+    use HasStoreMedia;
+
     /**
      * @var string
      */
@@ -40,6 +44,17 @@ class Brand extends Model
             'is_active' => 'boolean',
             'position' => 'integer',
         ];
+    }
+
+    /**
+     * The media collections of the brand.
+     *
+     * The logo of the brand lives in the collection "logo", and it is
+     * always one file: the new one replaces the old one.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('logo')->singleFile();
     }
 
     /**
