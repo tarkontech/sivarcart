@@ -35,12 +35,12 @@
     },
     "autoload": {
         "psr-4": {
-            "SivarcartCore\\SivarcartCore\\": "src/"
+            "SivarcartCore\\SivarcartCore\\": "src/",
+            "SivarcartCore\\SivarcartCore\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SivarcartCore\\SivarcartCore\\Database\\Factories\\": "database/factories/",
             "SivarcartCore\\SivarcartCore\\Tests\\": "tests/",
             "SivarcartCore\\SivarcartCore\\Tools\\": "tools/src/",
             "Workbench\\App\\": "workbench/app/",
