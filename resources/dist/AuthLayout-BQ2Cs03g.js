@@ -1,0 +1,1 @@
+import{t as e}from"./Flash-BZCKh0Ea.js";import{t}from"./admin.js";var n=t();function r({children:t}){return(0,n.jsx)(`div`,{className:`flex min-h-screen items-center justify-center bg-background p-6 text-foreground`,children:(0,n.jsxs)(`main`,{className:`flex w-full max-w-md flex-col gap-6`,children:[(0,n.jsx)(e,{}),t]})})}export{r as t};

@@ -1,0 +1,443 @@
+{
+    "$schema": "https://ui.shadcn.com/schema/registry.json",
+    "name": "sivarcart",
+    "homepage": "https://github.com/tarkontech/sivarcart-core",
+    "items": [
+        {
+            "name": "button",
+            "type": "registry:ui",
+            "title": "Button",
+            "description": "El componente button del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/button.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/button.tsx"
+                }
+            ]
+        },
+        {
+            "name": "card",
+            "type": "registry:ui",
+            "title": "Card",
+            "description": "El componente card del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/card.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/card.tsx"
+                }
+            ]
+        },
+        {
+            "name": "input",
+            "type": "registry:ui",
+            "title": "Input",
+            "description": "El componente input del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/input.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/input.tsx"
+                }
+            ]
+        },
+        {
+            "name": "label",
+            "type": "registry:ui",
+            "title": "Label",
+            "description": "El componente label del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/label.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/label.tsx"
+                }
+            ]
+        },
+        {
+            "name": "table",
+            "type": "registry:ui",
+            "title": "Table",
+            "description": "El componente table del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/table.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/table.tsx"
+                }
+            ]
+        },
+        {
+            "name": "badge",
+            "type": "registry:ui",
+            "title": "Badge",
+            "description": "El componente badge del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/badge.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/badge.tsx"
+                }
+            ]
+        },
+        {
+            "name": "separator",
+            "type": "registry:ui",
+            "title": "Separator",
+            "description": "El componente separator del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/separator.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/separator.tsx"
+                }
+            ]
+        },
+        {
+            "name": "skeleton",
+            "type": "registry:ui",
+            "title": "Skeleton",
+            "description": "El componente skeleton del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/skeleton.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/skeleton.tsx"
+                }
+            ]
+        },
+        {
+            "name": "alert",
+            "type": "registry:ui",
+            "title": "Alert",
+            "description": "El componente alert del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/alert.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/alert.tsx"
+                }
+            ]
+        },
+        {
+            "name": "select",
+            "type": "registry:ui",
+            "title": "Select",
+            "description": "El componente select del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/select.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/select.tsx"
+                }
+            ]
+        },
+        {
+            "name": "admin",
+            "type": "registry:base",
+            "title": "El panel de administracion de SivarCart Core",
+            "description": "El panel de administracion de SivarCart Core, en React, con Inertia y Tailwind 4.",
+            "dependencies": [
+                "@base-ui/react",
+                "@inertiajs/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "react",
+                "react-dom",
+                "tailwind-merge"
+            ],
+            "devDependencies": [
+                "@tailwindcss/vite",
+                "@types/react",
+                "@types/react-dom",
+                "@vitejs/plugin-react",
+                "tailwindcss",
+                "typescript",
+                "vite"
+            ],
+            "config": {
+                "style": "new-york",
+                "iconLibrary": "lucide",
+                "tsx": true,
+                "rsc": false,
+                "tailwind": {
+                    "css": "resources/css/sivarcart.css",
+                    "baseColor": "neutral",
+                    "cssVariables": true,
+                    "prefix": ""
+                },
+                "aliases": {
+                    "components": "@/components/sivarcart",
+                    "ui": "@/components/sivarcart/ui",
+                    "utils": "@/lib/utils",
+                    "hooks": "@/hooks",
+                    "lib": "@/lib"
+                }
+            },
+            "files": [
+                {
+                    "path": "resources/js/admin/pages/Admin/Customers/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Customers/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Dashboard.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Dashboard.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Login.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Login.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Orders/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Orders/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Orders/Show.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Orders/Show.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Products/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Products/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Roles/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Roles/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Settings/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Settings/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Setup.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Setup.tsx"
+                },
+                {
+                    "path": "resources/js/admin/lib/utils.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/lib/utils.ts"
+                },
+                {
+                    "path": "resources/js/admin/lib/format.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/lib/format.ts"
+                },
+                {
+                    "path": "resources/js/admin/lib/query.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/lib/query.ts"
+                },
+                {
+                    "path": "resources/js/admin/types/index.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/types/index.ts"
+                },
+                {
+                    "path": "resources/js/admin/components/widgets.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/components/widgets.ts"
+                },
+                {
+                    "path": "resources/js/admin/components/Icon.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/Icon.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/Flash.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/Flash.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/NavLink.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/NavLink.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/PageHeader.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/PageHeader.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/Pagination.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/Pagination.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/SearchInput.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/SearchInput.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/StatCard.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/StatCard.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/StatusBadge.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/StatusBadge.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/EmptyState.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/EmptyState.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ThemeToggle.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ThemeToggle.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/WidgetSlot.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/WidgetSlot.tsx"
+                },
+                {
+                    "path": "resources/js/admin/layouts/PanelLayout.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/layouts/PanelLayout.tsx"
+                },
+                {
+                    "path": "resources/js/admin/layouts/AuthLayout.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/layouts/AuthLayout.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/button.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/button.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/card.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/card.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/input.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/input.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/label.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/label.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/table.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/table.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/badge.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/badge.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/separator.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/separator.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/skeleton.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/skeleton.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/alert.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/alert.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ui/select.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/select.tsx"
+                },
+                {
+                    "path": "resources/css/admin.css",
+                    "type": "registry:theme",
+                    "target": "resources/css/sivarcart.css"
+                }
+            ]
+        }
+    ]
+}

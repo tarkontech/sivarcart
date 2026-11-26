@@ -7,7 +7,8 @@ namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as AuthFacade;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
@@ -22,13 +23,17 @@ final class LoginController
     /**
      * Show the sign in screen.
      */
-    public function show(Request $request): View|RedirectResponse
+    public function show(Request $request): Response|RedirectResponse
     {
         if (AuthFacade::guard(Auth::guard())->check()) {
             return redirect()->route('sivarcart-core.admin.index');
         }
 
-        return view('sivarcart-core::admin.login');
+        $email = $request->old('email', '');
+
+        return Inertia::render('Admin/Login', [
+            'email' => is_string($email) ? $email : '',
+        ]);
     }
 
     /**

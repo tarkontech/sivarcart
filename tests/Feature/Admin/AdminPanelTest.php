@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Livewire\Livewire;
+use Illuminate\Http\Request;
 use SivarcartCore\SivarcartCore\Admin\AdminPanel;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Dashboard;
+use SivarcartCore\SivarcartCore\Admin\AdminWidgetProps;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
 use Workbench\App\Models\User;
 
@@ -19,13 +19,25 @@ it('registers the pages of the package', function () {
         ->and($panel->find('roles'))->not->toBeNull();
 });
 
+it('gives every page of the package the name of its component', function () {
+    $panel = app(AdminPanel::class);
+
+    expect($panel->find('dashboard')?->component)->toBe('Admin/Dashboard')
+        ->and($panel->find('orders')?->component)->toBe('Admin/Orders/Index')
+        ->and($panel->find('products')?->component)->toBe('Admin/Products/Index')
+        ->and($panel->find('customers')?->component)->toBe('Admin/Customers/Index')
+        ->and($panel->find('settings')?->component)->toBe('Admin/Settings/Index')
+        ->and($panel->find('roles')?->component)->toBe('Admin/Roles/Index');
+});
+
 it('gives every page of the package a permission', function () {
     $panel = app(AdminPanel::class);
 
     expect($panel->find('orders')?->permission)->toBe('orders.view')
         ->and($panel->find('products')?->permission)->toBe('catalog.view')
         ->and($panel->find('customers')?->permission)->toBe('customers.view')
-        ->and($panel->find('settings')?->permission)->toBe('settings.view');
+        ->and($panel->find('settings')?->permission)->toBe('settings.view')
+        ->and($panel->find('roles')?->permission)->toBe('roles.view');
 });
 
 it('lets the application register a page of its own', function () {
@@ -35,24 +47,12 @@ it('lets the application register a page of its own', function () {
         key: 'quick-view',
         label: 'Vista rápida',
         permission: 'orders.view',
-        component: Dashboard::class,
+        component: 'Admin/QuickView',
     );
 
     expect($panel->find('quick-view'))->not->toBeNull()
-        ->and($page->component)->toBe('sivarcart.admin.page.quick-view')
-        ->and($page->componentClass)->toBe(Dashboard::class);
-});
-
-it('registers the component of a page with Livewire', function () {
-    app(AdminPanel::class)->page(
-        key: 'quick-view',
-        label: 'Vista rápida',
-        component: Dashboard::class,
-    );
-
-    app(AdminPanel::class)->registerLivewireComponents();
-
-    expect(Livewire::isDiscoverable('sivarcart.admin.page.quick-view'))->toBeTrue();
+        ->and($page->component)->toBe('Admin/QuickView')
+        ->and($page->belongsToPackage())->toBeTrue();
 });
 
 it('lets the application register a page with its own route', function () {
@@ -119,9 +119,27 @@ it('lets the owner of the store see every page', function () {
 it('registers a widget of the dashboard', function () {
     $panel = app(AdminPanel::class);
 
-    $widget = $panel->widget('mi-widget', Dashboard::class);
+    $widget = $panel->widget('mi-widget', 'Admin/Widgets/MiWidget');
 
     expect($panel->visibleWidgets())->toHaveCount(1)
-        ->and($widget->component)->toBe('sivarcart.admin.widget.mi-widget')
-        ->and($widget->componentClass)->toBe(Dashboard::class);
+        ->and($widget->component)->toBe('Admin/Widgets/MiWidget')
+        ->and($widget->props)->toBeNull();
+});
+
+it('gives the data of a widget to the resolver of the widget', function () {
+    $resolver = new class implements AdminWidgetProps
+    {
+        /**
+         * @return array<string, mixed>
+         */
+        public function props(Request $request): array
+        {
+            return ['total' => 7];
+        }
+    };
+
+    $widget = app(AdminPanel::class)->widget('mi-widget', 'Admin/Widgets/MiWidget', $resolver);
+
+    expect($widget->props)->not->toBeNull()
+        ->and($widget->props?->props(request()))->toBe(['total' => 7]);
 });

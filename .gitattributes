@@ -15,3 +15,12 @@
 /CLAUDE.md          export-ignore
 /AGENTS.md          export-ignore
 /AGENTS_PACKAGE.md  export-ignore
+
+# The tools of the frontend of the panel are only for the ones who develop
+# it. The source of the panel and its bundle travel with the package.
+/node_modules       export-ignore
+/package.json       export-ignore
+/package-lock.json  export-ignore
+/tsconfig.json      export-ignore
+/vite.config.ts     export-ignore
+/components.json    export-ignore

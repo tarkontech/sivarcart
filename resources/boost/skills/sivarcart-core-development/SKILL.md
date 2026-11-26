@@ -105,14 +105,24 @@ Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): 
   the application, so the `HasStoreRoles` trait of the section above is required. Without it the
   panel shows its setup screen
 - every screen asks for the permissions the package already seeds (`orders.view`,
-  `catalog.view`, `customers.view`, `settings.view`)
-- to change a screen, write the file in `resources/views/vendor/sivarcart-core/admin/`: the copy
-  of the application wins over the copy of the package, with nothing to publish and nothing to
-  configure
-- to edit the original instead of writing on top of it, publish the views with the tag
-  `sivarcart-core-views`
+  `catalog.view`, `customers.view`, `settings.view`), and the writing goes through the routes
+  of the panel: moving an order asks `orders.update` and saving the settings asks
+  `settings.update`
+- the panel is an **Inertia and React** application: its screens are components of React written
+  in TypeScript, and it has its own root view and its own middleware, so an application that
+  already has an Inertia of its own keeps it untouched
+- **the panel does not ask the application for Node**: the bundle travels with the package
+  already compiled and the package serves it, so the merchant installs the package and the panel
+  is there. If the merchant compiles a bundle of its own, **theirs wins**
+- to change the whole interface, publish the source of the panel with the tag
+  `sivarcart-core-admin-source`, write `resources/js/sivarcart/admin.tsx`, add the entry to the
+  `vite.config.js` of the application and compile. To change one component, edit the file of
+  that component
+- to install the panel with the shadcn CLI, the package publishes a registry:
+  `npx shadcn@latest add @sivarcart/admin`
 - to add a screen of its own, register it in the panel and it appears in the navigation with the
-  permission it needs:
+  permission it needs. The component is the **name** of the component, the same one the bundle
+  resolves:
 
 ```php
 use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
@@ -121,13 +131,15 @@ SivarcartCore::admin()->page(
     key: 'quick-view',
     label: 'Vista rapida',
     permission: 'orders.view',
-    component: QuickView::class,
+    component: 'Admin/QuickView',
 );
 ```
 
-- the panel brings its own stylesheet and **does not ask the application for Tailwind**: the
-  colors are CSS variables and come from the `admin.theme` section of the configuration, so a
-  merchant re-themes it without compiling anything
+- the stylesheet of the panel is **Tailwind 4 with the design system of shadcn/ui over Base UI**,
+  and **no color of the panel is a color of the Tailwind palette**: every one of them is a
+  semantic token (`bg-background`, `text-foreground`, `bg-primary`, `bg-muted`,
+  `border-border`). A theme is a change of the CSS, never of the components, and the tokens come
+  from the `admin.theme` section of the configuration
 
 ### 5. Sell to buyers with an account
 
@@ -316,7 +328,8 @@ app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela
 
 - the publish tags are `sivarcart-core`, `sivarcart-core-config`,
   `sivarcart-core-migrations`, `sivarcart-core-views`, `sivarcart-core-mailables`,
-  `sivarcart-core-lang` and `sivarcart-core-assets`
+  `sivarcart-core-lang`, `sivarcart-core-assets`, `sivarcart-core-admin-source` (the source
+  of the panel) and `sivarcart-core-panel-view` (the root view of the panel)
 
 ## Rules, References, and Templates
 
@@ -448,4 +461,9 @@ NotificationSetting::query()->updateOrCreate(
   brings the orders, the catalog, the customers, the settings and the roles
 - do not edit the views of the package in place; write them in
   `resources/views/vendor/sivarcart-core/` so the customization survives an update
+- do not put a color of the Tailwind palette in a component of the panel: every color of the
+  panel is a semantic token (`bg-background`, `text-foreground`, `bg-primary`, `bg-muted`,
+  `border-border`), and a test of the package fails when one of them is not
+- do not build the bundle of the panel in the application of the merchant: the package brings it
+  compiled, and only the merchant that wants its own interface needs Node
 - do not document the columns of a table as public API; the models and the enums are

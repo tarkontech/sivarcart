@@ -10,21 +10,40 @@
 - el panel **no autentica a nadie**: usa los usuarios, el guard y la sesión de la
   aplicación, así que el modelo del usuario tiene que llevar el trait `HasStoreRoles`. Sin
   él, el panel abre su pantalla de instalación y explica qué hacer
-- **las pantallas se sobrescriben como las de cualquier paquete**: el archivo que el
-  comerciante pone en `resources/views/vendor/sivarcart-core/admin/` gana sobre el del
-  paquete, sin publicar nada y sin tocar la configuración. `vendor:publish --tag=sivarcart-core-views`
-  publica los originales para editarlos
-- **la aplicación registra sus propias pantallas**: `SivarcartCore::admin()->page()` mete una
-  página en la navegación con el permiso que necesita, y `SivarcartCore::admin()->widget()`
-  mete un widget en el tablero
-- el panel trae su propia hoja de estilo y **no pide Tailwind**: el CSS viaja con el paquete
-  y lo sirve el propio paquete, y los colores son variables CSS que salen de la sección
-  `admin.theme` de la configuración
-- el paquete depende ahora de `livewire/livewire` (`^3.8|^4.0`)
+- **el panel es una aplicación de Inertia y React**: sus pantallas son componentes de React
+  escritos en TypeScript, y el panel tiene su propio root view y su propio middleware, así
+  que una aplicación que ya tenga un Inertia de su propio no se ve afectada
+- **el panel no le pide Node a nadie**: el bundle viaja con el paquete ya compilado y lo
+  sirve el propio paquete, así que el comerciante instala el paquete y el panel está. Si el
+  comerciante compila su propio bundle, **el suyo gana**, sin tocar la configuración
+- **el panel se sobreescribe de cuatro maneras**: la página entera (con
+  `SivarcartCore::admin()->page()` y `SivarcartCore::admin()->widget()`), los tokens del
+  tema (la sección `admin.theme` de la configuración), el bundle propio, y el código
+  (con `vendor:publish --tag=sivarcart-core-admin-source` o con el registro de shadcn del
+  paquete)
+- **ningún color del panel es un color de la paleta de Tailwind**: todos son tokens
+  semánticos (`bg-background`, `text-foreground`, `bg-primary`…), así que un tema es un
+  cambio del CSS y nunca un cambio de los componentes. Un test del paquete lo comprueba
+- el panel trae su propia hoja de estilo con **Tailwind 4 y el sistema de diseño de
+  shadcn/ui sobre Base UI**, y sus textos viajan del servidor, así que el panel habla el
+  idioma de la aplicación
+- **la escritura del panel va por sus propias rutas**: mover una orden pide
+  `orders.update` y guardar los ajustes pide `settings.update`, un permiso nuevo que el
+  `manager` lleva y el `staff` no
 - **el comando `sivarcart-core:create-admin`** crea al primer miembro del personal de la tienda
   y le da su rol (`owner` por defecto). El seeder dejaba los roles, pero no las personas: el
   personal de la tienda son los usuarios de la aplicación, y sin una persona con rol el panel
   no tenía a quién mostrarle nada
+- el paquete depende ahora de `inertiajs/inertia-laravel` (`^3.0`) y **ya no de
+  `livewire/livewire`**
+- **los assets del panel se versionan con el hash de su contenido**: la dirección
+  de un archivo solo cambia cuando el archivo cambia, así que el navegador nunca
+  se queda con un bundle que ya no es el que trae el paquete
+- **el dinero del panel se formatea con la etiqueta del idioma que entiende
+  `Intl`**: Laravel escribe el idioma con guion bajo (`es_SV`) y el estándar de
+  las etiquetas de idioma usa el guion (`es-SV`)
+- **el formulario de los ajustes de la tienda envía un `PUT`**, que es el método
+  de la ruta que los guarda
 
 ### El pago de la orden sigue a su pago
 

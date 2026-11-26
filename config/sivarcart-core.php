@@ -210,10 +210,13 @@ return [
     | Administration panel
     |--------------------------------------------------------------------------
     |
-    | The panel of the staff of the store lives in the package. It is a set of
-    | Livewire components and Blade views that the merchant overrides in
-    | "resources/views/vendor/sivarcart-core", the same way every package of
-    | Laravel does it.
+    | The panel of the staff of the store lives in the package. It is an
+    | Inertia application whose screens are React components written in
+    | TypeScript, and it brings its own bundle already compiled, so the
+    | merchant installs the package and the panel is there.
+    |
+    | The merchant that wants its own interface publishes the source of the
+    | panel, compiles it and its bundle wins over the one of the package.
     |
     | The panel does not authenticate the staff: it uses the users, the guard
     | and the session of the host application.
@@ -258,17 +261,50 @@ return [
         ],
 
         /*
-        | The theme of the panel. These values become CSS custom properties,
-        | so the merchant changes them without compiling anything.
+        | The theme of the panel. These values become CSS custom properties of
+        | the design system of the panel, so the merchant changes them without
+        | compiling anything.
+        |
+        | The names are the ones of the tokens: "primary" is the color of the
+        | main action, "destructive" the one of the danger, "success" and
+        | "warning" the ones of the states of the store. The surfaces —the
+        | background, the cards, the muted text— belong to the stylesheet of
+        | the package, because they are the ones that keep the panel readable
+        | in the light theme and in the dark one.
         */
         'theme' => [
             'primary' => '#1d4ed8',
-            'primary_hover' => '#1e40af',
-            'danger' => '#b91c1c',
+            'primary_foreground' => '#ffffff',
+            'destructive' => '#b91c1c',
+            'destructive_foreground' => '#ffffff',
             'success' => '#15803d',
+            'success_foreground' => '#ffffff',
             'warning' => '#b45309',
+            'warning_foreground' => '#ffffff',
             'radius' => '0.5rem',
             'font' => 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        ],
+
+        /*
+        | The theme of the panel for the dark mode. These values are written
+        | after the ones of the light theme, so they win on it. When they are
+        | empty the panel uses the brand of the light theme in the dark one.
+        */
+        'theme_dark' => [],
+
+        /*
+        | The bundle of the panel.
+        |
+        | The package brings its own bundle compiled and serves it, so the
+        | merchant installs the package and the panel is there, without Node
+        | and without a build step. A merchant that wants its own interface
+        | publishes the source of the panel, writes its own entry and compiles
+        | it: the package looks at the manifest of the application and, when
+        | the entry is in it, loads that bundle instead of its own.
+        */
+        'bundle' => [
+            'entry' => 'resources/js/sivarcart/admin.tsx',
+            'directory' => 'build',
         ],
 
         /*

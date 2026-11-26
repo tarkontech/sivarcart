@@ -76,12 +76,14 @@ viene por defecto en `owner`, que es el que tiene todos los permisos.
 ### Publicar los demás recursos
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core"           # todo
-php artisan vendor:publish --tag="sivarcart-core-config"    # config/sivarcart-core.php
-php artisan vendor:publish --tag="sivarcart-core-views"     # resources/views/vendor/sivarcart-core
-php artisan vendor:publish --tag="sivarcart-core-mailables" # resources/views/vendor/sivarcart-core/mail
-php artisan vendor:publish --tag="sivarcart-core-lang"      # lang/vendor/sivarcart-core
-php artisan vendor:publish --tag="sivarcart-core-assets"    # public/vendor/sivarcart-core
+php artisan vendor:publish --tag="sivarcart-core"               # todo
+php artisan vendor:publish --tag="sivarcart-core-config"        # config/sivarcart-core.php
+php artisan vendor:publish --tag="sivarcart-core-views"         # resources/views/vendor/sivarcart-core
+php artisan vendor:publish --tag="sivarcart-core-mailables"     # resources/views/vendor/sivarcart-core/mail
+php artisan vendor:publish --tag="sivarcart-core-lang"          # lang/vendor/sivarcart-core
+php artisan vendor:publish --tag="sivarcart-core-assets"        # public/vendor/sivarcart-core
+php artisan vendor:publish --tag="sivarcart-core-admin-source"  # resources/js/sivarcart
+php artisan vendor:publish --tag="sivarcart-core-panel-view"    # el root view del panel
 ```
 
 > **Las migraciones se publican, no se cargan desde el paquete.** Laravel deriva la clase
@@ -954,8 +956,8 @@ SivarcartCore::media();       // MediaService
 
 El núcleo expone la **API de tienda**: el catálogo, el carrito, el checkout, las órdenes del
 comprador y la cuenta del comprador. El **panel de administración del personal también vive en
-el núcleo**: son componentes de Livewire y vistas de Blade que el comerciante sobrescribe cuando
-lo necesita.
+el núcleo**: es una aplicación de Inertia y React que el comerciante puede sobreescribir con su
+propia interfaz cuando lo necesita.
 
 Las rutas las registra el paquete: la aplicación no tiene que publicarlas. Viven bajo el
 prefijo de la sección `api` de la configuración (`api/sivarcart` por defecto) y se pueden
@@ -1047,6 +1049,14 @@ clientes, los ajustes de la tienda y los roles del personal. Vive bajo el prefij
 `admin` de la configuración (`sivarcart/admin` por defecto) y se puede apagar con
 `admin.enabled`.
 
+El panel es una aplicación de **Inertia y React**: sus pantallas son componentes de React, su
+hoja de estilo es **Tailwind 4** con el sistema de diseño de **shadcn/ui** sobre Base UI, y su
+código está escrito en TypeScript.
+
+> **El panel no le pide Node a nadie.** El paquete trae el bundle del panel ya compilado y lo
+> sirve él mismo, así que el comerciante instala el paquete y el panel está. Node solo hace
+> falta para *desarrollar* el panel o para escribir tu propia interfaz.
+
 El panel **no autentica a nadie**: usa los usuarios, el guard y la sesión de la aplicación. La
 pantalla de entrada del panel es solo la pantalla de ese guard.
 
@@ -1067,39 +1077,21 @@ Cada pantalla pide el permiso que le corresponde (`orders.view`, `catalog.view`,
 `customers.view`, `settings.view`), así que el vocabulario de permisos que ya trae el paquete
 también gobierna el panel.
 
-### Sobrescribir las pantallas
+### Los cuatro niveles de sobreescritura
 
-El panel se sobrescribe como cualquier otra vista de un paquete de Laravel: el archivo que el
-comerciante pone en `resources/views/vendor/sivarcart-core/` **gana sobre el del paquete**, sin
-publicar nada y sin tocar la configuración.
+El panel se puede cambiar de cuatro maneras, y cada una cuesta algo distinto:
 
-```
-resources/views/vendor/sivarcart-core/admin/pages/orders/index.blade.php   # la lista de pedidos
-resources/views/vendor/sivarcart-core/admin/layout.blade.php                # el esqueleto del panel
-resources/views/vendor/sivarcart-core/admin/components/card.blade.php       # un componente
-```
+| Nivel | Qué cambia | Costo |
+|---|---|---|
+| **0. La página entera** | El panel pone el enlace y tu aplicación responde | Cero |
+| **1. Los tokens** | Los colores, el radio y la tipografía | Cero |
+| **2. El bundle** | Toda la interfaz, compilada por ti | Node y Vite |
+| **3. El código** | Componentes y pantallas sueltas, en TypeScript | Node y Vite |
 
-Los componentes de Blade del panel se usan así y se sobrescriben igual:
+#### Nivel 0 — La página entera
 
-```blade
-<x-sivarcart-core::card title="Pedidos de hoy">
-    ...
-</x-sivarcart-core::card>
-```
-
-Si lo que quieres es editar el original en vez de escribir encima, publícalo:
-
-```bash
-php artisan vendor:publish --tag="sivarcart-core-views"
-```
-
-> **`vendor:publish` nunca sobrescribe un archivo que ya existe**, así que una personalización
-> sobrevive a una actualización del paquete.
-
-### Agregar pantallas propias
-
-El panel tiene un registro de páginas. La aplicación registra las suyas y el panel las pone en la
-navegación, con el permiso que necesitan:
+El panel tiene un registro de páginas. La aplicación registra las suyas y el panel las pone en
+la navegación, con el permiso que necesitan:
 
 ```php
 use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
@@ -1109,12 +1101,14 @@ SivarcartCore::admin()->page(
     key: 'quick-view',
     label: 'Vista rápida',
     permission: 'orders.view',
-    component: QuickView::class,   // un componente de Livewire
+    component: 'Admin/QuickView',   // el nombre del componente de React
 );
 ```
 
-La página queda en `/sivarcart/admin/quick-view` y el enlace aparece en la barra lateral. Si lo
-que quieres es una ruta de tu aplicación, pasa la ruta y el paquete solo pone el enlace:
+La página queda en `/sivarcart/admin/quick-view` y el enlace aparece en la barra lateral. El
+componente es el **nombre** del componente, el mismo que resuelve el bundle del panel.
+
+Si lo que quieres es una ruta de tu aplicación, pasa la ruta y el paquete solo pone el enlace:
 
 ```php
 SivarcartCore::admin()->page(
@@ -1127,26 +1121,91 @@ SivarcartCore::admin()->page(
 El tablero también acepta widgets, que se renderizan en una rejilla debajo de los contadores:
 
 ```php
-SivarcartCore::admin()->widget('ventas-de-hoy', VentasDeHoy::class);
+SivarcartCore::admin()->widget(
+    key: 'ventas-de-hoy',
+    component: 'Admin/Widgets/VentasDeHoy',
+    props: new VentasDeHoyProps(),
+);
 ```
 
-### El tema
+#### Nivel 1 — Los tokens
 
-El panel trae su propia hoja de estilo y **no le pide a nadie que instale Tailwind**: el CSS
-viaja con el paquete y lo sirve el propio paquete, así que nunca queda desactualizado. Los
-colores son variables CSS, y se cambian en la configuración:
+**El panel no usa ningún color de la paleta de Tailwind.** Todos sus colores son *tokens
+semánticos* —`bg-background`, `text-foreground`, `bg-primary`, `bg-muted`, `border-border`—,
+así que un tema es un cambio del CSS y nunca un cambio de los componentes.
+
+Los tokens viajan en la hoja de estilo del paquete y los cambia la configuración:
 
 ```php
 'admin' => [
     'theme' => [
         'primary' => '#1d4ed8',
+        'primary_foreground' => '#ffffff',
+        'destructive' => '#b91c1c',
+        'success' => '#15803d',
+        'warning' => '#b45309',
         'radius' => '0.5rem',
+        'font' => 'system-ui, -apple-system, "Segoe UI", sans-serif',
     ],
 ],
 ```
 
 La hoja de estilo del paquete se sirve en `/sivarcart/admin/assets/admin.css`. Si tu aplicación
 tiene sus propias hojas, se cargan después con `admin.stylesheets`, así que ganan.
+
+El panel **no pide Node a nadie**: el bundle viaja con el paquete ya compilado y el propio
+paquete lo sirve. La dirección de cada archivo lleva el hash de su contenido, así que el
+navegador nunca se queda con un bundle que ya no es el que trae el paquete.
+
+#### Nivel 2 — El bundle
+
+El paquete sirve su propio bundle. Si compilas el tuyo, **el tuyo gana**, sin tocar la
+configuración del paquete:
+
+```bash
+# 1. Publica el fuente del panel.
+php artisan vendor:publish --tag="sivarcart-core-admin-source"
+
+# 2. Escribe tu propia entrada en resources/js/sivarcart/admin.tsx
+#    y añade la entrada a tu vite.config.js.
+
+# 3. Compila.
+npm run build
+```
+
+El paquete mira el manifiesto de tu aplicación y, cuando encuentra la entrada
+`resources/js/sivarcart/admin.tsx`, carga tu bundle en lugar del suyo.
+
+> **`vendor:publish` nunca sobrescribe un archivo que ya existe**, así que una personalización
+> sobrevive a una actualización del paquete.
+
+#### Nivel 3 — El código
+
+Hay dos caminos, y se complementan.
+
+**Publicar el fuente.** Lo que el comerciante edita es suyo:
+
+```bash
+php artisan vendor:publish --tag="sivarcart-core-admin-source"
+```
+
+Queda en `resources/js/sivarcart/`, con los componentes de shadcn, las pantallas y los layouts.
+Edita lo que quieras y compila.
+
+**El registro de shadcn.** El paquete publica un registro de shadcn, así que la CLI de shadcn
+instala el panel de una vez, con sus dependencias y sus variables CSS:
+
+```bash
+npx shadcn@latest registry add @sivarcart=https://raw.githubusercontent.com/tarkontech/sivarcart-core/main/registry/{name}.json
+npx shadcn@latest add @sivarcart/admin
+```
+
+El root view del panel, que es el archivo de Blade que monta la aplicación, se publica con un
+tag propio, para quien quiera cambiar el `<head>` o el logo:
+
+```bash
+php artisan vendor:publish --tag="sivarcart-core-panel-view"
+```
 
 ### Lo que el panel todavía no trae
 

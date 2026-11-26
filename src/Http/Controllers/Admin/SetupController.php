@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Auth as AuthFacade;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
@@ -20,11 +21,11 @@ final class SetupController
     /**
      * Show the setup screen.
      */
-    public function show(): View
+    public function show(): Response
     {
         $user = AuthFacade::guard(Auth::guard())->user();
 
-        return view('sivarcart-core::admin.setup', [
+        return Inertia::render('Admin/Setup', [
             'model' => Auth::model(),
             'signedIn' => $user !== null,
         ]);

@@ -110,4 +110,9 @@ return [
         'next' => 'Next',
     ],
 
+    'theme' => [
+        'light' => 'Light theme',
+        'dark' => 'Dark theme',
+    ],
+
 ];

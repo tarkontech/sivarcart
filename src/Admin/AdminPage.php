@@ -13,8 +13,10 @@ namespace SivarcartCore\SivarcartCore\Admin;
  *
  * A page is rendered in one of two ways:
  *
- * - With a component, the package renders a Livewire component and the page
- *   lives under the prefix of the panel: "/sivarcart/admin/quick-view".
+ * - With a component, the package renders an Inertia page and the page lives
+ *   under the prefix of the panel: "/sivarcart/admin/quick-view". The
+ *   component is the **name** of the component ("Admin/QuickView"), the same
+ *   name that the bundle of the panel resolves.
  * - With a route, the page is a route of the application and the package only
  *   puts the link in the navigation.
  */
@@ -25,8 +27,8 @@ final readonly class AdminPage
      * @param  string  $label  The name of the page in the navigation.
      * @param  string|null  $icon  The name of the icon of the page.
      * @param  string|null  $permission  The permission the staff needs to see it.
-     * @param  string|null  $component  The name of the Livewire component of the page.
-     * @param  string|null  $componentClass  The class of the Livewire component.
+     * @param  string|null  $component  The name of the Inertia component of the page.
+     * @param  AdminPageProps|null  $props  The resolver of the data of the page.
      * @param  string|null  $route  The route of the application that answers it.
      * @param  string|null  $group  The group of the navigation it belongs to.
      * @param  int  $order  The position of the page in the navigation.
@@ -37,7 +39,7 @@ final readonly class AdminPage
         public ?string $icon = null,
         public ?string $permission = null,
         public ?string $component = null,
-        public ?string $componentClass = null,
+        public ?AdminPageProps $props = null,
         public ?string $route = null,
         public ?string $group = null,
         public int $order = 100,

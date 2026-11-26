@@ -9,17 +9,20 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 use SivarcartCore\SivarcartCore\Admin\AdminPanel;
+use SivarcartCore\SivarcartCore\Admin\Pages\CustomersIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\DashboardProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\OrdersIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\ProductsIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\RolesIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\SettingsIndexProps;
 use SivarcartCore\SivarcartCore\Console\Commands\CreateAdminCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\RestockCommand;
@@ -46,13 +49,6 @@ use SivarcartCore\SivarcartCore\Listeners\SendOrderPlacedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderRefundedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderShippedNotification;
 use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Catalog\ProductList;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Customers\CustomerList;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Dashboard;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Orders\OrderList;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Orders\OrderShow;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Roles\RoleList;
-use SivarcartCore\SivarcartCore\Livewire\Admin\Settings\StoreSettings;
 use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Models\ProductImage;
 use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
@@ -227,6 +223,26 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'sivarcart-core');
 
+        /*
+        | The root view of the panel lives in a namespace of its own, and not in
+        | the namespace of the views of the package. The views of the package
+        | are published and the merchant can put its own in
+        | "resources/views/vendor/sivarcart-core", and the root view of an
+        | Inertia application is not something to overwrite by accident: a
+        | wrong file there breaks the mounting of the panel in silence.
+        */
+        $this->loadViewsFrom(__DIR__.'/../resources/views/panel', 'sivarcart-core-panel');
+
+        /*
+        | The pages of the panel live in the package, so Inertia has to know
+        | where they are. The folder of the application is kept, so an
+        | application that has an Inertia of its own keeps its own pages.
+        */
+        Config::set('inertia.pages.paths', [
+            ...(array) Config::get('inertia.pages.paths', []),
+            __DIR__.'/../resources/js/admin/pages',
+        ]);
+
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'sivarcart-core');
 
         $this->registerNotificationListeners();
@@ -248,6 +264,25 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/sivarcart-core'),
         ], ['sivarcart-core', 'sivarcart-core-views']);
+
+        /*
+        | The root view of the panel is published on its own tag, and not with
+        | the views of the package: it is the view that mounts the panel, so
+        | the merchant that wants to change the head or the logo of the panel
+        | asks for it explicitly.
+        */
+        $this->publishes([
+            __DIR__.'/../resources/views/panel' => resource_path('views/vendor/sivarcart-core-panel'),
+        ], ['sivarcart-core', 'sivarcart-core-panel-view']);
+
+        /*
+        | The source of the panel is published for the merchant that wants to
+        | write its own interface. The published files are never overwritten,
+        | so a customization survives an update of the package.
+        */
+        $this->publishes([
+            __DIR__.'/../resources/js/admin' => resource_path('js/sivarcart'),
+        ], ['sivarcart-core', 'sivarcart-core-admin-source']);
 
         $this->publishes([
             __DIR__.'/../resources/views/mail' => resource_path('views/vendor/sivarcart-core/mail'),
@@ -355,9 +390,14 @@ class SivarcartCoreServiceProvider extends ServiceProvider
     /**
      * Register the administration panel of the staff of the store.
      *
-     * The panel is made of Livewire components and Blade views, and the
-     * merchant overrides them in "resources/views/vendor/sivarcart-core", the
-     * same way every package of Laravel does it.
+     * The panel is an Inertia application: its pages are components of React
+     * and the bundle of the panel travels with the package. The merchant
+     * overrides them by publishing the source of the panel and compiling its
+     * own bundle, or by putting its own page in the registry.
+     *
+     * The panel has its own root view and its own middleware of Inertia, in a
+     * namespace of its own, so an application that already has an Inertia of
+     * its own keeps it untouched.
      *
      * The panel does not authenticate the staff: it uses the users, the guard
      * and the session of the host application.
@@ -370,20 +410,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         Route::aliasMiddleware('sivarcart.admin', EnsureStoreAdmin::class);
 
-        Blade::componentNamespace('SivarcartCore\SivarcartCore\View\Components', 'sivarcart-core');
-
         $this->loadRoutesFrom(__DIR__.'/../routes/admin.php');
-
-        $this->registerAdminViewComposer();
-
-        /*
-        | The component of the order is told to Livewire when the application
-        | is booted, because the provider of Livewire registers itself after
-        | the providers of the application do.
-        */
-        $this->app->booted(function (): void {
-            Livewire::component('sivarcart.orders.show', OrderShow::class);
-        });
     }
 
     /**
@@ -408,14 +435,16 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $panel->page(
             key: 'dashboard',
             label: 'sivarcart-core::admin.dashboard.title',
-            component: Dashboard::class,
+            component: 'Admin/Dashboard',
+            props: new DashboardProps,
             order: 10,
         );
 
         $panel->page(
             key: 'orders',
             label: 'sivarcart-core::admin.orders.title',
-            component: OrderList::class,
+            component: 'Admin/Orders/Index',
+            props: new OrdersIndexProps,
             permission: 'orders.view',
             order: 20,
         );
@@ -423,7 +452,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $panel->page(
             key: 'products',
             label: 'sivarcart-core::admin.products.title',
-            component: ProductList::class,
+            component: 'Admin/Products/Index',
+            props: new ProductsIndexProps,
             permission: 'catalog.view',
             order: 30,
         );
@@ -431,7 +461,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $panel->page(
             key: 'customers',
             label: 'sivarcart-core::admin.customers.title',
-            component: CustomerList::class,
+            component: 'Admin/Customers/Index',
+            props: new CustomersIndexProps,
             permission: 'customers.view',
             order: 40,
         );
@@ -439,7 +470,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $panel->page(
             key: 'settings',
             label: 'sivarcart-core::admin.settings.title',
-            component: StoreSettings::class,
+            component: 'Admin/Settings/Index',
+            props: new SettingsIndexProps,
             permission: 'settings.view',
             order: 50,
         );
@@ -447,62 +479,11 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $panel->page(
             key: 'roles',
             label: 'sivarcart-core::admin.roles.title',
-            component: RoleList::class,
+            component: 'Admin/Roles/Index',
+            props: new RolesIndexProps,
             permission: 'roles.view',
             order: 60,
         );
-    }
-
-    /**
-     * Give the views of the panel the data they need.
-     */
-    private function registerAdminViewComposer(): void
-    {
-        View::composer([
-            'sivarcart-core::admin.layout',
-            'sivarcart-core::admin.login',
-            'sivarcart-core::admin.setup',
-        ], function (\Illuminate\View\View $view): void {
-            $route = request()->route();
-
-            $currentPage = 'dashboard';
-
-            if ($route instanceof \Illuminate\Routing\Route) {
-                $parameter = $route->parameter('page');
-
-                if (is_string($parameter) && $parameter !== '') {
-                    $currentPage = $parameter;
-                }
-            }
-
-            $view->with([
-                'adminPages' => $this->app->make(AdminPanel::class)->visiblePages(),
-                'adminStore' => $this->app->make(StoreService::class)->current(),
-                'adminTheme' => (array) config('sivarcart-core.admin.theme', []),
-                'adminAssetVersion' => $this->adminAssetVersion(),
-                'adminCurrentPage' => $currentPage,
-            ]);
-        });
-    }
-
-    /**
-     * The version of the stylesheet of the panel.
-     *
-     * The stylesheet travels with the package, so it is the one that goes with
-     * the version the merchant installed. The number tells the browser that it
-     * changed.
-     */
-    private function adminAssetVersion(): string
-    {
-        $path = __DIR__.'/../resources/dist/admin.css';
-
-        if (! is_file($path)) {
-            return '1';
-        }
-
-        $time = filemtime($path);
-
-        return $time === false ? '1' : (string) $time;
     }
 
     /**

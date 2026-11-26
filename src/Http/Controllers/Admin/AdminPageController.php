@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 use SivarcartCore\SivarcartCore\Admin\AdminPage;
 use SivarcartCore\SivarcartCore\Admin\AdminPanel;
 
@@ -15,14 +16,14 @@ use SivarcartCore\SivarcartCore\Admin\AdminPanel;
  * The pages are not routes of the package: they are the ones the panel
  * registry knows. The package registers its own pages and the host application
  * registers the ones it needs, so this controller only has to look the page up
- * and hand it to the view.
+ * and hand it to the bundle of the panel.
  */
 final class AdminPageController
 {
     /**
      * Show the home of the panel.
      */
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         return $this->show($request, 'dashboard');
     }
@@ -30,7 +31,7 @@ final class AdminPageController
     /**
      * Show a page of the panel.
      */
-    public function show(Request $request, string $page): View
+    public function show(Request $request, string $page): Response
     {
         $panel = app(AdminPanel::class);
 
@@ -44,10 +45,9 @@ final class AdminPageController
             abort(403, 'No tienes permiso para ver esta página.');
         }
 
-        $panel->registerLivewireComponents();
-
-        return view('sivarcart-core::admin.page', [
-            'page' => $registered,
-        ]);
+        return Inertia::render(
+            (string) $registered->component,
+            $registered->props?->props($request, $registered) ?? [],
+        );
     }
 }

@@ -143,6 +143,7 @@ it('seeds the vocabulary of the permissions of the store', function () {
             'payments.*',
             'shipping.*',
             'settings.view',
+            'settings.update',
         ])
         ->and(StoreRole::query()->where('slug', 'staff')->firstOrFail()->permissions)->toBe([
             'catalog.view',

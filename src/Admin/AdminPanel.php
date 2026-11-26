@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SivarcartCore\SivarcartCore\Admin;
 
-use Livewire\Livewire;
 use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
@@ -17,8 +16,12 @@ use SivarcartCore\SivarcartCore\Support\Auth;
  *         key: 'quick-view',
  *         label: 'Vista rápida',
  *         permission: 'orders.view',
- *         component: QuickView::class,
+ *         component: 'Admin/QuickView',
  *     );
+ *
+ * The component of a page is the name of the component, not a class: it is the
+ * name that the bundle of the panel resolves. A merchant that builds its own
+ * bundle puts its own component under that name and the panel shows it.
  *
  * The registry is a singleton of the container, so the pages the application
  * registers in the boot of its provider are known by the panel, and the ones it
@@ -43,9 +46,9 @@ class AdminPanel
     /**
      * Register a page of the panel.
      *
-     * The component of a page is either the class of a Livewire component or
-     * the name of one that is already registered. A class is given the name
-     * of the page, and Livewire is told about it when the panel renders.
+     * The component of a page is the name of the component of the bundle of
+     * the panel ("Admin/Orders/Index"). A page without a component belongs to
+     * the application and is answered by its own route.
      */
     public function page(
         string $key,
@@ -53,24 +56,18 @@ class AdminPanel
         ?string $icon = null,
         ?string $permission = null,
         ?string $component = null,
+        ?AdminPageProps $props = null,
         ?string $route = null,
         ?string $group = null,
         int $order = 100,
     ): AdminPage {
-        $class = null;
-
-        if ($component !== null && class_exists($component)) {
-            $class = $component;
-            $component = 'sivarcart.admin.page.'.$key;
-        }
-
         $page = new AdminPage(
             key: $key,
             label: $label,
             icon: $icon,
             permission: $permission,
             component: $component,
-            componentClass: $class,
+            props: $props,
             route: $route,
             group: $group,
             order: $order,
@@ -83,24 +80,22 @@ class AdminPanel
 
     /**
      * Register a widget of the dashboard.
+     *
+     * The component of a widget is the name of the component of the bundle of
+     * the panel ("Admin/Widgets/LowStock"), and its data comes from the
+     * resolver the widget carries.
      */
     public function widget(
         string $key,
         string $component,
+        ?AdminWidgetProps $props = null,
         ?string $permission = null,
         int $order = 100,
     ): AdminWidget {
-        $class = null;
-
-        if (class_exists($component)) {
-            $class = $component;
-            $component = 'sivarcart.admin.widget.'.$key;
-        }
-
         $widget = new AdminWidget(
             key: $key,
             component: $component,
-            componentClass: $class,
+            props: $props,
             permission: $permission,
             order: $order,
         );
@@ -108,29 +103,6 @@ class AdminPanel
         $this->widgets[$key] = $widget;
 
         return $widget;
-    }
-
-    /**
-     * Tell Livewire about the components of the pages and of the widgets.
-     *
-     * Livewire is told about them when the panel renders and not when they are
-     * registered, because the application may register a page in the boot of
-     * its provider, which happens before the provider of Livewire registers
-     * itself.
-     */
-    public function registerLivewireComponents(): void
-    {
-        foreach ($this->pages as $page) {
-            if ($page->componentClass !== null && $page->component !== null) {
-                Livewire::component($page->component, $page->componentClass);
-            }
-        }
-
-        foreach ($this->widgets as $widget) {
-            if ($widget->componentClass !== null) {
-                Livewire::component($widget->component, $widget->componentClass);
-            }
-        }
     }
 
     /**

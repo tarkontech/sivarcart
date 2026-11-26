@@ -7,7 +7,8 @@ namespace SivarcartCore\SivarcartCore\Tests;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Livewire\LivewireServiceProvider;
+use Inertia\Inertia;
+use Inertia\ServiceProvider as InertiaServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Rmirandasv\Wompi\WompiServiceProvider;
 use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
@@ -40,6 +41,10 @@ abstract class TestCase extends Orchestra
             .DIRECTORY_SEPARATOR.Str::uuid()->toString();
 
         parent::setUp();
+
+        // The panel renders in the client, so the tests do not ask for the
+        // server-side rendering of Inertia.
+        Inertia::disableSsr();
     }
 
     /**
@@ -53,7 +58,7 @@ abstract class TestCase extends Orchestra
             // own observer, so the provider has to be loaded before the
             // package sets the model of the media.
             MediaLibraryServiceProvider::class,
-            LivewireServiceProvider::class,
+            InertiaServiceProvider::class,
             SivarcartCoreServiceProvider::class,
             WompiServiceProvider::class,
         ];

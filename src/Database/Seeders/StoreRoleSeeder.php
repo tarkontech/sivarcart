@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use SivarcartCore\SivarcartCore\Admin\AdminPermissions;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
 
 /**
@@ -34,7 +35,8 @@ class StoreRoleSeeder extends Seeder
                     'customers.*',
                     'payments.*',
                     'shipping.*',
-                    'settings.view',
+                    AdminPermissions::SETTINGS_VIEW,
+                    AdminPermissions::SETTINGS_UPDATE,
                 ],
             ],
             [

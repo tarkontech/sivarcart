@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-use Livewire\Livewire;
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
+use Inertia\Testing\AssertableInertia as Assert;
 use SivarcartCore\SivarcartCore\Enums\OrderStatus;
 use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Models\Order;
 use SivarcartCore\SivarcartCore\Models\Product;
+use SivarcartCore\SivarcartCore\Models\Store;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Services\StoreService;
 use Workbench\App\Models\User;
-
-beforeEach(function () {
-    app(AdminPanel::class)->registerLivewireComponents();
-});
 
 /**
  * Sign a member of the staff of the store in.
+ *
+ * @param  list<string>  $permissions
  */
 function staffWith(array $permissions): User
 {
@@ -33,9 +30,17 @@ function staffWith(array $permissions): User
 it('shows the dashboard of the panel', function () {
     staffWith(['*']);
 
-    Livewire::test('sivarcart.admin.page.dashboard')
+    $this->get('/sivarcart/admin/dashboard')
         ->assertOk()
-        ->assertSee('Orders today');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Dashboard')
+            ->has('ordersToday')
+            ->has('ordersAwaiting')
+            ->has('ordersUnpaid')
+            ->has('products')
+            ->has('lowStock')
+            ->has('widgets'),
+        );
 });
 
 it('counts the orders of the day in the dashboard', function () {
@@ -43,8 +48,8 @@ it('counts the orders of the day in the dashboard', function () {
 
     Order::factory()->create(['placed_at' => now()]);
 
-    Livewire::test('sivarcart.admin.page.dashboard')
-        ->assertSee('Orders today');
+    $this->get('/sivarcart/admin/dashboard')
+        ->assertInertia(fn (Assert $page) => $page->where('ordersToday', 1));
 });
 
 it('shows the orders of the store', function () {
@@ -52,9 +57,15 @@ it('shows the orders of the store', function () {
 
     $order = Order::factory()->create(['order_number' => 'SIV-2026-00001']);
 
-    Livewire::test('sivarcart.admin.page.orders')
+    $this->get('/sivarcart/admin/orders')
         ->assertOk()
-        ->assertSee('SIV-2026-00001');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Orders/Index')
+            ->has('orders.data', 1)
+            ->where('orders.data.0.number', 'SIV-2026-00001')
+            ->where('orders.data.0.uuid', $order->uuid)
+            ->has('statuses', 7),
+        );
 });
 
 it('searches the orders of the store', function () {
@@ -63,10 +74,38 @@ it('searches the orders of the store', function () {
     Order::factory()->create(['order_number' => 'SIV-2026-00001']);
     Order::factory()->create(['order_number' => 'OTRA-ORDEN-1']);
 
-    Livewire::test('sivarcart.admin.page.orders')
-        ->set('search', 'OTRA-ORDEN')
-        ->assertSee('OTRA-ORDEN-1')
-        ->assertDontSee('SIV-2026-00001');
+    $this->get('/sivarcart/admin/orders?q=OTRA-ORDEN')
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('orders.data', 1)
+            ->where('orders.data.0.number', 'OTRA-ORDEN-1')
+            ->where('filters.q', 'OTRA-ORDEN'),
+        );
+});
+
+it('filters the orders of the store by their state', function () {
+    staffWith(['*']);
+
+    Order::factory()->create(['order_number' => 'SIV-2026-00001', 'status' => OrderStatus::PENDING]);
+    Order::factory()->create(['order_number' => 'SIV-2026-00002', 'status' => OrderStatus::SHIPPED]);
+
+    $this->get('/sivarcart/admin/orders?estado=shipped')
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('orders.data', 1)
+            ->where('orders.data.0.number', 'SIV-2026-00002')
+            ->where('filters.status', 'shipped'),
+        );
+});
+
+it('shows the state of an order with the tone it is read with', function () {
+    staffWith(['*']);
+
+    Order::factory()->create(['status' => OrderStatus::DELIVERED]);
+
+    $this->get('/sivarcart/admin/orders')
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('orders.data.0.status.tone', 'success')
+            ->where('orders.data.0.status.label', 'Delivered'),
+        );
 });
 
 it('shows the products of the catalog, the drafts included', function () {
@@ -74,9 +113,26 @@ it('shows the products of the catalog, the drafts included', function () {
 
     Product::factory()->create(['name' => 'Un producto']);
 
-    Livewire::test('sivarcart.admin.page.products')
+    $this->get('/sivarcart/admin/products')
         ->assertOk()
-        ->assertSee('Un producto');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Products/Index')
+            ->has('products.data', 1)
+            ->where('products.data.0.name', 'Un producto'),
+        );
+});
+
+it('searches the products of the catalog', function () {
+    staffWith(['*']);
+
+    Product::factory()->create(['name' => 'Un producto']);
+    Product::factory()->create(['name' => 'Otro producto']);
+
+    $this->get('/sivarcart/admin/products?q=Otro')
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('products.data', 1)
+            ->where('products.data.0.name', 'Otro producto'),
+        );
 });
 
 it('shows the buyers of the store', function () {
@@ -84,9 +140,13 @@ it('shows the buyers of the store', function () {
 
     Customer::factory()->create(['email' => 'comprador@example.test']);
 
-    Livewire::test('sivarcart.admin.page.customers')
+    $this->get('/sivarcart/admin/customers')
         ->assertOk()
-        ->assertSee('comprador@example.test');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Customers/Index')
+            ->has('customers.data', 1)
+            ->where('customers.data.0.email', 'comprador@example.test'),
+        );
 });
 
 it('shows the roles of the staff of the store', function () {
@@ -94,32 +154,28 @@ it('shows the roles of the staff of the store', function () {
 
     StoreRole::factory()->create(['name' => 'Administrador', 'slug' => 'administrador']);
 
-    Livewire::test('sivarcart.admin.page.roles')
+    $this->get('/sivarcart/admin/roles')
         ->assertOk()
-        ->assertSee('Administrador')
-        ->assertSee('administrador');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Roles/Index')
+            ->has('roles')
+            ->where('roles.0.name', 'Administrador')
+            ->where('roles.0.slug', 'administrador'),
+        );
 });
 
-it('saves the settings of the store', function () {
+it('shows the settings of the store', function () {
     staffWith(['*']);
 
-    Livewire::test('sivarcart.admin.page.settings')
-        ->set('name', 'Mi Tienda')
-        ->set('email', 'hola@mitienda.test')
-        ->call('save')
-        ->assertHasNoErrors();
+    Store::factory()->create(['name' => 'Mi Tienda']);
 
-    expect(app(StoreService::class)->current()?->name)
-        ->toBe('Mi Tienda');
-});
-
-it('does not save the settings of the store without a name', function () {
-    staffWith(['*']);
-
-    Livewire::test('sivarcart.admin.page.settings')
-        ->set('name', '')
-        ->call('save')
-        ->assertHasErrors('name');
+    $this->get('/sivarcart/admin/settings')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Settings/Index')
+            ->has('settings')
+            ->where('settings.name', 'Mi Tienda'),
+        );
 });
 
 it('shows one order of the store', function () {
@@ -127,30 +183,45 @@ it('shows one order of the store', function () {
 
     $order = Order::factory()->create(['order_number' => 'SIV-2026-00002']);
 
-    Livewire::test('sivarcart.orders.show', ['order' => $order->uuid])
+    $this->get('/sivarcart/admin/orders/'.$order->uuid)
         ->assertOk()
-        ->assertSee('SIV-2026-00002');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Orders/Show')
+            ->where('order.number', 'SIV-2026-00002')
+            ->has('order.items')
+            ->has('order.totals')
+            ->has('order.buyer')
+            ->has('order.timeline')
+            ->where('canUpdate', true),
+        );
 });
 
-it('moves an order through its lifecycle from the panel', function () {
-    staffWith(['orders.view', 'orders.update']);
-
-    $order = Order::factory()->create(['status' => OrderStatus::PENDING]);
-
-    Livewire::test('sivarcart.orders.show', ['order' => $order->uuid])
-        ->call('move', 'processing')
-        ->assertHasNoErrors();
-
-    expect($order->fresh()->status)->toBe(OrderStatus::PROCESSING);
-});
-
-it('does not move an order without the permission of the store', function () {
+it('does not show the moves of an order to the staff that cannot move it', function () {
     staffWith(['orders.view']);
 
     $order = Order::factory()->create(['status' => OrderStatus::PENDING]);
 
-    Livewire::test('sivarcart.orders.show', ['order' => $order->uuid])
-        ->call('move', 'processing');
+    $this->get('/sivarcart/admin/orders/'.$order->uuid)
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('canUpdate', false)
+            ->has('transitions', 0),
+        );
+});
 
-    expect($order->fresh()->status)->toBe(OrderStatus::PENDING);
+it('shows the moves an order can be taken through', function () {
+    staffWith(['orders.view', 'orders.update']);
+
+    $order = Order::factory()->create(['status' => OrderStatus::PENDING]);
+
+    $this->get('/sivarcart/admin/orders/'.$order->uuid)
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('transitions', 3)
+            ->where('transitions.0.value', 'processing'),
+        );
+});
+
+it('answers 404 for an order that does not exist', function () {
+    staffWith(['*']);
+
+    $this->get('/sivarcart/admin/orders/un-pedido-que-no-existe')->assertNotFound();
 });

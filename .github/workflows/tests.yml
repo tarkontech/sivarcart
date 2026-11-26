@@ -69,3 +69,35 @@ jobs:
       - name: Test Suite (Windows)
         if: runner.os == 'Windows'
         run: vendor/bin/pest
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    name: Frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@d0c41cda0b6b7a8dea9b39a27a772c5d5084f3d # v6.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build the panel
+        run: npm run build
+
+      - name: The bundle of the panel is up to date
+        run: |
+          if [ -n "$(git status --porcelain -- resources/dist)" ]; then
+            echo "The bundle of the panel does not match its source. Run 'npm run build' and commit the result."
+            git status --porcelain -- resources/dist
+            exit 1
+          fi

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Testing\AssertableInertia as Assert;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
 use SivarcartCore\SivarcartCore\Tests\Fixtures\PlainUser;
 use Workbench\App\Models\User;
@@ -11,9 +12,13 @@ it('registers the routes of the panel', function () {
     expect(Route::has('sivarcart-core.admin.index'))->toBeTrue()
         ->and(Route::has('sivarcart-core.admin.page'))->toBeTrue()
         ->and(Route::has('sivarcart-core.admin.orders.show'))->toBeTrue()
+        ->and(Route::has('sivarcart-core.admin.orders.status'))->toBeTrue()
+        ->and(Route::has('sivarcart-core.admin.settings.update'))->toBeTrue()
         ->and(Route::has('sivarcart-core.admin.login'))->toBeTrue()
         ->and(Route::has('sivarcart-core.admin.setup'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.assets.css'))->toBeTrue();
+        ->and(Route::has('sivarcart-core.admin.assets.css'))->toBeTrue()
+        ->and(Route::has('sivarcart-core.admin.assets.js'))->toBeTrue()
+        ->and(Route::has('sivarcart-core.admin.assets.chunk'))->toBeTrue();
 });
 
 it('mounts the panel under the configured prefix', function () {
@@ -41,6 +46,19 @@ it('protects the orders of the panel with the permission of the store', function
     expect($middleware)->toContain('store.permission:orders.view');
 });
 
+it('protects the writing of the panel with the permission of the store', function () {
+    $status = Route::getRoutes()
+        ->getByName('sivarcart-core.admin.orders.status')
+        ->gatherMiddleware();
+
+    $settings = Route::getRoutes()
+        ->getByName('sivarcart-core.admin.settings.update')
+        ->gatherMiddleware();
+
+    expect($status)->toContain('store.permission:orders.update')
+        ->and($settings)->toContain('store.permission:settings.update');
+});
+
 it('sends the staff that are not signed in to the sign in screen', function () {
     $this->get('/sivarcart/admin/dashboard')
         ->assertRedirect(route('sivarcart-core.admin.login'));
@@ -49,7 +67,7 @@ it('sends the staff that are not signed in to the sign in screen', function () {
 it('shows the sign in screen of the panel', function () {
     $this->get('/sivarcart/admin/login')
         ->assertOk()
-        ->assertSee('Sign in');
+        ->assertInertia(fn (Assert $page) => $page->component('Admin/Login')->has('email'));
 });
 
 it('signs the staff of the store in with the guard of the application', function () {
@@ -84,7 +102,11 @@ it('sends a user whose model does not carry the trait of the roles to the setup 
 it('shows the setup screen of the panel', function () {
     $this->get('/sivarcart/admin/setup')
         ->assertOk()
-        ->assertSee('HasStoreRoles');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Setup')
+            ->where('model', User::class)
+            ->has('signedIn'),
+        );
 });
 
 it('refuses a page the staff of the store is not allowed to see', function () {
@@ -116,14 +138,24 @@ it('shows the navigation of the panel in the language of the application', funct
 
     $this->get('/sivarcart/admin/dashboard')
         ->assertOk()
-        ->assertSee('Orders')
-        ->assertDontSee('sivarcart-core::admin.orders.title');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Dashboard')
+            ->has('nav', 6)
+            ->where('nav.1.label', 'Orders'),
+        );
 });
 
-it('serves the stylesheet of the panel', function () {
-    $response = $this->get('/sivarcart/admin/assets/admin.css');
+it('mounts the panel in its own element', function () {
+    $user = User::factory()->create();
 
-    $response->assertOk();
+    $user->assignStoreRole(StoreRole::factory()->create(['permissions' => ['*']]));
 
-    expect($response->headers->get('content-type'))->toContain('text/css');
+    $this->actingAs($user);
+
+    $response = $this->get('/sivarcart/admin/dashboard');
+
+    expect($response->getContent())
+        ->toContain('id="sivarcart-admin"')
+        ->toContain('/sivarcart/admin/assets/admin.css')
+        ->toContain('/sivarcart/admin/assets/admin.js');
 });
