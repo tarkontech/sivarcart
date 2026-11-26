@@ -7,8 +7,10 @@ namespace SivarcartCore\SivarcartCore\Admin\Pages;
 use Illuminate\Http\Request;
 use SivarcartCore\SivarcartCore\Admin\AdminPage;
 use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
+use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
 use SivarcartCore\SivarcartCore\Models\Store;
 use SivarcartCore\SivarcartCore\Services\StoreService;
+use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
  * The data of the settings of the store.
@@ -27,16 +29,26 @@ final readonly class SettingsIndexProps implements AdminPageProps
         $store = app(StoreService::class)->current();
 
         if (! $store instanceof Store) {
-            return ['settings' => self::empty()];
+            return [
+                'settings' => self::empty(),
+                'logo' => null,
+                'favicon' => null,
+                'canUpdate' => Auth::hasStorePermission(Auth::user(), 'settings.update'),
+            ];
         }
 
-        return ['settings' => [
-            'name' => (string) ($store->name ?? ''),
-            'legal_name' => (string) ($store->legal_name ?? ''),
-            'tax_id' => (string) ($store->tax_id ?? ''),
-            'email' => (string) ($store->email ?? ''),
-            'phone' => (string) ($store->phone ?? ''),
-        ]];
+        return [
+            'settings' => [
+                'name' => (string) ($store->name ?? ''),
+                'legal_name' => (string) ($store->legal_name ?? ''),
+                'tax_id' => (string) ($store->tax_id ?? ''),
+                'email' => (string) ($store->email ?? ''),
+                'phone' => (string) ($store->phone ?? ''),
+            ],
+            'logo' => AdminPresenter::fileUrl($store->logo_path),
+            'favicon' => AdminPresenter::fileUrl($store->favicon_path),
+            'canUpdate' => Auth::hasStorePermission(Auth::user(), 'settings.update'),
+        ];
     }
 
     /**

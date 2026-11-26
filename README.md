@@ -1044,8 +1044,9 @@ cuadran, en el idioma de la aplicación.
 
 ## El panel de administración
 
-El paquete trae el **panel del personal de la tienda**: el tablero, los pedidos, el catálogo, los
-clientes, los ajustes de la tienda y los roles del personal. Vive bajo el prefijo de la sección
+El paquete trae el **panel del personal de la tienda**: el tablero, los pedidos, el catálogo (los
+productos, las categorías, las marcas, los métodos de envío y los de pago), los clientes, los
+ajustes de la tienda, los roles y el personal. Vive bajo el prefijo de la sección
 `admin` de la configuración (`sivarcart/admin` por defecto) y se puede apagar con
 `admin.enabled`.
 
@@ -1073,9 +1074,33 @@ class User extends Authenticatable
 }
 ```
 
-Cada pantalla pide el permiso que le corresponde (`orders.view`, `catalog.view`,
-`customers.view`, `settings.view`), así que el vocabulario de permisos que ya trae el paquete
-también gobierna el panel.
+### Lo que el panel escribe
+
+El panel no es de lectura: escribe el catálogo, el personal, los pedidos y los ajustes de la
+tienda. Cada escritura pide su propio permiso, y el permiso se pide **en el servidor**: el
+panel esconde los botones al personal que no los tiene, pero la ruta los negaría igual.
+
+| Permiso | Qué deja escribir |
+|---|---|
+| `catalog.update` | Los productos y sus variantes, las categorías, las marcas, los métodos de envío y los de pago |
+| `orders.update` | Mover un pedido, reembolsarlo y registrar su devolución |
+| `settings.update` | Los ajustes de la tienda, su logo y su favicon |
+| `roles.update` | Los permisos que da cada rol de la tienda |
+| `staff.update` | Dar de alta al personal y asignarle o quitarle sus roles |
+
+Leer es otra cosa: `catalog.view`, `orders.view`, `customers.view`, `settings.view`, `roles.view`
+y `staff.view` dejan ver. El vocabulario completo está en
+`SivarcartCore\SivarcartCore\Admin\AdminPermissions`, y el seeder de los roles del paquete deja
+`catalog.*`, `orders.*` y `customers.*` al administrador y `catalog.view`, `orders.view`,
+`orders.update` y `customers.view` al empleado.
+
+> **Dar de baja al personal no borra al usuario de tu aplicación.** El panel le quita los roles
+> de la tienda, así que deja de ver el panel, y tu aplicación conserva el usuario. Borrar
+> usuarios es cosa de tu aplicación, no del paquete.
+
+Los roles de la tienda pueden llevar un comodín (`*` para todo, `catalog.*` para el grupo del
+catálogo). El panel los muestra como tal y los conserva cuando el personal no los tocó, así que
+guardar un rol no le quita en silencio un permiso que el comodín daba.
 
 ### Los cuatro niveles de sobreescritura
 
@@ -1150,12 +1175,17 @@ Los tokens viajan en la hoja de estilo del paquete y los cambia la configuració
 ],
 ```
 
-La hoja de estilo del paquete se sirve en `/sivarcart/admin/assets/admin.css`. Si tu aplicación
-tiene sus propias hojas, se cargan después con `admin.stylesheets`, así que ganan.
+La hoja de estilo del paquete se sirve en `/sivarcart/admin/assets/{version}/admin.css`. Si tu
+aplicación tiene sus propias hojas, se cargan después con `admin.stylesheets`, así que ganan.
 
 El panel **no pide Node a nadie**: el bundle viaja con el paquete ya compilado y el propio
 paquete lo sirve. La dirección de cada archivo lleva el hash de su contenido, así que el
 navegador nunca se queda con un bundle que ya no es el que trae el paquete.
+
+> **La versión es una carpeta de la dirección y no una consulta.** El bundle está partido en
+> piezas y las piezas se piden entre ellas con direcciones relativas, así que la carpeta de la
+> versión viaja con ellas: el navegador pide el bundle entero y nunca mezcla el bundle de una
+> versión con el de otra.
 
 #### Nivel 2 — El bundle
 

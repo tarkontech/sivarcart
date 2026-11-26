@@ -10,6 +10,7 @@ use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
 use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
 use SivarcartCore\SivarcartCore\Models\Product;
 use SivarcartCore\SivarcartCore\Services\Admin\ProductService;
+use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
  * The data of the catalog of the panel.
@@ -37,6 +38,7 @@ final readonly class ProductsIndexProps implements AdminPageProps
                 fn (Product $product): array => AdminPresenter::productListItem($product),
             ),
             'filters' => ['q' => $search],
+            'canUpdate' => Auth::hasStorePermission(Auth::user(), 'catalog.update'),
         ];
     }
 }

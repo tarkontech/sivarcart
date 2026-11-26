@@ -5,8 +5,9 @@
 ### El panel de administración entra en el núcleo
 
 - **el paquete trae el panel del personal de la tienda**: el tablero, los pedidos (lista y
-  detalle, con el ciclo de vida de la orden), el catálogo, los clientes, los ajustes de la
-  tienda y los roles. Vive bajo `sivarcart/admin` y se apaga con `admin.enabled`
+  detalle, con el ciclo de vida de la orden), el catálogo (los productos, las categorías, las
+  marcas, los métodos de envío y los de pago), los clientes, los ajustes de la tienda, los
+  roles y el personal. Vive bajo `sivarcart/admin` y se apaga con `admin.enabled`
 - el panel **no autentica a nadie**: usa los usuarios, el guard y la sesión de la
   aplicación, así que el modelo del usuario tiene que llevar el trait `HasStoreRoles`. Sin
   él, el panel abre su pantalla de instalación y explica qué hacer
@@ -39,11 +40,41 @@
 - **los assets del panel se versionan con el hash de su contenido**: la dirección
   de un archivo solo cambia cuando el archivo cambia, así que el navegador nunca
   se queda con un bundle que ya no es el que trae el paquete
+- **la versión de los assets es una carpeta de la dirección** (`/assets/{version}/admin.js`),
+  y no una consulta: el bundle está partido en piezas y las piezas se piden entre ellas con
+  direcciones relativas, así que la carpeta viaja con ellas. Con la versión de consulta el
+  navegador servía de su caché el `admin.js` de la versión anterior y el panel mezclaba dos
+  bundles (dos copias de React y una pantalla en blanco)
 - **el dinero del panel se formatea con la etiqueta del idioma que entiende
   `Intl`**: Laravel escribe el idioma con guion bajo (`es_SV`) y el estándar de
   las etiquetas de idioma usa el guion (`es-SV`)
 - **el formulario de los ajustes de la tienda envía un `PUT`**, que es el método
   de la ruta que los guarda
+
+### El panel de administración escribe
+
+- **el panel ya no es de lectura**: escribe el catálogo (los productos y sus variantes, las
+  categorías, las marcas, los métodos de envío y los de pago), el personal, los pedidos y los
+  ajustes de la tienda
+- **leer y escribir son permisos distintos**: `catalog.update` para el catálogo, `orders.update`
+  para los pedidos, `settings.update` para los ajustes y sus imágenes, `roles.update` para los
+  roles y `staff.update` para el personal. El panel esconde los botones al personal que no los
+  tiene, pero la ruta los negaría igual
+- **la pantalla del producto escribe el producto y sus variantes juntas** (precio, sku,
+  existencias, umbral de existencias y la variante por defecto), lo publica, lo archiva y lo
+  saca del catálogo. Las categorías y la marca se escriben en la misma pantalla
+- **una categoría no puede quedar dentro de sí misma**, y el servicio lo niega
+- **las credenciales de un método de pago nunca vuelven al navegador**: el panel ve las claves
+  y la bolsa vacía, y las vuelve a escribir cuando cambian
+- **dar de baja al personal no borra al usuario de la aplicación**: le quita los roles de la
+  tienda, así que deja de ver el panel. Los usuarios son de la aplicación
+- **los roles de la tienda conservan sus comodines** (`*`, `catalog.*`) cuando el personal no
+  los tocó, así que guardar un rol no le quita en silencio un permiso que el comodín daba
+- **la pantalla del pedido reembolsa y registra la devolución**: el reembolso lo escribe
+  `OrderService::refund()` y la devolución `OrderService::markReturned()`, así que el stock y
+  los pagos se mueven como deben
+- **los ajustes de la tienda suben su logo y su favicon**, y los acepta el `MediaService`, así
+  que un archivo que la tienda no acepta no deja nada detrás
 
 ### El pago de la orden sigue a su pago
 

@@ -44,7 +44,29 @@ final class OrderController
             | does not even offer them.
             */
             'transitions' => $canUpdate ? $this->transitions($model) : [],
+
+            /*
+            | A refund is not a move: it gives the money back, so it takes an
+            | amount, and the panel is told how much of the payment is left.
+            */
+            'refundable' => $this->refundable($model),
+            'canRefund' => $canUpdate && $this->refundable($model) > 0.0,
+            'canReturn' => $canUpdate && $model->status->canTransitionTo(OrderStatus::RETURNED),
         ]);
+    }
+
+    /**
+     * How much of the payment of the order can still be refunded.
+     */
+    private function refundable(Order $order): float
+    {
+        $payment = $order->payments->first();
+
+        if ($payment === null) {
+            return 0.0;
+        }
+
+        return round((float) $payment->amount - (float) $payment->refunded_amount, 2);
     }
 
     /**

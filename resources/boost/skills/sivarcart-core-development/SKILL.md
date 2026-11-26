@@ -98,9 +98,10 @@ Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): 
 ### 4. Use the administration panel of the package
 
 - the package brings the **administration panel of the staff**: the dashboard, the orders, the
-  catalog, the customers, the settings of the store and the roles of the staff. It is mounted
-  under `sivarcart/admin` (the `admin.prefix` of the configuration) and it is turned off with
-  `admin.enabled`
+  catalog (the products, the categories, the brands, the shipping methods and the payment
+  methods), the customers, the settings of the store, the roles of the staff and the staff
+  itself. It is mounted under `sivarcart/admin` (the `admin.prefix` of the configuration) and it
+  is turned off with `admin.enabled`
 - the panel **does not authenticate anybody**: it uses the users, the guard and the session of
   the application, so the `HasStoreRoles` trait of the section above is required. Without it the
   panel shows its setup screen
@@ -108,6 +109,12 @@ Route::middleware(['auth', 'store.permission:orders.view'])->group(function (): 
   `catalog.view`, `customers.view`, `settings.view`), and the writing goes through the routes
   of the panel: moving an order asks `orders.update` and saving the settings asks
   `settings.update`
+- **reading and writing are different permissions**: `catalog.update` writes the catalog,
+  `orders.update` moves and refunds the orders, `settings.update` writes the settings and their
+  images, `roles.update` writes the permissions of the roles and `staff.update` writes the staff.
+  The panel hides the buttons the staff cannot use, and the routes refuse them anyway
+- **taking a member of the staff off does not delete the user of the application**: it takes the
+  roles of the store away, so they stop seeing the panel. The users belong to the application
 - the panel is an **Inertia and React** application: its screens are components of React written
   in TypeScript, and it has its own root view and its own middleware, so an application that
   already has an Inertia of its own keeps it untouched

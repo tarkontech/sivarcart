@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
+use SivarcartCore\SivarcartCore\Admin\AdminBundle;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
 use SivarcartCore\SivarcartCore\Tests\Fixtures\PlainUser;
 use Workbench\App\Models\User;
@@ -140,7 +141,7 @@ it('shows the navigation of the panel in the language of the application', funct
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Admin/Dashboard')
-            ->has('nav', 6)
+            ->has('nav', 11)
             ->where('nav.1.label', 'Orders'),
         );
 });
@@ -156,6 +157,6 @@ it('mounts the panel in its own element', function () {
 
     expect($response->getContent())
         ->toContain('id="sivarcart-admin"')
-        ->toContain('/sivarcart/admin/assets/admin.css')
-        ->toContain('/sivarcart/admin/assets/admin.js');
+        ->toContain('/sivarcart/admin/assets/'.AdminBundle::version().'/admin.css')
+        ->toContain('/sivarcart/admin/assets/'.AdminBundle::version().'/admin.js');
 });

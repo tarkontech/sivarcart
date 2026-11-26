@@ -1,6 +1,7 @@
 import { Head, useForm, usePage } from '@inertiajs/react'
 import type { FormEvent } from 'react'
 
+import { ImageUpload } from '@/components/ImageUpload'
 import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +17,17 @@ import type { PanelSharedProps, StoreSettings } from '@/types'
  * ways it reaches its buyers. The settings are written by the service of the
  * store, the same one the rest of the package reads.
  */
-export default function SettingsIndex({ settings }: { settings: StoreSettings }) {
+export default function SettingsIndex({
+    settings,
+    logo,
+    favicon,
+    canUpdate,
+}: {
+    settings: StoreSettings
+    logo: string | null
+    favicon: string | null
+    canUpdate: boolean
+}) {
     const { nav, text } = usePage<PanelSharedProps>().props
 
     const { data, setData, put, processing, errors } = useForm({
@@ -124,6 +135,30 @@ export default function SettingsIndex({ settings }: { settings: StoreSettings })
                     </form>
                 </CardContent>
             </Card>
+
+            {canUpdate ? (
+                <Card className="max-w-2xl">
+                    <CardHeader>
+                        <CardTitle>{text.settings.logo}</CardTitle>
+                    </CardHeader>
+
+                    <CardContent className="flex flex-col gap-6">
+                        <ImageUpload
+                            name="logo"
+                            label={text.settings.logo}
+                            hint={text.settings.logo_hint}
+                            url={logo}
+                        />
+
+                        <ImageUpload
+                            name="favicon"
+                            label={text.settings.favicon}
+                            hint={text.settings.favicon_hint}
+                            url={favicon}
+                        />
+                    </CardContent>
+                </Card>
+            ) : null}
         </PanelLayout>
     )
 }

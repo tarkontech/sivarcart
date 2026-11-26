@@ -7,15 +7,18 @@ namespace SivarcartCore\SivarcartCore\Admin\Pages;
 use Illuminate\Http\Request;
 use SivarcartCore\SivarcartCore\Admin\AdminPage;
 use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
+use SivarcartCore\SivarcartCore\Admin\AdminPermissions;
 use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use SivarcartCore\SivarcartCore\Services\Admin\RoleService;
+use SivarcartCore\SivarcartCore\Support\Auth;
 
 /**
  * The data of the roles of the staff of the store.
  *
  * The roles come from the seeder of the package, and the permissions they
  * grant are the ones the middleware of the permissions and the routes of the
- * panel check.
+ * panel check. The panel offers the whole vocabulary of the store, so the
+ * staff can decide what every role grants.
  */
 final readonly class RolesIndexProps implements AdminPageProps
 {
@@ -24,17 +27,16 @@ final readonly class RolesIndexProps implements AdminPageProps
      */
     public function props(Request $request, AdminPage $page): array
     {
-        $roles = StoreRole::query()
-            ->withCount('users')
-            ->orderBy('name')
-            ->get();
-
         $presented = [];
 
-        foreach ($roles as $role) {
+        foreach (app(RoleService::class)->all() as $role) {
             $presented[] = AdminPresenter::role($role);
         }
 
-        return ['roles' => $presented];
+        return [
+            'roles' => $presented,
+            'permissions' => AdminPermissions::all(),
+            'canUpdate' => Auth::hasStorePermission(Auth::user(), 'roles.update'),
+        ];
     }
 }

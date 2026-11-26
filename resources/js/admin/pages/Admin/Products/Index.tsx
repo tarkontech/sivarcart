@@ -1,6 +1,8 @@
 import { Head, usePage } from '@inertiajs/react'
 
+import { DeleteButton } from '@/components/DeleteButton'
 import { EmptyState } from '@/components/EmptyState'
+import { LinkButton } from '@/components/LinkButton'
 import { PageHeader } from '@/components/PageHeader'
 import { Pagination } from '@/components/Pagination'
 import { SearchInput } from '@/components/SearchInput'
@@ -27,17 +29,30 @@ import type { Paginated, PanelSharedProps, ProductListItem } from '@/types'
 export default function ProductsIndex({
     products,
     filters,
+    canUpdate,
 }: {
     products: Paginated<ProductListItem>
     filters: { q: string }
+    canUpdate: boolean
 }) {
-    const { text, locale } = usePage<PanelSharedProps>().props
+    const { nav, text, locale } = usePage<PanelSharedProps>().props
+
+    const base = nav.find((item) => item.key === 'products')?.url ?? window.location.pathname
 
     return (
         <PanelLayout>
             <Head title={text.products.title} />
 
-            <PageHeader title={text.products.title} />
+            <PageHeader
+                title={text.products.title}
+                actions={
+                    canUpdate ? (
+                        <LinkButton href={`${base}/create`} size="sm">
+                            {text.products.new}
+                        </LinkButton>
+                    ) : null
+                }
+            />
 
             <div className="min-w-64 max-w-md">
                 <SearchInput
@@ -60,13 +75,29 @@ export default function ProductsIndex({
                                     <TableHead>{text.products.price}</TableHead>
                                     <TableHead>{text.products.stock}</TableHead>
                                     <TableHead>{text.products.status}</TableHead>
+                                    {canUpdate ? (
+                                        <TableHead>{text.products.actions}</TableHead>
+                                    ) : null}
                                 </TableRow>
                             </TableHeader>
 
                             <TableBody>
                                 {products.data.map((product) => (
                                     <TableRow key={product.uuid}>
-                                        <TableCell>{product.name}</TableCell>
+                                        <TableCell>
+                                            {canUpdate ? (
+                                                <LinkButton
+                                                    href={`${base}/${product.uuid}/edit`}
+                                                    variant="link"
+                                                    size="sm"
+                                                    className="h-auto p-0"
+                                                >
+                                                    {product.name}
+                                                </LinkButton>
+                                            ) : (
+                                                product.name
+                                            )}
+                                        </TableCell>
                                         <TableCell>{product.sku ?? '—'}</TableCell>
                                         <TableCell>
                                             {moneyRange(product.price_min, product.price_max, locale)}
@@ -75,6 +106,25 @@ export default function ProductsIndex({
                                         <TableCell>
                                             <StatusBadge state={product.status} />
                                         </TableCell>
+                                        {canUpdate ? (
+                                            <TableCell>
+                                                <div className="flex items-center gap-1">
+                                                    <LinkButton
+                                                        href={`${base}/${product.uuid}/edit`}
+                                                        variant="ghost"
+                                                        size="sm"
+                                                    >
+                                                        {text.products.edit}
+                                                    </LinkButton>
+
+                                                    <DeleteButton
+                                                        url={`${base}/${product.uuid}`}
+                                                        label={text.products.delete_confirm}
+                                                        confirm={text.products.delete_confirm}
+                                                    />
+                                                </div>
+                                            </TableCell>
+                                        ) : null}
                                     </TableRow>
                                 ))}
                             </TableBody>

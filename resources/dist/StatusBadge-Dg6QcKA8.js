@@ -1,0 +1,1 @@
+import{t as e}from"./badge-n27k2s8N.js";import{t}from"./admin.js";var n=t();function r({state:t}){return(0,n.jsx)(e,{tone:t.tone,children:t.label})}export{r as t};

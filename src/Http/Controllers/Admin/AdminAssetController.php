@@ -14,13 +14,19 @@ use Symfony\Component\HttpFoundation\Response;
  * the version of the panel the merchant installed. The merchant that wants to
  * change it publishes the source of the panel and compiles its own bundle,
  * and then the package stops serving its own.
+ *
+ * The assets live in a folder with the version of the bundle. The pieces of
+ * the bundle ask for each other with a relative address, so the version
+ * travels with them: a browser that kept the bundle of a previous version
+ * never mixes it with the bundle of the one that is installed, and a mixed
+ * bundle is a panel that does not work.
  */
 final class AdminAssetController
 {
     /**
      * Answer the stylesheet of the panel.
      */
-    public function css(Request $request): Response
+    public function css(Request $request, string $version): Response
     {
         return $this->serve('admin.css', 'text/css; charset=utf-8');
     }
@@ -28,7 +34,7 @@ final class AdminAssetController
     /**
      * Answer the script of the panel.
      */
-    public function js(Request $request): Response
+    public function js(Request $request, string $version): Response
     {
         return $this->serve('admin.js', 'text/javascript; charset=utf-8');
     }
@@ -41,7 +47,7 @@ final class AdminAssetController
      * is answered is always one of the files of the bundle and never one of
      * the files of the application.
      */
-    public function chunk(Request $request, string $chunk): Response
+    public function chunk(Request $request, string $version, string $chunk): Response
     {
         if (preg_match('/^[A-Za-z0-9_.-]+\.(js|css)$/', $chunk) !== 1) {
             abort(404, 'El archivo del panel no existe.');

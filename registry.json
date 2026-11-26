@@ -204,6 +204,46 @@
             ]
         },
         {
+            "name": "checkbox",
+            "type": "registry:ui",
+            "title": "Checkbox",
+            "description": "El componente checkbox del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/checkbox.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/checkbox.tsx"
+                }
+            ]
+        },
+        {
+            "name": "textarea",
+            "type": "registry:ui",
+            "title": "Textarea",
+            "description": "El componente textarea del panel de SivarCart Core, con tokens semanticos.",
+            "dependencies": [
+                "@base-ui/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/admin/components/ui/textarea.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ui/textarea.tsx"
+                }
+            ]
+        },
+        {
             "name": "admin",
             "type": "registry:base",
             "title": "El panel de administracion de SivarCart Core",
@@ -436,6 +476,76 @@
                     "path": "resources/css/admin.css",
                     "type": "registry:theme",
                     "target": "resources/css/sivarcart.css"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Brands/Form.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Brands/Form.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Brands/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Brands/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Categories/Form.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Categories/Form.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Categories/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Categories/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/PaymentMethods/Form.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/PaymentMethods/Form.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/PaymentMethods/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/PaymentMethods/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Products/Form.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Products/Form.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/ShippingMethods/Form.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/ShippingMethods/Form.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/ShippingMethods/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/ShippingMethods/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/pages/Admin/Staff/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/pages/Admin/Staff/Index.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/DeleteButton.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/DeleteButton.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/Form.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/Form.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/ImageUpload.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/ImageUpload.tsx"
+                },
+                {
+                    "path": "resources/js/admin/components/LinkButton.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/components/LinkButton.tsx"
                 }
             ]
         }

@@ -17,12 +17,17 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
 use SivarcartCore\SivarcartCore\Admin\AdminPanel;
+use SivarcartCore\SivarcartCore\Admin\Pages\BrandsIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\CategoriesIndexProps;
 use SivarcartCore\SivarcartCore\Admin\Pages\CustomersIndexProps;
 use SivarcartCore\SivarcartCore\Admin\Pages\DashboardProps;
 use SivarcartCore\SivarcartCore\Admin\Pages\OrdersIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\PaymentMethodsIndexProps;
 use SivarcartCore\SivarcartCore\Admin\Pages\ProductsIndexProps;
 use SivarcartCore\SivarcartCore\Admin\Pages\RolesIndexProps;
 use SivarcartCore\SivarcartCore\Admin\Pages\SettingsIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\ShippingMethodsIndexProps;
+use SivarcartCore\SivarcartCore\Admin\Pages\StaffIndexProps;
 use SivarcartCore\SivarcartCore\Console\Commands\CreateAdminCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
 use SivarcartCore\SivarcartCore\Console\Commands\RestockCommand;
@@ -459,6 +464,42 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         );
 
         $panel->page(
+            key: 'categories',
+            label: 'sivarcart-core::admin.categories.title',
+            component: 'Admin/Categories/Index',
+            props: new CategoriesIndexProps,
+            permission: 'catalog.view',
+            order: 31,
+        );
+
+        $panel->page(
+            key: 'brands',
+            label: 'sivarcart-core::admin.brands.title',
+            component: 'Admin/Brands/Index',
+            props: new BrandsIndexProps,
+            permission: 'catalog.view',
+            order: 32,
+        );
+
+        $panel->page(
+            key: 'shipping-methods',
+            label: 'sivarcart-core::admin.shipping_methods.title',
+            component: 'Admin/ShippingMethods/Index',
+            props: new ShippingMethodsIndexProps,
+            permission: 'catalog.view',
+            order: 33,
+        );
+
+        $panel->page(
+            key: 'payment-methods',
+            label: 'sivarcart-core::admin.payment_methods.title',
+            component: 'Admin/PaymentMethods/Index',
+            props: new PaymentMethodsIndexProps,
+            permission: 'catalog.view',
+            order: 34,
+        );
+
+        $panel->page(
             key: 'customers',
             label: 'sivarcart-core::admin.customers.title',
             component: 'Admin/Customers/Index',
@@ -483,6 +524,15 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             props: new RolesIndexProps,
             permission: 'roles.view',
             order: 60,
+        );
+
+        $panel->page(
+            key: 'staff',
+            label: 'sivarcart-core::admin.staff.title',
+            component: 'Admin/Staff/Index',
+            props: new StaffIndexProps,
+            permission: 'staff.view',
+            order: 70,
         );
     }
 

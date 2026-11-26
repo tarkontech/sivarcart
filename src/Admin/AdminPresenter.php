@@ -5,11 +5,20 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore\Admin;
 
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Storage;
+use SivarcartCore\SivarcartCore\Models\Brand;
+use SivarcartCore\SivarcartCore\Models\Category;
 use SivarcartCore\SivarcartCore\Models\Customer;
 use SivarcartCore\SivarcartCore\Models\Order;
+use SivarcartCore\SivarcartCore\Models\PaymentMethod;
 use SivarcartCore\SivarcartCore\Models\Product;
+use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use SivarcartCore\SivarcartCore\Models\ShippingMethod;
 use SivarcartCore\SivarcartCore\Models\StoreRole;
+use SivarcartCore\SivarcartCore\Support\Media;
+use Throwable;
 
 /**
  * The shape the panel shows.
@@ -133,6 +142,264 @@ final class AdminPresenter
     }
 
     /**
+     * The product the form of the panel writes.
+     *
+     * A product that does not exist yet is an empty form, so the screen of
+     * "new product" and the screen of "edit product" are the same one.
+     *
+     * @return array{uuid: string|null, name: string, slug: string, short_description: string, description: string, status: string, type: string, is_featured: bool, is_virtual: bool, brand_id: int|null, weight: float|null, categories: list<int>, variants: list<array{uuid: string|null, name: string, sku: string, barcode: string, price: string, compare_at_price: string, cost_price: string, stock_quantity: int, low_stock_threshold: int|null, is_default: bool, is_active: bool}>}
+     */
+    public static function productForm(?Product $product): array
+    {
+        if (! $product instanceof Product) {
+            return [
+                'uuid' => null,
+                'name' => '',
+                'slug' => '',
+                'short_description' => '',
+                'description' => '',
+                'status' => 'draft',
+                'type' => 'simple',
+                'is_featured' => false,
+                'is_virtual' => false,
+                'brand_id' => null,
+                'weight' => null,
+                'categories' => [],
+                'variants' => [self::emptyVariant()],
+            ];
+        }
+
+        $categories = [];
+
+        foreach ($product->categories as $category) {
+            $categories[] = (int) $category->getKey();
+        }
+
+        $variants = [];
+
+        foreach ($product->variants->sortBy('position') as $variant) {
+            $variants[] = self::variant($variant);
+        }
+
+        return [
+            'uuid' => (string) $product->uuid,
+            'name' => (string) $product->name,
+            'slug' => (string) $product->slug,
+            'short_description' => (string) ($product->short_description ?? ''),
+            'description' => (string) ($product->description ?? ''),
+            'status' => $product->status->value,
+            'type' => $product->type->value,
+            'is_featured' => (bool) $product->is_featured,
+            'is_virtual' => (bool) $product->is_virtual,
+            'brand_id' => $product->brand_id === null ? null : (int) $product->brand_id,
+            'weight' => $product->weight === null ? null : (float) $product->weight,
+            'categories' => $categories,
+            'variants' => $variants,
+        ];
+    }
+
+    /**
+     * One variant of the form of the panel.
+     *
+     * @return array{uuid: string|null, name: string, sku: string, barcode: string, price: string, compare_at_price: string, cost_price: string, stock_quantity: int, low_stock_threshold: int|null, is_default: bool, is_active: bool}
+     */
+    public static function variant(ProductVariant $variant): array
+    {
+        return [
+            'uuid' => (string) $variant->uuid,
+            'name' => (string) ($variant->name ?? ''),
+            'sku' => (string) ($variant->sku ?? ''),
+            'barcode' => (string) ($variant->barcode ?? ''),
+            'price' => (string) $variant->price,
+            'compare_at_price' => (string) ($variant->compare_at_price ?? ''),
+            'cost_price' => (string) ($variant->cost_price ?? ''),
+            'stock_quantity' => (int) $variant->stock_quantity,
+            'low_stock_threshold' => $variant->low_stock_threshold === null ? null : (int) $variant->low_stock_threshold,
+            'is_default' => (bool) $variant->is_default,
+            'is_active' => (bool) $variant->is_active,
+        ];
+    }
+
+    /**
+     * The variant of a product that does not exist yet.
+     *
+     * A product always owns a sellable unit, so the form of a new product
+     * starts with one.
+     *
+     * @return array{uuid: string|null, name: string, sku: string, barcode: string, price: string, compare_at_price: string, cost_price: string, stock_quantity: int, low_stock_threshold: int|null, is_default: bool, is_active: bool}
+     */
+    public static function emptyVariant(): array
+    {
+        return [
+            'uuid' => null,
+            'name' => '',
+            'sku' => '',
+            'barcode' => '',
+            'price' => '0',
+            'compare_at_price' => '',
+            'cost_price' => '',
+            'stock_quantity' => 0,
+            'low_stock_threshold' => null,
+            'is_default' => true,
+            'is_active' => true,
+        ];
+    }
+
+    /**
+     * One category of the catalog of the panel.
+     *
+     * @return array{uuid: string, id: int, name: string, slug: string, description: string, parent_id: int|null, position: int, is_active: bool, is_featured: bool, products: int}
+     */
+    public static function category(Category $category): array
+    {
+        return [
+            'uuid' => (string) $category->uuid,
+            'id' => (int) $category->getKey(),
+            'name' => (string) $category->name,
+            'slug' => (string) $category->slug,
+            'description' => (string) ($category->description ?? ''),
+            'parent_id' => $category->parent_id === null ? null : (int) $category->parent_id,
+            'position' => (int) $category->position,
+            'is_active' => (bool) $category->is_active,
+            'is_featured' => (bool) $category->is_featured,
+            'products' => (int) ($category->products_count ?? 0),
+        ];
+    }
+
+    /**
+     * One brand of the catalog of the panel.
+     *
+     * @return array{id: int, name: string, slug: string, description: string, position: int, is_active: bool, products: int, logo: string|null}
+     */
+    public static function brand(Brand $brand): array
+    {
+        return [
+            'id' => (int) $brand->getKey(),
+            'name' => (string) $brand->name,
+            'slug' => (string) $brand->slug,
+            'description' => (string) ($brand->description ?? ''),
+            'position' => (int) $brand->position,
+            'is_active' => (bool) $brand->is_active,
+            'products' => (int) ($brand->products_count ?? 0),
+            'logo' => self::fileUrl($brand->logo_path),
+        ];
+    }
+
+    /**
+     * One shipping method of the panel.
+     *
+     * @return array{uuid: string, code: string, name: string, type: string, type_label: string, price: float, min_order_amount: float|null, max_order_amount: float|null, estimated_days: int|null, instructions: string, position: int, is_active: bool}
+     */
+    public static function shippingMethod(ShippingMethod $method): array
+    {
+        return [
+            'uuid' => (string) $method->uuid,
+            'code' => (string) $method->code,
+            'name' => (string) $method->name,
+            'type' => $method->type->value,
+            'type_label' => $method->type->label(),
+            'price' => (float) $method->price,
+            'min_order_amount' => $method->min_order_amount === null ? null : (float) $method->min_order_amount,
+            'max_order_amount' => $method->max_order_amount === null ? null : (float) $method->max_order_amount,
+            'estimated_days' => $method->estimated_days === null ? null : (int) $method->estimated_days,
+            'instructions' => (string) ($method->instructions ?? ''),
+            'position' => (int) $method->position,
+            'is_active' => (bool) $method->is_active,
+        ];
+    }
+
+    /**
+     * One payment method of the panel.
+     *
+     * The credentials never travel: the panel is told whether they are there
+     * and not what they are.
+     *
+     * @return array{uuid: string, code: string, name: string, type: string, type_label: string, driver: string|null, instructions: string, icon: string|null, position: int, is_active: bool, has_credentials: bool}
+     */
+    public static function paymentMethod(PaymentMethod $method): array
+    {
+        $credentials = $method->credentials;
+
+        return [
+            'uuid' => (string) $method->uuid,
+            'code' => (string) $method->code,
+            'name' => (string) $method->name,
+            'type' => $method->type->value,
+            'type_label' => $method->type->label(),
+            'driver' => $method->driver === null ? null : (string) $method->driver,
+            'instructions' => (string) ($method->instructions ?? ''),
+            'icon' => $method->icon === null ? null : (string) $method->icon,
+            'position' => (int) $method->position,
+            'is_active' => (bool) $method->is_active,
+            'has_credentials' => is_array($credentials) && $credentials !== [],
+        ];
+    }
+
+    /**
+     * The credentials of a payment method, as the form carries them.
+     *
+     * The values are not sent: the staff only sees the keys, and writes the
+     * values again when they want to change them.
+     *
+     * @return list<array{key: string, value: string}>
+     */
+    public static function paymentCredentials(PaymentMethod $method): array
+    {
+        $credentials = $method->credentials;
+
+        if (! is_array($credentials)) {
+            return [];
+        }
+
+        $pairs = [];
+
+        foreach ($credentials as $key => $value) {
+            if (! is_string($key)) {
+                continue;
+            }
+
+            $pairs[] = ['key' => $key, 'value' => ''];
+        }
+
+        return $pairs;
+    }
+
+    /**
+     * One member of the staff of the store.
+     *
+     * @param  list<string>  $roles
+     * @return array{id: int, name: string|null, email: string|null, roles: list<string>}
+     */
+    public static function staffMember(Model $user, array $roles): array
+    {
+        $name = $user->getAttribute('name');
+        $email = $user->getAttribute('email');
+
+        return [
+            'id' => (int) $user->getKey(),
+            'name' => is_string($name) ? $name : null,
+            'email' => is_string($email) ? $email : null,
+            'roles' => $roles,
+        ];
+    }
+
+    /**
+     * The address of a file of the store.
+     */
+    public static function fileUrl(?string $path): ?string
+    {
+        if ($path === null || $path === '') {
+            return null;
+        }
+
+        try {
+            return Storage::disk(Media::disk())->url($path);
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
      * One buyer of the panel.
      *
      * @return array{email: string, name: string, phone: string, orders: int}
@@ -152,7 +419,12 @@ final class AdminPresenter
     /**
      * One role of the staff of the store.
      *
-     * @return array{name: string, slug: string, description: string, permissions: list<string>, staff: int}
+     * The permissions of the vocabulary that the role grants are sent apart
+     * from the ones it holds: a role that holds "*" grants everything, and
+     * the panel has to show that without pretending the role lists them one
+     * by one.
+     *
+     * @return array{name: string, slug: string, description: string, permissions: list<string>, granted: list<string>, staff: int}
      */
     public static function role(StoreRole $role): array
     {
@@ -164,11 +436,20 @@ final class AdminPresenter
             }
         }
 
+        $granted = [];
+
+        foreach (AdminPermissions::all() as $permission) {
+            if ($role->hasPermission($permission)) {
+                $granted[] = $permission;
+            }
+        }
+
         return [
             'name' => (string) $role->name,
             'slug' => (string) $role->slug,
             'description' => (string) ($role->description ?? ''),
             'permissions' => $permissions,
+            'granted' => $granted,
             'staff' => (int) ($role->users_count ?? 0),
         ];
     }

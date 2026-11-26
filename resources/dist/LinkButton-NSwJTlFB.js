@@ -1,0 +1,1 @@
+import{r as e,t}from"./admin.js";import{n}from"./button-BpbXsGrR.js";import{r}from"./Flash-D9OpvhnF.js";var i=t();function a({href:t,variant:a=`default`,size:o=`default`,className:s,children:c}){return(0,i.jsx)(e,{href:t,className:r(n({variant:a,size:o}),s),children:c})}export{a as t};

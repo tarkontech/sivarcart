@@ -1,10 +1,13 @@
 import { Head, Link, router, usePage } from '@inertiajs/react'
 import { useState } from 'react'
 
+import { Field } from '@/components/Form'
 import { PageHeader } from '@/components/PageHeader'
 import { StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { PanelLayout } from '@/layouts/PanelLayout'
 import { money, moneyWithCurrency } from '@/lib/format'
 import type { OrderDetail, PanelSharedProps, State } from '@/types'
@@ -20,13 +23,22 @@ export default function OrderShow({
     order,
     canUpdate,
     transitions,
+    refundable,
+    canRefund,
+    canReturn,
 }: {
     order: OrderDetail
     canUpdate: boolean
     transitions: State[]
+    refundable: number
+    canRefund: boolean
+    canReturn: boolean
 }) {
     const { nav, text, locale } = usePage<PanelSharedProps>().props
     const [pending, setPending] = useState<string | null>(null)
+    const [amount, setAmount] = useState('')
+    const [reason, setReason] = useState('')
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     const back = nav.find((item) => item.key === 'orders')?.url
 
@@ -38,6 +50,40 @@ export default function OrderShow({
             { status },
             {
                 preserveScroll: true,
+                onFinish: () => setPending(null),
+            },
+        )
+    }
+
+    /*
+    | A refund gives the money back and a return says that the units came
+    | back to the store, so the two are two different writes.
+    */
+    const refund = () => {
+        setPending('refund')
+        setErrors({})
+
+        router.post(
+            `${window.location.pathname}/refund`,
+            { amount, reason },
+            {
+                preserveScroll: true,
+                onError: (received) => setErrors(received as Record<string, string>),
+                onFinish: () => setPending(null),
+            },
+        )
+    }
+
+    const markReturned = () => {
+        setPending('return')
+        setErrors({})
+
+        router.post(
+            `${window.location.pathname}/return`,
+            { reason },
+            {
+                preserveScroll: true,
+                onError: (received) => setErrors(received as Record<string, string>),
                 onFinish: () => setPending(null),
             },
         )
@@ -180,6 +226,74 @@ export default function OrderShow({
                                         {transition.label}
                                     </Button>
                                 ))}
+                            </CardContent>
+                        </Card>
+                    ) : null}
+
+                    {canRefund || canReturn ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>{text.orders.refund}</CardTitle>
+                            </CardHeader>
+
+                            <CardContent className="flex flex-col gap-4">
+                                {canRefund ? (
+                                    <Field
+                                        label={text.orders.refund_amount}
+                                        htmlFor="refund-amount"
+                                        error={errors.amount}
+                                        hint={text.orders.refund_max.replace(
+                                            ':amount',
+                                            money(refundable, locale),
+                                        )}
+                                    >
+                                        <Input
+                                            id="refund-amount"
+                                            type="number"
+                                            step="0.01"
+                                            min="0.01"
+                                            max={refundable}
+                                            value={amount}
+                                            onChange={(event) => setAmount(event.target.value)}
+                                        />
+                                    </Field>
+                                ) : null}
+
+                                <Field
+                                    label={text.orders.refund_reason}
+                                    htmlFor="refund-reason"
+                                    error={errors.reason}
+                                >
+                                    <Textarea
+                                        id="refund-reason"
+                                        value={reason}
+                                        onChange={(event) => setReason(event.target.value)}
+                                    />
+                                </Field>
+
+                                <div className="flex flex-wrap gap-2">
+                                    {canRefund ? (
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            disabled={pending !== null}
+                                            onClick={() => refund()}
+                                        >
+                                            {text.orders.refund_submit}
+                                        </Button>
+                                    ) : null}
+
+                                    {canReturn ? (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            disabled={pending !== null}
+                                            onClick={() => markReturned()}
+                                        >
+                                            {text.orders.return_submit}
+                                        </Button>
+                                    ) : null}
+                                </div>
                             </CardContent>
                         </Card>
                     ) : null}
