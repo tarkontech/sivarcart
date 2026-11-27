@@ -1,0 +1,1 @@
+import{r as e,t}from"./storefront.js";import{a as n,o as r}from"./Flash-VjK3cdc3.js";var i=t();function a({href:t,variant:a=`default`,size:o=`default`,className:s,children:c}){return(0,i.jsx)(e,{href:t,className:r(n({variant:a,size:o}),s),children:c})}export{a as t};

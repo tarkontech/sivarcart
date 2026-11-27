@@ -45,6 +45,7 @@ use SivarcartCore\SivarcartCore\Events\PaymentFailed;
 use SivarcartCore\SivarcartCore\Http\ApiExceptionRenderer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureBuyer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStoreAdmin;
+use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorefrontBuyer;
 use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
 use SivarcartCore\SivarcartCore\Http\Middleware\StorefrontApi;
 use SivarcartCore\SivarcartCore\Listeners\SendOrderCancelledNotification;
@@ -239,13 +240,23 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views/panel', 'sivarcart-core-panel');
 
         /*
+        | The root view of the store lives in a namespace of its own, for the
+        | same reason that the one of the panel does.
+        */
+        $this->loadViewsFrom(__DIR__.'/../resources/views/storefront', 'sivarcart-core-storefront');
+
+        /*
         | The pages of the panel live in the package, so Inertia has to know
         | where they are. The folder of the application is kept, so an
         | application that has an Inertia of its own keeps its own pages.
+        |
+        | The pages of the store live in their own folder, so the two
+        | applications of the package never take a page of the other.
         */
         Config::set('inertia.pages.paths', [
             ...(array) Config::get('inertia.pages.paths', []),
             __DIR__.'/../resources/js/admin/pages',
+            __DIR__.'/../resources/js/storefront/pages',
         ]);
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'sivarcart-core');
@@ -257,6 +268,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->registerStoreApi();
 
         $this->registerAdminPanel();
+
+        $this->registerStorefront();
 
         if (! $this->app->runningInConsole()) {
             return;
@@ -288,6 +301,24 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/js/admin' => resource_path('js/sivarcart'),
         ], ['sivarcart-core', 'sivarcart-core-admin-source']);
+
+        /*
+        | The source of the store is published for the merchant that wants to
+        | write its own storefront. It lives in its own folder, so the two
+        | interfaces of the package never share a file.
+        */
+        $this->publishes([
+            __DIR__.'/../resources/js/storefront' => resource_path('js/sivarcart/storefront'),
+        ], ['sivarcart-core', 'sivarcart-core-storefront-source']);
+        /*
+        | The root view of the store is published on its own tag, and not with
+        | las vistas del paquete: es la vista que monta la tienda, así que el
+        | comerciante que quiere cambiar el "head" o los datos de la página
+        | lo pide de forma explícita.
+        */
+        $this->publishes([
+            __DIR__.'/../resources/views/storefront' => resource_path('views/vendor/sivarcart-core-storefront'),
+        ], ['sivarcart-core', 'sivarcart-core-storefront-view']);
 
         $this->publishes([
             __DIR__.'/../resources/views/mail' => resource_path('views/vendor/sivarcart-core/mail'),
@@ -534,6 +565,34 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             permission: 'staff.view',
             order: 70,
         );
+    }
+
+    /**
+     * Register the store the shopper buys in.
+     *
+     * The store is an Inertia application: its pages are components of React
+     * and the bundle of the store travels with the package. The merchant
+     * overrides them by publishing the source of the store and compiling its
+     * own bundle.
+     *
+     * The store has its own root view and its own middleware of Inertia, in a
+     * namespace of its own, so an application that already has an Inertia of
+     * its own keeps it untouched.
+     *
+     * The store and the store API are two ways of mounting the same store and
+     * they live together: the API serves the clients that are not a browser,
+     * and the store serves the shopper that is one. Each one is turned off on
+     * its own.
+     */
+    private function registerStorefront(): void
+    {
+        if (! (bool) config('sivarcart-core.storefront.enabled', true)) {
+            return;
+        }
+
+        Route::aliasMiddleware('sivarcart.storefront.buyer', EnsureStorefrontBuyer::class);
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/storefront.php');
     }
 
     /**

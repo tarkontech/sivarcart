@@ -51,7 +51,18 @@ it('writes the verification email with the signed link', function () {
     $mail->assertSeeInHtml(url('/email/verify/'.$customer->getKey()));
 });
 
-it('writes the reset email with the link of the application', function () {
+it('writes the reset email with the link of la tienda', function () {
+    $customer = Customer::factory()->create(['email' => 'ana@example.test']);
+
+    $mail = new AccountPasswordResetMail($customer, 'un-token');
+
+    $mail->assertTo('ana@example.test');
+    $mail->assertSeeInHtml(url('/tienda/cuenta/recuperar/un-token'));
+});
+
+it('writes the reset email with the link of the application when it names one', function () {
+    config()->set('sivarcart-core.buyers.password_reset_route', 'password.reset');
+
     $customer = Customer::factory()->create(['email' => 'ana@example.test']);
 
     $mail = new AccountPasswordResetMail($customer, 'un-token');

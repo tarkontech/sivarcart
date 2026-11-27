@@ -101,6 +101,16 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set('database.default', 'testing');
 
+        /*
+        | The panel and the store use the "web" group, and el grupo "web"
+        | cifra las cookies, así que la aplicación necesita una clave. The
+        | key of the tests is a fixed one, so the suite does not depend on the
+        | ".env" of the skeleton: the skeleton is purged by the build, and a
+        | suite that needs a file that a build deletes is a suite that breaks
+        | without saying why.
+        */
+        $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('s', 32)));
+
         // The notifications of the package go through the queue, so the tests
         // run them right away instead of leaving them in a table that does not
         // exist. The mail of the buyer is really sent, the same way it leaves

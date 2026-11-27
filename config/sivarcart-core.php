@@ -72,9 +72,12 @@ return [
     | read from here, so a merchant that already uses those names can change
     | them.
     |
-    | The two routes are the ones the application declares for its own pages:
-    | the links of the verification email and of the password reset point at
-    | them. The package does not render those pages.
+    | The route of la pantalla que cambia la clave es la de la tienda cuando
+    | la tienda está encendida: la tienda dibuja esa pantalla. Cuando la
+    | tienda está apagada, la aplicación declara la suya y la nombra aquí.
+    |
+    | La verificación de correo es otra cosa: la tienda no la dibuja, así que
+    | la aplicación la declara y la nombra aquí.
     |
     */
 
@@ -83,7 +86,7 @@ return [
         'provider' => 'sivarcart',
         'password_reset_table' => 'sivarcart_password_reset_tokens',
         'password_expire_minutes' => 60,
-        'password_reset_route' => 'password.reset',
+        'password_reset_route' => null,
         'email_verification_route' => 'verification.verify',
     ],
 
@@ -314,6 +317,94 @@ return [
         'stylesheets' => [],
 
         'per_page' => 25,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tienda del comprador
+    |--------------------------------------------------------------------------
+    |
+    | La tienda es la pantalla donde el cliente compra. Es una aplicación de
+    | Inertia y React que vive en el paquete, con su propio bundle ya
+    | compilado, así que el comerciante instala el paquete y la tienda está.
+    |
+    | La tienda y la API son dos maneras de montar la misma tienda, y
+    | conviven: la API sigue siendo la vía del modo headless y la de los
+    | clientes externos (apps móviles, integraciones). Cada una se apaga
+    | sola, así que un comerciante que quiere su propia interfaz apaga la
+    | tienda y deja la API.
+    |
+    | Los segmentos de las direcciones son los que el comprador ve, así que
+    | están en español; los nombres de las rutas son del paquete y están en
+    | inglés.
+    |
+    */
+
+    'storefront' => [
+        'enabled' => true,
+
+        /*
+        | Dónde se monta la tienda. Sus rutas las registra el paquete, así que
+        | la aplicación no tiene que publicarlas.
+        */
+        'prefix' => 'tienda',
+
+        /*
+        | El middleware de la tienda. El grupo "web" trae la sesión y el
+        | CSRF: la tienda escribe (el carrito, el checkout y la cuenta), así
+        | que necesita los dos.
+        */
+        'middleware' => ['web'],
+
+        /*
+        | El tema de la tienda. Estos valores son las propiedades CSS del
+        | sistema de diseño de la tienda, así que el comerciante los cambia
+        | sin compilar nada.
+        |
+        | La tienda tiene su propio tema y no el del panel: son dos caras
+        | distintas de la misma tienda, y cada una lleva su marca.
+        */
+        'theme' => [
+            'primary' => '#1d4ed8',
+            'primary_foreground' => '#ffffff',
+            'destructive' => '#b91c1c',
+            'destructive_foreground' => '#ffffff',
+            'success' => '#15803d',
+            'success_foreground' => '#ffffff',
+            'warning' => '#b45309',
+            'warning_foreground' => '#ffffff',
+            'radius' => '0.5rem',
+            'font' => 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        ],
+
+        /*
+        | El tema de la tienda para el modo oscuro. Estos valores se escriben
+        | después de los del tema claro, así que ganan sobre ellos.
+        */
+        'theme_dark' => [],
+
+        /*
+        | El bundle de la tienda.
+        |
+        | El paquete trae su propio bundle compilado y lo sirve, así que el
+        | comerciante instala el paquete y la tienda está, sin Node y sin un
+        | paso de compilación. El comerciante que quiere su propia interfaz
+        | publica el fuente de la tienda y compila el suyo: el paquete mira
+        | el manifiesto de la aplicación y, cuando la entrada del
+        | comerciante está en él, carga ese bundle en lugar del suyo.
+        */
+        'bundle' => [
+            'entry' => 'resources/js/sivarcart/storefront.tsx',
+            'directory' => 'build',
+        ],
+
+        /*
+        | Extra stylesheets de la aplicación. Cargan después de la hoja de
+        | estilo de la tienda, así que ganan.
+        */
+        'stylesheets' => [],
+
+        'per_page' => 15,
     ],
 
     'notifications' => [

@@ -148,7 +148,53 @@ SivarcartCore::admin()->page(
   `border-border`). A theme is a change of the CSS, never of the components, and the tokens come
   from the `admin.theme` section of the configuration
 
-### 5. Sell to buyers with an account
+### 5. Sell with the store of the package
+
+- the package brings **the store the shopper buys in**: the home, the catalog, the product page,
+  the cart, the checkout, the order confirmation and the account of the buyer (sign in, sign up
+  and password reset). It lives under the prefix of the `storefront` section of
+  `config/sivarcart-core.php` (`tienda` by default) and it is **on by default**
+- **the store and the store API are two ways of mounting the same store and they live
+  together**: the API (`api/sivarcart`) is the headless mode for the clients that are not a
+  browser, and the store is the mode with an interface. Turn each one off with its own flag
+  (`api.enabled` and `storefront.enabled`); turning one off never turns the other off
+- the store is **a second Inertia application**: it has its own root view
+  (`sivarcart-core-storefront::app`) and its own middleware, so an application that already
+  has an Inertia of its own keeps it untouched. Its pages are `Storefront/...` and the panel's
+  are `Admin/...`, so they never mix
+- **the store does not call the API over HTTP**: it uses the services of the domain, the same
+  ones the API and the panel use, with its own `SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter`.
+  The totals are computed on the server and the client only shows them
+- **the store asks for a signed in buyer** on the cart, the checkout and the orders, the same
+  way the domain does: the buyer of the store is a `Customer`, not the user of the application
+- the store draws the screen that changes the password, so the link of the reset email points
+  there when the store is on. An application that wants its own screen names its route in
+  `buyers.password_reset_route`. The **email verification stays with the application**: the
+  store does not draw it, so `buyers.email_verification_route` is still the route of the
+  application
+- the store brings its own compiled bundle and its own tokens, and it is themed from the
+  `storefront.theme` section of the configuration, separately from the panel's theme
+
+```php
+// config/sivarcart-core.php
+'storefront' => [
+    'enabled' => true,
+    'prefix' => 'tienda',
+    'middleware' => ['web'],
+    'theme' => ['primary' => '#1d4ed8', 'radius' => '0.5rem'],
+    'bundle' => ['entry' => 'resources/js/sivarcart/storefront.tsx', 'directory' => 'build'],
+],
+```
+
+- a merchant that wants its own storefront publishes the source and compiles its own bundle;
+  the merchant's bundle wins, without touching the configuration:
+
+```bash
+php artisan vendor:publish --tag="sivarcart-core-storefront-source"
+php artisan vendor:publish --tag="sivarcart-core-storefront-view"
+```
+
+### 6. Sell to buyers with an account
 
 - the **buyer** signs in with the guard of the package, not with the guard of the
   application: the package registers its own guard, its own provider and its own password
@@ -177,14 +223,14 @@ Route::middleware(['auth:sivarcart'])->group(function (): void {
 
 - the package brings the whole account cycle: `register()`, `updateProfile()`,
   `changePassword()`, `verifyEmail()`, `sendPasswordResetLink()` and `resetPassword()`
-- the emails of the account point at the routes the application declares:
-  `buyers.password_reset_route` and `buyers.email_verification_route`. The package does
-  not render those pages
+- the emails of the account point at `buyers.password_reset_route` and
+  `buyers.email_verification_route`. The reset screen is the one of the store when the store
+  is on, and the verification screen is always the one of the application
 - the document of identity is checked against its type with the check digit of each one;
   the rule `SivarcartCore\SivarcartCore\Rules\CustomerDocument` works in the forms and in
   the domain
 
-### 6. Sell
+### 7. Sell
 
 - the services in `SivarcartCore\SivarcartCore\Services` are the spine of the domain:
   `CartService`, `CustomerService`, `OrderService`, `PaymentService` and
@@ -220,7 +266,7 @@ php artisan sivarcart:restock SKU-123 10 --reason="Llegó del proveedor"
 php artisan sivarcart:restock SKU-123 --stock=25
 ```
 
-### 7. Collect the money with Wompi
+### 8. Collect the money with Wompi
 
 - the credentials of the gateway live in `sivarcart_payment_methods` and are stored
   encrypted; the package `rmirandasv/laravel-wompi` handles the OAuth2, the HMAC
@@ -237,7 +283,7 @@ php artisan sivarcart:restock SKU-123 --stock=25
 - the webhook is idempotent: `payment_transactions.idempotency_key` has a unique index,
   so a repeated delivery never charges or moves the stock twice
 
-### 8. Move the order
+### 9. Move the order
 
 - `MarkOrderAsPaid` confirms a payment the store collected on its own, like the cash of
   a delivery order. It only moves the payment axis: the order stays `pending` until the
@@ -264,7 +310,7 @@ php artisan sivarcart:restock SKU-123 --stock=25
   `failed`, and `CancelOrder` leaves it `cancelled`. A gateway that fails leaves the
   payment `unpaid`, so the buyer can ask for the link again
 
-### 9. Write to the buyer
+### 10. Write to the buyer
 
 - the package writes to the buyer when the order moves: every notification of
   `SivarcartCore\SivarcartCore\Enums\OrderNotification` delivers a markdown mailable, and
@@ -289,7 +335,7 @@ php artisan sivarcart-core:publish-mailables
 - the sender comes from `config('sivarcart-core.notifications.from')`, and when it is
   null the `mail.from` of the application is used
 
-### 10. Keep the images of the store
+### 11. Keep the images of the store
 
 - the images of the products, of the variants, of the brands and of the store are stored with
   Spatie Media Library, but in the table of the package (`sivarcart_product_images`), so every
@@ -321,7 +367,7 @@ $media->delete($image);
 - the store API returns the images with their path, their disk and their text, and also
   with `url` and `thumbnail_url`
 
-### 11. Extend the store
+### 12. Extend the store
 
 - a module keeps its own settings in its own table: the package does not have a table
   of free form settings
@@ -336,7 +382,9 @@ app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela
 - the publish tags are `sivarcart-core`, `sivarcart-core-config`,
   `sivarcart-core-migrations`, `sivarcart-core-views`, `sivarcart-core-mailables`,
   `sivarcart-core-lang`, `sivarcart-core-assets`, `sivarcart-core-admin-source` (the source
-  of the panel) and `sivarcart-core-panel-view` (the root view of the panel)
+  of the panel), `sivarcart-core-panel-view` (the root view of the panel),
+  `sivarcart-core-storefront-source` (the source of the store) and
+  `sivarcart-core-storefront-view` (the root view of the store)
 
 ## Rules, References, and Templates
 
@@ -344,8 +392,8 @@ Read before executing:
 
 - `README.md` — the table by table data model, the install flow and the domain layer
 - `config/sivarcart-core.php` — store defaults, numbering prefixes, the Wompi settings, the
-  notifications of the buyer, the media of the store, the model and guard of the users and
-  the `admin` section of the administration panel
+  notifications of the buyer, the media of the store, the model and guard of the users, the
+  `admin` section of the administration panel and the `storefront` section of the store
 
 ## Examples
 

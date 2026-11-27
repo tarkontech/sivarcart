@@ -1,0 +1,1 @@
+import{o as e}from"./Flash-VjK3cdc3.js";import{t}from"./storefront.js";var n=t();function r({children:t,className:r}){return(0,n.jsx)(`p`,{className:e(`rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground`,r),children:t})}export{r as t};

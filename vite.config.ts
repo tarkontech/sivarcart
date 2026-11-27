@@ -8,8 +8,12 @@ import { defineConfig } from 'vite'
  *
  * The bundle travels with the package: the package serves it, so a merchant
  * that installs the package has the panel without Node and without a build
- * step. The result lives in "resources/dist" and it is versioned in the
+ * step. The result lives in "resources/dist/admin" and it is versioned in the
  * repository, the same way the stylesheet of the panel was before.
+ *
+ * The panel has its own build and its own folder: the bundle of the store
+ * lives in "resources/dist/storefront", so the build of one never deletes the
+ * bundle of the other.
  */
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -21,7 +25,7 @@ export default defineConfig({
   },
 
   build: {
-    outDir: 'resources/dist',
+    outDir: 'resources/dist/admin',
     emptyOutDir: true,
 
     /*

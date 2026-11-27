@@ -1,0 +1,126 @@
+/*
+ | The stylesheet of the store the shopper buys in.
+ |
+ | The store brings its own design system: the merchant installs the package
+ | and the store is there, without Tailwind and without a build step. The
+ | colors are CSS custom properties, so the merchant changes them in the
+ | configuration of the package, or in its own stylesheet, without compiling
+ | anything.
+ |
+ | Every color of the store is a **semantic token**. There is not a single
+ | color of the palette of Tailwind in the components of the store, so a
+ | theme is a change of the CSS and never a change of the components.
+ |
+ | The store has its own stylesheet and not the one of the panel: they are
+ | two faces of the same store, and each one carries its own brand.
+ |
+ | The names of the classes start with "siv-", so they never collide with the
+ | classes of the application that installs the package.
+ */
+
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary-hover: var(--primary-hover);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+    --radius: 0.5rem;
+
+    --background: oklch(0.99 0.002 250);
+    --foreground: oklch(0.21 0.01 250);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.21 0.01 250);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.21 0.01 250);
+    --primary: oklch(0.48 0.19 258);
+    --primary-foreground: oklch(0.985 0 0);
+    --primary-hover: oklch(0.42 0.19 258);
+    --secondary: oklch(0.96 0.008 250);
+    --secondary-foreground: oklch(0.28 0.02 250);
+    --muted: oklch(0.96 0.008 250);
+    --muted-foreground: oklch(0.52 0.015 250);
+    --accent: oklch(0.95 0.015 255);
+    --accent-foreground: oklch(0.3 0.06 258);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.985 0 0);
+    --success: oklch(0.596 0.145 163.225);
+    --success-foreground: oklch(0.985 0 0);
+    --warning: oklch(0.666 0.179 58.318);
+    --warning-foreground: oklch(0.145 0 0);
+    --border: oklch(0.9 0.008 250);
+    --input: oklch(0.9 0.008 250);
+    --ring: oklch(0.48 0.19 258);
+}
+
+.dark {
+    --background: oklch(0.16 0.01 250);
+    --foreground: oklch(0.97 0.005 250);
+    --card: oklch(0.21 0.012 250);
+    --card-foreground: oklch(0.97 0.005 250);
+    --popover: oklch(0.21 0.012 250);
+    --popover-foreground: oklch(0.97 0.005 250);
+    --primary: oklch(0.68 0.16 258);
+    --primary-foreground: oklch(0.16 0.01 250);
+    --primary-hover: oklch(0.74 0.15 258);
+    --secondary: oklch(0.27 0.012 250);
+    --secondary-foreground: oklch(0.97 0.005 250);
+    --muted: oklch(0.27 0.012 250);
+    --muted-foreground: oklch(0.7 0.015 250);
+    --accent: oklch(0.3 0.04 258);
+    --accent-foreground: oklch(0.96 0.01 250);
+    --destructive: oklch(0.704 0.191 22.216);
+    --destructive-foreground: oklch(0.985 0 0);
+    --success: oklch(0.696 0.17 162.48);
+    --success-foreground: oklch(0.145 0 0);
+    --warning: oklch(0.828 0.189 84.429);
+    --warning-foreground: oklch(0.145 0 0);
+    --border: oklch(1 0 0 / 12%);
+    --input: oklch(1 0 0 / 18%);
+    --ring: oklch(0.68 0.16 258);
+}
+
+@layer base {
+    *,
+    ::after,
+    ::before {
+        border-color: var(--border);
+    }
+
+    body {
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-sans);
+    }
+}

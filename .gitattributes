@@ -23,4 +23,5 @@
 /package-lock.json  export-ignore
 /tsconfig.json      export-ignore
 /vite.config.ts     export-ignore
+/vite.storefront.config.ts export-ignore
 /components.json    export-ignore

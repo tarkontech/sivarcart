@@ -61,12 +61,12 @@ it('keeps the version of the bundle in the address of the pieces of the bundle',
     | that kept the bundle of a previous version would ask for the piece of
     | that version and would mix the two bundles.
     */
-    $content = file_get_contents(dirname(__DIR__, 3).'/resources/dist/admin.js');
+    $content = file_get_contents(dirname(__DIR__, 3).'/resources/dist/admin/admin.js');
 
     expect($content)->not->toBeFalse()
         ->and($content)->toContain('import');
 
-    $chunk = glob(dirname(__DIR__, 3).'/resources/dist/Index-*.js');
+    $chunk = glob(dirname(__DIR__, 3).'/resources/dist/admin/Index-*.js');
 
     expect($chunk)->not->toBeEmpty();
 

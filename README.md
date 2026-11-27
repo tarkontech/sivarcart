@@ -263,13 +263,14 @@ $customers->sendPasswordResetLink('ana@example.com');   // Manda el enlace al co
 $customers->resetPassword('ana@example.com', $token, 'su-contrasena-nueva');
 ```
 
-Los enlaces del correo apuntan a las rutas que declara la aplicación, que el paquete no
-renderiza:
+El enlace del restablecimiento apunta a la pantalla que cambia la contraseña: la de la
+tienda cuando la tienda está encendida, y la de la aplicación cuando la aplicación nombra
+su ruta. El enlace de la verificación siempre es de la aplicación:
 
 ```php
 // config/sivarcart-core.php
 'buyers' => [
-    'password_reset_route' => 'password.reset',
+    'password_reset_route' => null,
     'email_verification_route' => 'verification.verify',
 ],
 ```
@@ -952,12 +953,151 @@ SivarcartCore::shippingMethods(); // ShippingMethodService
 SivarcartCore::media();       // MediaService
 ```
 
+## La tienda del comprador
+
+El paquete trae **la tienda donde el cliente compra**: la portada, el catálogo, la ficha del
+producto, el carrito, el checkout, la confirmación del pedido y la cuenta del comprador
+(entrar, registrarse y restablecer la contraseña). Es una aplicación de **Inertia y React**,
+con su propio bundle ya compilado, así que el comerciante instala el paquete y la tienda
+está: sin Node y sin un paso de compilación.
+
+> **La tienda viene encendida por defecto.** Es la respuesta corta a "quiero una tienda que
+> funcione": instala el paquete, configura la tienda en el panel y ya tienes una tienda que
+> recibe pedidos.
+
+La tienda vive bajo el prefijo de la sección `storefront` de la configuración (`tienda` por
+defecto) y se puede apagar con `storefront.enabled`.
+
+### Los dos modos de la tienda
+
+El paquete ofrece **dos maneras de montar la misma tienda**, y **conviven**:
+
+| Modo | Qué es | Cómo se apaga |
+|---|---|---|
+| **Headless** | La API de la tienda (`api/sivarcart`): el catálogo, el carrito, el checkout y las órdenes en JSON. | `api.enabled = false` |
+| **Con interfaz** | La tienda de Inertia y React que trae el paquete. | `storefront.enabled = false` |
+
+Apagar la tienda **no** apaga la API, y apagar la API **no** apaga la tienda. Un comerciante
+que quiere su propia interfaz (una app móvil, un *front* hecho a medida) apaga la tienda y
+deja la API; un comerciante que quiere una tienda ya funcionando deja las dos.
+
+### Lo que hace la tienda
+
+- **El catálogo** con los filtros de categoría, marca, precio, existencia, búsqueda y
+  orden. Los filtros viajan en la dirección, así que el catálogo se puede compartir y recargar.
+- **La ficha del producto** con su galería, sus variantes y sus existencias. El comprador
+  elige la variante y la pone en el carrito.
+- **El carrito** con sus líneas, su código de descuento y sus totales. Los totales los
+  calcula el servidor: el cliente solo los muestra.
+- **El checkout** con los datos del comprador, la dirección de entrega, el método de envío
+  (con su cotización), el método de pago y la nota para la tienda.
+- **La confirmación del pedido** con el enlace de pago cuando el método es en línea. Si la
+  pasarela falla, la orden existe igual y el comprador puede pedir el enlace otra vez.
+- **La cuenta del comprador**: entrar, registrarse, restablecer la contraseña y cambiar el
+  perfil.
+
+> **El carrito pide un comprador.** El dominio ya exige una cuenta para completar el pedido,
+> así que la tienda manda al comprador a la pantalla de entrada y lo devuelve al carrito o al
+> checkout de donde venía.
+
+### Los tokens de la tienda
+
+La tienda **no usa ningún color de la paleta de Tailwind**. Todos sus colores son *tokens
+semánticos* —`bg-background`, `text-foreground`, `bg-primary`, `bg-muted`, `border-border`—,
+así que un tema es un cambio del CSS y nunca un cambio de los componentes.
+
+Los tokens viajan en la hoja de estilo del paquete y los cambia la configuración:
+
+```php
+'storefront' => [
+    'theme' => [
+        'primary' => '#1d4ed8',
+        'primary_foreground' => '#ffffff',
+        'destructive' => '#b91c1c',
+        'success' => '#15803d',
+        'warning' => '#b45309',
+        'radius' => '0.5rem',
+        'font' => 'system-ui, -apple-system, "Segoe UI", sans-serif',
+    ],
+],
+```
+
+La tienda tiene su propio tema y no el del panel: son dos caras de la misma tienda, y cada
+una lleva su marca.
+
+La hoja de estilo de la tienda se sirve en `/tienda/assets/{version}/storefront.css`. Si tu
+aplicación tiene sus propias hojas, se cargan después con `storefront.stylesheets`, así que
+ganan.
+
+### Los niveles de sobreescritura
+
+La tienda se puede cambiar de cuatro maneras, y cada una cuesta algo distinto:
+
+| Nivel | Qué cambia | Costo |
+|---|---|---|
+| **1. Los tokens** | Los colores, el radio y la tipografía | Cero |
+| **2. El bundle** | Toda la interfaz, compilada por ti | Node y Vite |
+| **3. El código** | Componentes y pantallas sueltas, en TypeScript | Node y Vite |
+| **4. La vista raíz** | El `<head>`, los datos de la página y el montaje | Cero |
+
+#### Nivel 2 — El bundle
+
+El paquete sirve su propio bundle. Si compilas el tuyo, **el tuyo gana**, sin tocar la
+configuración del paquete:
+
+```bash
+# 1. Publica el fuente de la tienda.
+php artisan vendor:publish --tag="sivarcart-core-storefront-source"
+
+# 2. Escribe tu propia entrada en resources/js/sivarcart/storefront.tsx
+#    y añade la entrada a tu vite.config.js.
+
+# 3. Compila.
+npm run build
+```
+
+El paquete mira el manifiesto de tu aplicación y, cuando encuentra la entrada
+`resources/js/sivarcart/storefront.tsx`, carga tu bundle en lugar del suyo.
+
+> **`vendor:publish` nunca sobrescribe un archivo que ya existe**, así que una personalización
+> sobrevive a una actualización del paquete.
+
+#### Nivel 3 — El código
+
+El fuente de la tienda se publica con su propio tag:
+
+```bash
+php artisan vendor:publish --tag="sivarcart-core-storefront-source"
+```
+
+Queda en `resources/js/sivarcart/storefront/`, con los componentes de shadcn, las pantallas y
+los layouts. Edita lo que quieras y compila.
+
+#### Nivel 4 — La vista raíz
+
+La vista que monta la tienda se publica con un tag propio, para quien quiera cambiar el
+`<head>`, los datos de la página o el favicon:
+
+```bash
+php artisan vendor:publish --tag="sivarcart-core-storefront-view"
+```
+
+### La tienda no rompe tu Inertia
+
+La tienda es una **segunda aplicación de Inertia**, con su propia vista raíz y su propio
+middleware: una aplicación que ya tiene un Inertia de su propio lo mantiene intacto. Sus
+páginas se llaman `Storefront/...` y las del panel `Admin/...`, así que nunca se mezclan.
+
+La tienda habla el idioma de la aplicación (`app.locale`), y los textos viajan del servidor
+a los componentes.
+
 ## La API de tienda
 
 El núcleo expone la **API de tienda**: el catálogo, el carrito, el checkout, las órdenes del
-comprador y la cuenta del comprador. El **panel de administración del personal también vive en
-el núcleo**: es una aplicación de Inertia y React que el comerciante puede sobreescribir con su
-propia interfaz cuando lo necesita.
+comprador y la cuenta del comprador. Es el modo **headless** de la tienda, para el
+comerciante que quiere su propia interfaz: una app móvil, un *front* hecho a medida o un
+cliente que habla JSON. El **panel de administración del personal** y la **tienda del
+comprador** también viven en el núcleo.
 
 Las rutas las registra el paquete: la aplicación no tiene que publicarlas. Viven bajo el
 prefijo de la sección `api` de la configuración (`api/sivarcart` por defecto) y se pueden
@@ -1230,6 +1370,10 @@ npx shadcn@latest registry add @sivarcart=https://raw.githubusercontent.com/tark
 npx shadcn@latest add @sivarcart/admin
 ```
 
+El registro trae también la tienda (`@sivarcart/storefront`) y sus componentes sueltos
+(`@sivarcart/storefront-product-card`, `@sivarcart/storefront-cart-totals`,
+`@sivarcart/storefront-link-button` y `@sivarcart/storefront-empty-state`).
+
 El root view del panel, que es el archivo de Blade que monta la aplicación, se publica con un
 tag propio, para quien quiera cambiar el `<head>` o el logo:
 
@@ -1247,9 +1391,10 @@ y son la capa de escritura del catálogo.
 
 `config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
 numeración de órdenes y pagos, la vida del carrito, la sección `api` de la API de tienda, la
-sección `admin` del panel de administración, la configuración de Wompi (ruta del webhook, ruta
-del redirect y las formas de pago habilitadas), las dos claves de autenticación del personal de
-la tienda y la sección `buyers` de la cuenta del comprador.
+sección `storefront` de la tienda del comprador, la sección `admin` del panel de
+administración, la configuración de Wompi (ruta del webhook, ruta del redirect y las formas
+de pago habilitadas), las dos claves de autenticación del personal de la tienda y la sección
+`buyers` de la cuenta del comprador.
 
 Las claves de autenticación son `null` por defecto, y en ese caso el paquete lee el
 modelo del proveedor `users` y el guard por defecto de `config/auth.php`. Solo hay que
@@ -1272,10 +1417,17 @@ del correo:
     'provider' => 'sivarcart',           // El provider del comprador.
     'password_reset_table' => 'sivarcart_password_reset_tokens',
     'password_expire_minutes' => 60,     // La vida del token del restablecimiento.
-    'password_reset_route' => 'password.reset',
+    'password_reset_route' => null,      // La pantalla de la tienda, si la tienda está encendida.
     'email_verification_route' => 'verification.verify',
 ],
 ```
+
+> **La pantalla que cambia la contraseña es la de la tienda** cuando la tienda está encendida:
+> el paquete la dibuja y el enlace del correo apunta ahí. Una aplicación que quiere su propia
+> pantalla la declara y nombra su ruta en `password_reset_route`.
+>
+> La **verificación del correo** sigue siendo de la aplicación: la tienda no la dibuja, así
+> que la ruta sigue siendo `email_verification_route`.
 
 Los correos al comprador se controlan desde la base de datos (ver *Los correos al
 comprador*), y la configuración solo pone el valor por defecto:

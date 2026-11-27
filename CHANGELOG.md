@@ -2,6 +2,41 @@
 
 ## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
 
+### La tienda del comprador entra en el núcleo
+
+- **el paquete trae la tienda donde el cliente compra**: la portada, el catálogo con sus
+  filtros, la ficha del producto, el carrito, el checkout, la confirmación del pedido y la
+  cuenta del comprador (entrar, registrarse y restablecer la contraseña). Vive bajo el
+  prefijo de la sección `storefront` de la configuración (`tienda` por defecto) y se apaga
+  con `storefront.enabled`
+- **la tienda viene encendida por defecto**: es la respuesta a "quiero una tienda que
+  funcione". El comerciante instala el paquete y la tienda está, sin Node y sin un paso de
+  compilación: el bundle de la tienda viaja con el paquete ya compilado
+- **los dos modos de la tienda conviven**: la API (`api/sivarcart`) es el modo *headless* y
+  la tienda de Inertia es el modo *con interfaz*. Apagar la tienda no apaga la API, y
+  apagar la API no apaga la tienda. Cada una se apaga con su bandera
+- **la tienda es una segunda aplicación de Inertia**, con su propio root view y su propio
+  middleware: una aplicación que ya tiene un Inertia de su propio no se ve afectada. Sus
+  páginas se llaman `Storefront/...` y las del panel `Admin/...`, así que nunca se mezclan
+- **la tienda usa los servicios del dominio**, los mismos que la API y el panel, y no llama
+  a la API por HTTP: los totales los calcula el servidor y el cliente solo los muestra
+- **la tienda dibuja la pantalla que cambia la contraseña**: el enlace del correo del
+  restablecimiento apunta ahí cuando la tienda está encendida. Una aplicación que quiere su
+  propia pantalla la declara y nombra su ruta en `buyers.password_reset_route`. La
+  **verificación del correo** sigue siendo de la aplicación
+- **ningún color de la tienda es un color de la paleta de Tailwind**: todos son tokens
+  semánticos, y la tienda tiene su propio tema (la sección `storefront.theme` de la
+  configuración) para que la marca del panel y la de la tienda no se mezclen
+- **la tienda se sobreescribe de cuatro maneras**: los tokens del tema, el bundle propio
+  (con `vendor:publish --tag=sivarcart-core-storefront-source`), el código, y la vista raíz
+  (con `vendor:publish --tag=sivarcart-core-storefront-view`)
+- **el panel y la tienda tienen cada uno su bundle y su carpeta**: el del panel vive en
+  `resources/dist/admin` y el de la tienda en `resources/dist/storefront`, así que el build
+  de uno nunca borra el bundle del otro
+- **la suite de pruebas ya no depende del `.env` del esqueleto**: la clave de la aplicación
+  se fija en el entorno de pruebas, porque el esqueleto se purga en cada build y una suite
+  que necesita un archivo que un build borra es una suite que se rompe sin decir por qué
+
 ### El panel de administración entra en el núcleo
 
 - **el paquete trae el panel del personal de la tienda**: el tablero, los pedidos (lista y

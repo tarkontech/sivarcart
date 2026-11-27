@@ -548,6 +548,319 @@
                     "target": "resources/js/sivarcart/components/LinkButton.tsx"
                 }
             ]
+        },
+        {
+            "name": "storefront",
+            "type": "registry:base",
+            "title": "La tienda del comprador de SivarCart Core",
+            "description": "La tienda del comprador de SivarCart Core, en React, con Inertia y Tailwind 4.",
+            "dependencies": [
+                "@base-ui/react",
+                "@inertiajs/react",
+                "class-variance-authority",
+                "clsx",
+                "lucide-react",
+                "react",
+                "react-dom",
+                "tailwind-merge"
+            ],
+            "devDependencies": [
+                "@tailwindcss/vite",
+                "@types/react",
+                "@types/react-dom",
+                "@vitejs/plugin-react",
+                "tailwindcss",
+                "typescript",
+                "vite"
+            ],
+            "config": {
+                "style": "new-york",
+                "iconLibrary": "lucide",
+                "tsx": true,
+                "rsc": false,
+                "tailwind": {
+                    "css": "resources/css/sivarcart-storefront.css",
+                    "baseColor": "neutral",
+                    "cssVariables": true,
+                    "prefix": ""
+                },
+                "aliases": {
+                    "components": "@/components/sivarcart/storefront",
+                    "ui": "@/components/sivarcart/storefront/ui",
+                    "utils": "@/lib/utils",
+                    "hooks": "@/hooks",
+                    "lib": "@/lib"
+                }
+            },
+            "files": [
+                {
+                    "path": "resources/js/storefront/app.tsx",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/app.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/storefront.tsx",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/storefront.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Home.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Home.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Orders/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Orders/Index.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Orders/Show.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Orders/Show.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Products/Show.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Products/Show.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Checkout/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Checkout/Index.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Cart/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Cart/Index.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Catalog/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Catalog/Index.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Account/ForgotPassword.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Account/ForgotPassword.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Account/Index.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Account/Index.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Account/Login.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Account/Login.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Account/Register.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Account/Register.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/pages/Storefront/Account/ResetPassword.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/pages/Storefront/Account/ResetPassword.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/layouts/AccountLayout.tsx",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/layouts/AccountLayout.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/layouts/StorefrontLayout.tsx",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/layouts/StorefrontLayout.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/CartTotals.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/CartTotals.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/EmptyState.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/EmptyState.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/Flash.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/Flash.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/LinkButton.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/LinkButton.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/Pagination.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/Pagination.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ProductCard.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/ProductCard.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/alert.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/alert.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/badge.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/badge.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/button.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/button.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/card.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/card.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/checkbox.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/checkbox.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/input.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/input.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/label.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/label.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/select.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/select.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/separator.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/separator.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/skeleton.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/skeleton.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/components/ui/textarea.tsx",
+                    "type": "registry:ui",
+                    "target": "resources/js/sivarcart/storefront/components/ui/textarea.tsx"
+                },
+                {
+                    "path": "resources/js/storefront/lib/format.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/lib/format.ts"
+                },
+                {
+                    "path": "resources/js/storefront/lib/query.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/lib/query.ts"
+                },
+                {
+                    "path": "resources/js/storefront/lib/url.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/lib/url.ts"
+                },
+                {
+                    "path": "resources/js/storefront/lib/utils.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/lib/utils.ts"
+                },
+                {
+                    "path": "resources/js/storefront/types/index.ts",
+                    "type": "registry:lib",
+                    "target": "resources/js/sivarcart/storefront/types/index.ts"
+                },
+                {
+                    "path": "resources/css/storefront.css",
+                    "type": "registry:theme",
+                    "target": "resources/css/sivarcart-storefront.css"
+                }
+            ]
+        },
+        {
+            "name": "storefront-product-card",
+            "type": "registry:ui",
+            "title": "La tarjeta del producto",
+            "description": "La tarjeta de un producto del catalogo de la tienda, con su imagen y su rango de precios.",
+            "dependencies": [
+                "class-variance-authority",
+                "clsx",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/storefront/components/ProductCard.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/ProductCard.tsx"
+                }
+            ]
+        },
+        {
+            "name": "storefront-cart-totals",
+            "type": "registry:ui",
+            "title": "Los totales del carrito",
+            "description": "Los totales de un carrito o de una orden, con el token semantico del total.",
+            "dependencies": [
+                "class-variance-authority",
+                "clsx",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/storefront/components/CartTotals.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/CartTotals.tsx"
+                }
+            ]
+        },
+        {
+            "name": "storefront-link-button",
+            "type": "registry:ui",
+            "title": "El boton que es un enlace",
+            "description": "Un enlace que parece un boton de la tienda.",
+            "dependencies": [
+                "class-variance-authority",
+                "clsx",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/storefront/components/LinkButton.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/LinkButton.tsx"
+                }
+            ]
+        },
+        {
+            "name": "storefront-empty-state",
+            "type": "registry:ui",
+            "title": "El aviso de una lista vacia",
+            "description": "El aviso de una lista de la tienda que no tiene nada que mostrar.",
+            "dependencies": [
+                "class-variance-authority",
+                "clsx",
+                "tailwind-merge"
+            ],
+            "files": [
+                {
+                    "path": "resources/js/storefront/components/EmptyState.tsx",
+                    "type": "registry:component",
+                    "target": "resources/js/sivarcart/storefront/components/EmptyState.tsx"
+                }
+            ]
         }
     ]
 }

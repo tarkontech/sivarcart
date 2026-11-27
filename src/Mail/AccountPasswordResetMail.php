@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SivarcartCore\SivarcartCore\Mail;
 
 use SivarcartCore\SivarcartCore\Models\Customer;
+use SivarcartCore\SivarcartCore\Support\BuyerRoutes;
 
 /**
  * The email the buyer receives to reset the password of the account.
@@ -56,12 +57,14 @@ final class AccountPasswordResetMail extends BuyerAccountMail
 
     /**
      * The link that opens the page where the password is changed.
+     *
+     * The page is la de la tienda when the store is on, and the one of the
+     * application when the application names it in the configuration of the
+     * package.
      */
     private function resetUrl(): string
     {
-        $route = (string) config('sivarcart-core.buyers.password_reset_route', 'password.reset');
-
-        return $this->applicationUrl($route, [
+        return $this->applicationUrl(BuyerRoutes::passwordReset(), [
             'token' => $this->token,
             'email' => (string) $this->customer->getEmailForPasswordReset(),
         ]);

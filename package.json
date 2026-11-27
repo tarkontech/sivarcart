@@ -1,11 +1,14 @@
 {
     "name": "@tarkontech/sivarcart-core-admin",
-    "description": "El panel de administración de SivarCart Core, en React.",
+    "description": "El panel de administración y la tienda de SivarCart Core, en React.",
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "npm run build:admin && npm run build:storefront",
+        "build:admin": "vite build",
+        "build:storefront": "vite build --config vite.storefront.config.ts",
         "dev": "vite build --watch",
+        "dev:storefront": "vite build --config vite.storefront.config.ts --watch",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {

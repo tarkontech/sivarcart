@@ -46,14 +46,7 @@ final class CartService
      */
     public function findOrCreate(int $customerId): Cart
     {
-        $cart = Cart::query()
-            ->where('customer_id', $customerId)
-            ->whereNull('converted_at')
-            ->where(function (Builder $query): void {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->orderByDesc('id')
-            ->first();
+        $cart = $this->find($customerId);
 
         if ($cart !== null) {
             return $cart;
@@ -64,6 +57,25 @@ final class CartService
             'currency' => $this->stores->currency(),
             'expires_at' => now()->addDays($this->ttlDays()),
         ]);
+    }
+
+    /**
+     * The cart of a buyer, when it has one.
+     *
+     * The method only reads: it never creates a cart. The header of the store
+     * asks for the cart of the shopper on every página, and un carrito que no
+     * existe no se crea hasta que el comprador compra algo.
+     */
+    public function find(int $customerId): ?Cart
+    {
+        return Cart::query()
+            ->where('customer_id', $customerId)
+            ->whereNull('converted_at')
+            ->where(function (Builder $query): void {
+                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->orderByDesc('id')
+            ->first();
     }
 
     /**

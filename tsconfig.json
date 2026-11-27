@@ -24,9 +24,17 @@
 
         "baseUrl": ".",
         "paths": {
-            "@/*": ["resources/js/admin/*"]
+            "@/*": ["resources/js/admin/*"],
+            "@storefront/*": ["resources/js/storefront/*"]
         }
     },
-    "include": ["resources/js/admin/**/*.ts", "resources/js/admin/**/*.tsx", "vite.config.ts"],
+    "include": [
+        "resources/js/admin/**/*.ts",
+        "resources/js/admin/**/*.tsx",
+        "resources/js/storefront/**/*.ts",
+        "resources/js/storefront/**/*.tsx",
+        "vite.config.ts",
+        "vite.storefront.config.ts"
+    ],
     "exclude": ["node_modules", "vendor", "resources/dist"]
 }

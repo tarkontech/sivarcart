@@ -124,7 +124,7 @@ final readonly class AdminBundle
      */
     public static function files(): array
     {
-        $directory = dirname(__DIR__, 2).'/resources/dist';
+        $directory = dirname(__DIR__, 2).'/resources/dist/admin';
 
         return [
             $directory.'/admin.js',

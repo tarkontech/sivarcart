@@ -61,7 +61,7 @@ final class AdminAssetController
      */
     private function serve(string $file, string $type): Response
     {
-        $path = dirname(__DIR__, 4).'/resources/dist/'.$file;
+        $path = dirname(__DIR__, 4).'/resources/dist/admin/'.$file;
 
         if (! is_file($path)) {
             abort(404, 'El archivo del panel no existe.');
