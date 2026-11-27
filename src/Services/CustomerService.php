@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\PasswordBroker;
@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Auth as AuthFacade;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerAlreadyExists;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidDocument;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\CustomerAddress;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Notifications\AccountWelcomeNotification;
-use SivarcartCore\SivarcartCore\Rules\CustomerDocument;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Exceptions\CustomerAlreadyExists;
+use Tarkontech\SivarCart\Exceptions\InvalidDocument;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\CustomerAddress;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Notifications\AccountWelcomeNotification;
+use Tarkontech\SivarCart\Rules\CustomerDocument;
 
 /**
  * Keeps the account of the buyers of the store.
@@ -48,13 +48,13 @@ final class CustomerService
         $email = $this->email($attributes);
 
         if ($email === null) {
-            throw new SivarcartCoreException('La cuenta necesita un correo electrónico.');
+            throw new SivarCartException('La cuenta necesita un correo electrónico.');
         }
 
         $password = $this->string($attributes, 'password');
 
         if ($password === null) {
-            throw new SivarcartCoreException('La cuenta necesita una contraseña.');
+            throw new SivarCartException('La cuenta necesita una contraseña.');
         }
 
         $this->assertDocumentIsValid($attributes);
@@ -154,11 +154,11 @@ final class CustomerService
         $customer = Customer::query()->find($id);
 
         if ($customer === null) {
-            throw new SivarcartCoreException('El enlace de verificación no es válido.');
+            throw new SivarCartException('El enlace de verificación no es válido.');
         }
 
         if (! hash_equals($customer->emailVerificationHash(), $hash)) {
-            throw new SivarcartCoreException('El enlace de verificación no es válido.');
+            throw new SivarCartException('El enlace de verificación no es válido.');
         }
 
         return $this->verifyEmail($customer);
@@ -288,7 +288,7 @@ final class CustomerService
         );
 
         if ($status !== Password::PASSWORD_RESET) {
-            throw new SivarcartCoreException('El enlace de restablecimiento no es válido o ya caducó.');
+            throw new SivarCartException('El enlace de restablecimiento no es válido o ya caducó.');
         }
     }
 
@@ -368,7 +368,7 @@ final class CustomerService
      */
     private function guard(): string
     {
-        $guard = config('sivarcart-core.buyers.guard', 'sivarcart');
+        $guard = config('sivarcart.buyers.guard', 'sivarcart');
 
         return is_string($guard) && $guard !== '' ? $guard : 'sivarcart';
     }
@@ -378,7 +378,7 @@ final class CustomerService
      */
     private function broker(): PasswordBroker
     {
-        $broker = config('sivarcart-core.buyers.provider', 'sivarcart');
+        $broker = config('sivarcart.buyers.provider', 'sivarcart');
 
         return Password::broker(is_string($broker) && $broker !== '' ? $broker : 'sivarcart');
     }

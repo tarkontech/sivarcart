@@ -5,12 +5,12 @@ declare(strict_types=1);
 use Illuminate\Database\QueryException;
 use Rmirandasv\Wompi\Enums\FormaPago;
 use Rmirandasv\Wompi\Enums\ResultadoTransaccion;
-use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
-use SivarcartCore\SivarcartCore\Enums\PaymentTransactionStatus;
-use SivarcartCore\SivarcartCore\Models\DocumentSequence;
-use SivarcartCore\SivarcartCore\Models\Payment;
-use SivarcartCore\SivarcartCore\Models\PaymentTransaction;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use Tarkontech\SivarCart\Enums\DocumentSequenceType;
+use Tarkontech\SivarCart\Enums\PaymentTransactionStatus;
+use Tarkontech\SivarCart\Models\DocumentSequence;
+use Tarkontech\SivarCart\Models\Payment;
+use Tarkontech\SivarCart\Models\PaymentTransaction;
+use Tarkontech\SivarCart\Models\ProductVariant;
 
 it('stores the same webhook only once', function () {
     $payment = Payment::factory()->create();

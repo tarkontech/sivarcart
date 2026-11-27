@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Listeners;
+namespace Tarkontech\SivarCart\Listeners;
 
 use Illuminate\Notifications\Notification;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Events\PaymentFailed;
-use SivarcartCore\SivarcartCore\Notifications\PaymentFailedNotification;
-use SivarcartCore\SivarcartCore\Services\NotificationService;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Events\PaymentFailed;
+use Tarkontech\SivarCart\Notifications\PaymentFailedNotification;
+use Tarkontech\SivarCart\Services\NotificationService;
 
 /**
  * Writes to the buyer when the payment of the order did not go through.

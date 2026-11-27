@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SivarcartCore\SivarcartCore\Database\Factories\CartFactory;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\CartFactory;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * A shopping cart.

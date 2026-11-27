@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use SivarcartCore\SivarcartCore\Casts\WompiPaymentMethod;
-use SivarcartCore\SivarcartCore\Casts\WompiTransactionResult;
-use SivarcartCore\SivarcartCore\Database\Factories\PaymentTransactionFactory;
-use SivarcartCore\SivarcartCore\Enums\PaymentTransactionStatus;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Casts\WompiPaymentMethod;
+use Tarkontech\SivarCart\Casts\WompiTransactionResult;
+use Tarkontech\SivarCart\Database\Factories\PaymentTransactionFactory;
+use Tarkontech\SivarCart\Enums\PaymentTransactionStatus;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * A single transaction reported by a payment gateway.

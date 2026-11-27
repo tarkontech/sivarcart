@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductImage;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Models\Store;
 use Spatie\MediaLibrary\Conversions\Conversion;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductImage;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\Store;
 
 it('stores the media in the table of the images of the package', function (): void {
     expect(config('media-library.media_model'))->toBe(ProductImage::class)
@@ -73,7 +73,7 @@ it('builds the thumbnails that the configuration asks for', function (): void {
         $product->mediaConversions,
     );
 
-    expect($names)->toBe(array_keys(config('sivarcart-core.media.thumbnails', [])));
+    expect($names)->toBe(array_keys(config('sivarcart.media.thumbnails', [])));
 });
 
 it('writes the manipulations of the thumbnail so they survive the database', function (): void {

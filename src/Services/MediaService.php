@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\File;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidMediaFile;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductImage;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Support\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Tarkontech\SivarCart\Exceptions\InvalidMediaFile;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductImage;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Support\Media;
 use Throwable;
 
 /**

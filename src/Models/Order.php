@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SivarcartCore\SivarcartCore\Database\Factories\OrderFactory;
-use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidOrderStatusTransition;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidPaymentStatusTransition;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\OrderFactory;
+use Tarkontech\SivarCart\Enums\OrderHistoryAxis;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Exceptions\InvalidOrderStatusTransition;
+use Tarkontech\SivarCart\Exceptions\InvalidPaymentStatusTransition;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * An order placed by a shopper.

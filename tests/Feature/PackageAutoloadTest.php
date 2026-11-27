@@ -12,8 +12,8 @@ it('ships its factories so the application that installs it can use them', funct
 
     $autoload = $composer['autoload']['psr-4'] ?? [];
 
-    expect($autoload)->toHaveKey('SivarcartCore\SivarcartCore\Database\Factories\\')
-        ->and($autoload['SivarcartCore\SivarcartCore\Database\Factories\\'])->toBe('database/factories/');
+    expect($autoload)->toHaveKey('Tarkontech\SivarCart\Database\Factories\\')
+        ->and($autoload['Tarkontech\SivarCart\Database\Factories\\'])->toBe('database/factories/');
 });
 
 it('keeps the tests and the tools out of the production autoload', function () {
@@ -26,6 +26,6 @@ it('keeps the tests and the tools out of the production autoload', function () {
 
     $autoload = $composer['autoload']['psr-4'] ?? [];
 
-    expect($autoload)->not->toHaveKey('SivarcartCore\SivarcartCore\Tests\\')
+    expect($autoload)->not->toHaveKey('Tarkontech\SivarCart\Tests\\')
         ->not->toHaveKey('Workbench\App\\');
 });

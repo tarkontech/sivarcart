@@ -1,1 +1,1 @@
-<div>SivarcartCore placeholder view.</div>
+<div>SivarCart placeholder view.</div>

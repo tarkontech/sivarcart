@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Gate;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Tests\Fixtures\PlainUser;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Tests\Fixtures\PlainUser;
 use Workbench\App\Models\User;
 
 it('answers the ability of the permissions with the roles of the user', function () {

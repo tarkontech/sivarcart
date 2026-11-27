@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Data;
+namespace Tarkontech\SivarCart\Data;
 
 /**
  * The cost of delivering an order.

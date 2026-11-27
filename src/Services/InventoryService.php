@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
-use SivarcartCore\SivarcartCore\Enums\InventoryMovementType;
-use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\InventoryMovement;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use Tarkontech\SivarCart\Enums\InventoryMovementType;
+use Tarkontech\SivarCart\Exceptions\InsufficientStock;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\InventoryMovement;
+use Tarkontech\SivarCart\Models\ProductVariant;
 
 /**
  * Moves the stock of the store and writes the ledger that explains it.
@@ -240,12 +240,12 @@ final class InventoryService
     /**
      * A movement always moves at least one unit.
      *
-     * @throws SivarcartCoreException
+     * @throws SivarCartException
      */
     private function guardQuantity(int $quantity): void
     {
         if ($quantity < 1) {
-            throw new SivarcartCoreException('La cantidad de un movimiento de stock tiene que ser mayor que cero.');
+            throw new SivarCartException('La cantidad de un movimiento de stock tiene que ser mayor que cero.');
         }
     }
 }

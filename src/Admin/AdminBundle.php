@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin;
+namespace Tarkontech\SivarCart\Admin;
 
 use Illuminate\Support\Facades\Config;
 
@@ -48,8 +48,8 @@ final readonly class AdminBundle
      */
     public static function resolve(): self
     {
-        $entry = (string) Config::get('sivarcart-core.admin.bundle.entry', 'resources/js/sivarcart/admin.tsx');
-        $directory = (string) Config::get('sivarcart-core.admin.bundle.directory', 'build');
+        $entry = (string) Config::get('sivarcart.admin.bundle.entry', 'resources/js/sivarcart/admin.tsx');
+        $directory = (string) Config::get('sivarcart.admin.bundle.directory', 'build');
 
         if (self::manifestHas($directory, $entry)) {
             return new self(type: self::TYPE_VITE, entry: $entry, version: self::version());

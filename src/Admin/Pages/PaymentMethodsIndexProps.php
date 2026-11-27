@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin\Pages;
+namespace Tarkontech\SivarCart\Admin\Pages;
 
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Admin\AdminPage;
-use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Services\Admin\PaymentMethodService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPage;
+use Tarkontech\SivarCart\Admin\AdminPageProps;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Services\Admin\PaymentMethodService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * The data of the payment methods of the panel.
@@ -26,7 +26,7 @@ final readonly class PaymentMethodsIndexProps implements AdminPageProps
 
         $methods = app(PaymentMethodService::class)->paginate(
             search: $search,
-            perPage: (int) config('sivarcart-core.admin.per_page', 25),
+            perPage: (int) config('sivarcart.admin.per_page', 25),
         );
 
         return [

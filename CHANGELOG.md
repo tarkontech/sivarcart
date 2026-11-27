@@ -1,6 +1,38 @@
 # Release Notes
 
-## [Unreleased](https://github.com/tarkontech/sivarcart-core/compare/v0.1.0...1.x)
+## [Unreleased](https://github.com/tarkontech/sivarcart/compare/v0.1.0...1.x)
+
+### El paquete se llama SivarCart
+
+- **el paquete ya no se llama `sivarcart-core`**: ahora es `tarkontech/sivarcart`, y la marca se
+  escribe **SivarCart** (sin el sufijo "Core")
+- **las clases viven en un namespace con el vendor**: `Tarkontech\SivarCart\...` en lugar del
+  namespace duplicado de antes. La clase de entrada es `Tarkontech\SivarCart\SivarCart`, la
+  fachada es `Tarkontech\SivarCart\Facades\SivarCart` (con el alias de Laravel `SivarCart`) y el
+  provider es `Tarkontech\SivarCart\SivarCartServiceProvider`
+- **la configuración se llama `config/sivarcart.php`** y su clave es `sivarcart`, así que
+  `config('sivarcart.store.currency')` sustituye a `config('sivarcart-core.store.currency')`
+- **los comandos pierden el sufijo**: `sivarcart:install`, `sivarcart:publish-mailables` y
+  `sivarcart:create-admin` (los de `sivarcart:prune-carts` y `sivarcart:restock` no cambian)
+- **los tags de publicación pierden el sufijo**: `sivarcart`, `sivarcart-config`,
+  `sivarcart-views`, `sivarcart-panel-view`, `sivarcart-admin-source`,
+  `sivarcart-storefront-source`, `sivarcart-storefront-view`, `sivarcart-mailables`,
+  `sivarcart-lang`, `sivarcart-assets` y `sivarcart-migrations`
+- **los nombres de las vistas y de las traducciones pierden el sufijo**: `sivarcart::`,
+  `sivarcart-panel::` y `sivarcart-storefront::`
+- **los nombres de las rutas pierden el sufijo**: `sivarcart.admin.*`, `sivarcart.api.*`,
+  `sivarcart.storefront.*` y `sivarcart.wompi.webhook`
+- **las tablas NO cambian**: siguen siendo `sivarcart_*`, igual que el guard y el provider de los
+  compradores (`sivarcart`), los prefijos de la API (`api/sivarcart`) y del panel
+  (`sivarcart/admin`). El esquema y las URLs de una instalación existente siguen valiendo
+- **el código de error del dominio cambia**: la API responde `sivar_cart_exception` en lugar de
+  `sivarcart_core_exception`, porque el código es el nombre de la excepción en snake_case
+- **la skill de Boost se llama `sivarcart-development`** y el paquete de npm es
+  `@tarkontech/sivarcart-admin`
+- **para actualizar una instalación que ya tenía el paquete**: borra el `config/sivarcart-core.php`
+  que se había publicado (el nuevo es `config/sivarcart.php`) y las vistas publicadas en
+  `resources/views/vendor/sivarcart-core*`, y vuelve a publicar. Las migraciones conservan su
+  nombre, así que republicar el tag `sivarcart-migrations` no duplica ninguna
 
 ### La tienda del comprador entra en el núcleo
 

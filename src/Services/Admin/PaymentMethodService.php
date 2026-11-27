@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services\Admin;
+namespace Tarkontech\SivarCart\Services\Admin;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SivarcartCore\SivarcartCore\Enums\PaymentMethodType;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Support\Slug;
+use Tarkontech\SivarCart\Enums\PaymentMethodType;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Support\Slug;
 
 /**
  * The payment methods of the store, as the staff of the store sees them.

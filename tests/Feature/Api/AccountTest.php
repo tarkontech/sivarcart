@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\CustomerAddress;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\CustomerAddress;
 
 /**
  * The account of a buyer that signs up through the API.
@@ -100,7 +100,7 @@ it('does not say if the email exists when the credentials do not match', functio
         'password' => 'otracosa',
     ])
         ->assertStatus(422)
-        ->assertJsonPath('code', 'sivarcart_core_exception')
+        ->assertJsonPath('code', 'sivar_cart_exception')
         ->assertJsonMissingPath('data');
 });
 
@@ -165,7 +165,7 @@ it('does not change the password when the current one does not match', function 
         'password_confirmation' => 'otrasecreto123',
     ])
         ->assertStatus(422)
-        ->assertJsonPath('code', 'sivarcart_core_exception');
+        ->assertJsonPath('code', 'sivar_cart_exception');
 
     expect($customer->fresh()->password)->not->toBe('otrasecreto123');
 });

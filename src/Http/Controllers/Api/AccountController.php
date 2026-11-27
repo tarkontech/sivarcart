@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Api;
+namespace Tarkontech\SivarCart\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Http\Requests\ChangePasswordRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\LoginRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\RegisterRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\SendResetLinkRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\UpdateProfileRequest;
-use SivarcartCore\SivarcartCore\Http\Resources\CustomerAddressResource;
-use SivarcartCore\SivarcartCore\Http\Resources\CustomerResource;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Http\Requests\ChangePasswordRequest;
+use Tarkontech\SivarCart\Http\Requests\LoginRequest;
+use Tarkontech\SivarCart\Http\Requests\RegisterRequest;
+use Tarkontech\SivarCart\Http\Requests\SendResetLinkRequest;
+use Tarkontech\SivarCart\Http\Requests\UpdateProfileRequest;
+use Tarkontech\SivarCart\Http\Resources\CustomerAddressResource;
+use Tarkontech\SivarCart\Http\Resources\CustomerResource;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Services\CustomerService;
 
 /**
  * The account of a buyer.
@@ -59,7 +59,7 @@ final class AccountController extends ApiController
         );
 
         if (! $buyer instanceof Customer) {
-            throw new SivarcartCoreException((string) __('sivarcart-core::messages.api.invalid_credentials'));
+            throw new SivarCartException((string) __('sivarcart::messages.api.invalid_credentials'));
         }
 
         return CustomerResource::make($buyer)->response();
@@ -86,7 +86,7 @@ final class AccountController extends ApiController
         $this->customers->sendPasswordResetLink((string) $request->validated('email'));
 
         return response()->json([
-            'message' => (string) __('sivarcart-core::messages.api.password_link_sent'),
+            'message' => (string) __('sivarcart::messages.api.password_link_sent'),
         ], 202);
     }
 
@@ -116,13 +116,13 @@ final class AccountController extends ApiController
         $buyer = $this->buyer();
 
         if (! $this->customers->verifyPassword($buyer, (string) $request->validated('current_password'))) {
-            throw new SivarcartCoreException((string) __('sivarcart-core::messages.api.wrong_password'));
+            throw new SivarCartException((string) __('sivarcart::messages.api.wrong_password'));
         }
 
         $this->customers->changePassword($buyer, (string) $request->validated('password'));
 
         return response()->json([
-            'message' => (string) __('sivarcart-core::messages.api.password_changed'),
+            'message' => (string) __('sivarcart::messages.api.password_changed'),
         ]);
     }
 

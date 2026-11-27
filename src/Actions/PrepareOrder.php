@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Actions;
+namespace Tarkontech\SivarCart\Actions;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
-use SivarcartCore\SivarcartCore\Events\OrderPrepared;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\OrderService;
+use Tarkontech\SivarCart\Events\OrderPrepared;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\OrderService;
 
 /**
  * Starts the preparation of an order.

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Illuminate\Database\UniqueConstraintViolationException;
-use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
-use SivarcartCore\SivarcartCore\Models\DocumentSequence;
+use Tarkontech\SivarCart\Enums\DocumentSequenceType;
+use Tarkontech\SivarCart\Models\DocumentSequence;
 
 /**
  * Numbers the documents of the store.
@@ -29,7 +29,7 @@ final class SequenceService
 
         $number = $this->increment($type, $period);
 
-        $padding = (int) config('sivarcart-core.orders.number_padding', 5);
+        $padding = (int) config('sivarcart.orders.number_padding', 5);
 
         return sprintf('%s-%s-%s', $prefix, $period, str_pad((string) $number, $padding, '0', STR_PAD_LEFT));
     }

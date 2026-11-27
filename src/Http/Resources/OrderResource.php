@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Resources;
+namespace Tarkontech\SivarCart\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Payment;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Payment;
 
 /**
  * An order, as the store API shows it.

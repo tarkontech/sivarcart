@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Services\MediaService;
-use SivarcartCore\SivarcartCore\Services\StoreService;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Services\MediaService;
+use Tarkontech\SivarCart\Services\StoreService;
 use Throwable;
 
 /**
@@ -33,14 +33,14 @@ final class StoreMediaController
         $store = app(StoreService::class)->current();
 
         if (! $store instanceof Store) {
-            abort(404, __('sivarcart-core::admin.settings.not_found'));
+            abort(404, __('sivarcart::admin.settings.not_found'));
         }
 
         $file = $request->file('logo');
 
         if ($file === null) {
             return back()
-                ->withErrors(['logo' => __('sivarcart-core::admin.settings.invalid_image')])
+                ->withErrors(['logo' => __('sivarcart::admin.settings.invalid_image')])
                 ->setStatusCode(303);
         }
 
@@ -52,7 +52,7 @@ final class StoreMediaController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.settings.logo_saved'));
+        Inertia::flash('notice', __('sivarcart::admin.settings.logo_saved'));
 
         return back()->setStatusCode(303);
     }
@@ -69,14 +69,14 @@ final class StoreMediaController
         $store = app(StoreService::class)->current();
 
         if (! $store instanceof Store) {
-            abort(404, __('sivarcart-core::admin.settings.not_found'));
+            abort(404, __('sivarcart::admin.settings.not_found'));
         }
 
         $file = $request->file('favicon');
 
         if ($file === null) {
             return back()
-                ->withErrors(['favicon' => __('sivarcart-core::admin.settings.invalid_image')])
+                ->withErrors(['favicon' => __('sivarcart::admin.settings.invalid_image')])
                 ->setStatusCode(303);
         }
 
@@ -88,7 +88,7 @@ final class StoreMediaController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.settings.favicon_saved'));
+        Inertia::flash('notice', __('sivarcart::admin.settings.favicon_saved'));
 
         return back()->setStatusCode(303);
     }

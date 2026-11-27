@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The axis of an order that a recorded change belongs to.
@@ -23,6 +23,6 @@ enum OrderHistoryAxis: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.order_history_axis.'.$this->value);
+        return (string) __('sivarcart::messages.order_history_axis.'.$this->value);
     }
 }

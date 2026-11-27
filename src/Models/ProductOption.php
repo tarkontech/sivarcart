@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SivarcartCore\SivarcartCore\Database\Factories\ProductOptionFactory;
-use SivarcartCore\SivarcartCore\Enums\ProductOptionType;
+use Tarkontech\SivarCart\Database\Factories\ProductOptionFactory;
+use Tarkontech\SivarCart\Enums\ProductOptionType;
 
 /**
  * An option a product offers, such as "Talla" or "Color".

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin;
+namespace Tarkontech\SivarCart\Admin;
 
 use Illuminate\Support\Facades\Config;
 
@@ -28,7 +28,7 @@ final class AdminTheme
      */
     public static function variables(): array
     {
-        return self::read('sivarcart-core.admin.theme');
+        return self::read('sivarcart.admin.theme');
     }
 
     /**
@@ -40,7 +40,7 @@ final class AdminTheme
      */
     public static function darkVariables(): array
     {
-        return self::read('sivarcart-core.admin.theme_dark');
+        return self::read('sivarcart.admin.theme_dark');
     }
 
     /**

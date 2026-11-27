@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidCategoryParent;
-use SivarcartCore\SivarcartCore\Models\Category;
-use SivarcartCore\SivarcartCore\Services\Admin\CategoryService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Exceptions\InvalidCategoryParent;
+use Tarkontech\SivarCart\Models\Category;
+use Tarkontech\SivarCart\Services\Admin\CategoryService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Writes the categories of the catalog.
@@ -42,11 +42,11 @@ final class CategoryController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.categories.created', [
+        Inertia::flash('notice', __('sivarcart::admin.categories.created', [
             'name' => (string) $category->name,
         ]));
 
-        return redirect()->route('sivarcart-core.admin.categories.edit', [
+        return redirect()->route('sivarcart.admin.categories.edit', [
             'category' => (string) $category->uuid,
         ])->setStatusCode(303);
     }
@@ -59,7 +59,7 @@ final class CategoryController
         $model = app(CategoryService::class)->find($category);
 
         if (! $model instanceof Category) {
-            abort(404, __('sivarcart-core::admin.categories.not_found'));
+            abort(404, __('sivarcart::admin.categories.not_found'));
         }
 
         return $this->form($model);
@@ -73,7 +73,7 @@ final class CategoryController
         $model = app(CategoryService::class)->find($category);
 
         if (! $model instanceof Category) {
-            abort(404, __('sivarcart-core::admin.categories.not_found'));
+            abort(404, __('sivarcart::admin.categories.not_found'));
         }
 
         $attributes = $request->validate($this->rules());
@@ -86,7 +86,7 @@ final class CategoryController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.categories.saved', [
+        Inertia::flash('notice', __('sivarcart::admin.categories.saved', [
             'name' => (string) $model->name,
         ]));
 
@@ -101,16 +101,16 @@ final class CategoryController
         $model = app(CategoryService::class)->find($category);
 
         if (! $model instanceof Category) {
-            abort(404, __('sivarcart-core::admin.categories.not_found'));
+            abort(404, __('sivarcart::admin.categories.not_found'));
         }
 
         app(CategoryService::class)->delete($model);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.categories.deleted', [
+        Inertia::flash('notice', __('sivarcart::admin.categories.deleted', [
             'name' => (string) $model->name,
         ]));
 
-        return redirect()->route('sivarcart-core.admin.page', ['page' => 'categories'])
+        return redirect()->route('sivarcart.admin.page', ['page' => 'categories'])
             ->setStatusCode(303);
     }
 

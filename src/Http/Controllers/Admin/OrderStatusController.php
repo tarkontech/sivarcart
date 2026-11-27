@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\Admin\OrderService as AdminOrderService;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\Admin\OrderService as AdminOrderService;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Support\Auth;
 use Throwable;
 
 /**
@@ -34,14 +34,14 @@ final class OrderStatusController
         $model = app(AdminOrderService::class)->find($order);
 
         if (! $model instanceof Order) {
-            abort(404, __('sivarcart-core::admin.orders.not_found'));
+            abort(404, __('sivarcart::admin.orders.not_found'));
         }
 
         $status = OrderStatus::tryFrom($validated['status']);
 
         if (! $status instanceof OrderStatus || ! $this->isMovable($status)) {
             return back()
-                ->withErrors(['status' => __('sivarcart-core::admin.orders.unknown_status')])
+                ->withErrors(['status' => __('sivarcart::admin.orders.unknown_status')])
                 ->setStatusCode(303);
         }
 
@@ -64,7 +64,7 @@ final class OrderStatusController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.orders.moved', [
+        Inertia::flash('notice', __('sivarcart::admin.orders.moved', [
             'status' => $model->status->label(),
         ]));
 

@@ -1,6 +1,6 @@
 {
-    "name": "@tarkontech/sivarcart-core-admin",
-    "description": "El panel de administración y la tienda de SivarCart Core, en React.",
+    "name": "@tarkontech/sivarcart-admin",
+    "description": "El panel de administración y la tienda de SivarCart, en React.",
     "private": true,
     "type": "module",
     "scripts": {

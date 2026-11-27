@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin;
+namespace Tarkontech\SivarCart\Admin;
 
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * The registry of the administration panel.
@@ -12,7 +12,7 @@ use SivarcartCore\SivarcartCore\Support\Auth;
  * The panel is made of pages and widgets. The package registers its own, and
  * the host application registers the ones it needs:
  *
- *     SivarcartCore::admin()->page(
+ *     SivarCart::admin()->page(
  *         key: 'quick-view',
  *         label: 'Vista rápida',
  *         permission: 'orders.view',

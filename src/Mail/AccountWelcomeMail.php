@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
-use SivarcartCore\SivarcartCore\Models\Customer;
+use Tarkontech\SivarCart\Models\Customer;
 
 /**
  * The email the buyer receives when the account is created.
@@ -16,7 +16,7 @@ final class AccountWelcomeMail extends BuyerAccountMail
      */
     protected function template(): string
     {
-        return 'sivarcart-core::mail.account-welcome';
+        return 'sivarcart::mail.account-welcome';
     }
 
     /**

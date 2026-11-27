@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The kind of value a product option accepts.
@@ -21,6 +21,6 @@ enum ProductOptionType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.product_option_type.'.$this->value);
+        return (string) __('sivarcart::messages.product_option_type.'.$this->value);
     }
 }

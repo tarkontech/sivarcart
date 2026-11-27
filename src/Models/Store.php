@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use SivarcartCore\SivarcartCore\Database\Factories\StoreFactory;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
 use Spatie\MediaLibrary\HasMedia;
+use Tarkontech\SivarCart\Database\Factories\StoreFactory;
+use Tarkontech\SivarCart\Models\Concerns\HasStoreMedia;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * The profile and the settings of the single store this installation serves.

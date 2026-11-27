@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Resources;
+namespace Tarkontech\SivarCart\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use SivarcartCore\SivarcartCore\Models\CartItem;
+use Tarkontech\SivarCart\Models\CartItem;
 
 /**
  * A line of the cart of a shopper, as the store API shows it.

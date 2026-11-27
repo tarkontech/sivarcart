@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 
 /**
- * The build of the store of SivarCart Core.
+ * The build of the store of SivarCart.
  *
  * The bundle travels with the package: the package serves it, so a merchant
  * that installs the package has the store without Node and without a build

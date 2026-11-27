@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Tests\TestCase;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);
 

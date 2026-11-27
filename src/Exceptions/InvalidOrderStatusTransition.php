@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 use RuntimeException;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\OrderStatus;
 
 /**
  * Thrown when an order is asked to move to a status it cannot reach.

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\CouponType;
-use SivarcartCore\SivarcartCore\Exceptions\CouponNotApplicable;
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\CouponService;
+use Tarkontech\SivarCart\Enums\CouponType;
+use Tarkontech\SivarCart\Exceptions\CouponNotApplicable;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\CouponService;
 
 it('finds a coupon by its code', function () {
     $coupon = Coupon::factory()->create(['code' => 'BIENVENIDA']);

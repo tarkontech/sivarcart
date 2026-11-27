@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Actions;
+namespace Tarkontech\SivarCart\Actions;
 
 use Illuminate\Support\Facades\DB;
-use SivarcartCore\SivarcartCore\Events\OrderCancelled;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\OrderService;
+use Tarkontech\SivarCart\Events\OrderCancelled;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\OrderService;
 
 /**
  * Cancels an order and gives the reserved units back.

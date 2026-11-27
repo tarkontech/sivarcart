@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Arr;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
+use Tarkontech\SivarCart\Enums\OrderNotification;
 
 it('has the same keys in every language', function () {
     $english = Arr::dot(require __DIR__.'/../../lang/en/messages.php');
@@ -15,7 +15,7 @@ it('has the same keys in every language', function () {
 it('has every key the templates use', function () {
     foreach (OrderNotification::cases() as $notification) {
         foreach (['label', 'subject', 'greeting', 'body', 'cta', 'footer'] as $key) {
-            $translation = "sivarcart-core::messages.order_notifications.{$notification->value}.{$key}";
+            $translation = "sivarcart::messages.order_notifications.{$notification->value}.{$key}";
 
             expect(trans($translation))->not->toBe($translation);
         }
@@ -24,7 +24,7 @@ it('has every key the templates use', function () {
 
 it('has the headers of the table of the items', function () {
     foreach (['product', 'quantity', 'price'] as $key) {
-        $translation = "sivarcart-core::messages.order_notifications.table.{$key}";
+        $translation = "sivarcart::messages.order_notifications.table.{$key}";
 
         expect(trans($translation))->not->toBe($translation);
     }
@@ -33,14 +33,14 @@ it('has the headers of the table of the items', function () {
 it('speaks the language of the application', function () {
     app()->setLocale('es');
 
-    expect(trans('sivarcart-core::messages.order_notifications.order_placed.label'))
+    expect(trans('sivarcart::messages.order_notifications.order_placed.label'))
         ->toBe('Pedido recibido');
 });
 
 it('speaks the language of the store when the application uses es_SV', function () {
     app()->setLocale('es_SV');
 
-    expect(trans('sivarcart-core::messages.order_notifications.order_placed.label'))
+    expect(trans('sivarcart::messages.order_notifications.order_placed.label'))
         ->toBe('Pedido recibido');
 });
 

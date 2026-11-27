@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SivarcartCore\SivarcartCore\Database\Factories\PaymentFactory;
-use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\PaymentFactory;
+use Tarkontech\SivarCart\Enums\PaymentRecordStatus;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * The payment of an order.

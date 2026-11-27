@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
-use SivarcartCore\SivarcartCore\Database\Factories\DocumentSequenceFactory;
-use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
+use Tarkontech\SivarCart\Database\Factories\DocumentSequenceFactory;
+use Tarkontech\SivarCart\Enums\DocumentSequenceType;
 
 /**
  * The counter behind the human readable document numbers.

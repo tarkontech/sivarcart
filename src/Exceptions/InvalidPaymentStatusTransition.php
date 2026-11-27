@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 use RuntimeException;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
 
 /**
  * Thrown when the payment of an order is asked to move to a state it cannot

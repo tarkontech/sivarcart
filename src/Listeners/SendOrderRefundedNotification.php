@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Listeners;
+namespace Tarkontech\SivarCart\Listeners;
 
 use Illuminate\Notifications\Notification;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Events\OrderRefunded;
-use SivarcartCore\SivarcartCore\Notifications\OrderRefundedNotification;
-use SivarcartCore\SivarcartCore\Services\NotificationService;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Events\OrderRefunded;
+use Tarkontech\SivarCart\Notifications\OrderRefundedNotification;
+use Tarkontech\SivarCart\Services\NotificationService;
 
 /**
  * Writes to the buyer when the order is refunded.

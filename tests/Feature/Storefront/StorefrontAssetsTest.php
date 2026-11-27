@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Storefront\StorefrontBundle;
+use Tarkontech\SivarCart\Storefront\StorefrontBundle;
 
 it('serves the stylesheet of the store', function () {
     $response = $this->get('/tienda/assets/'.StorefrontBundle::version().'/storefront.css');

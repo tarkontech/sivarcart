@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Admin\AdminPage;
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
+use Tarkontech\SivarCart\Admin\AdminPage;
+use Tarkontech\SivarCart\Admin\AdminPanel;
 
 /**
  * Renders the pages of the administration panel.

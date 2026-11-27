@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use SivarcartCore\SivarcartCore\Services\StoreService;
+use Tarkontech\SivarCart\Services\StoreService;
 
 /**
  * Writes the settings of the store.
@@ -32,7 +32,7 @@ final class SettingsController
 
         app(StoreService::class)->update($attributes);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.settings.saved'));
+        Inertia::flash('notice', __('sivarcart::admin.settings.saved'));
 
         return back()->setStatusCode(303);
     }

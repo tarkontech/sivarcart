@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin\Pages;
+namespace Tarkontech\SivarCart\Admin\Pages;
 
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Admin\AdminPage;
-use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
-use SivarcartCore\SivarcartCore\Admin\AdminPermissions;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Services\Admin\RoleService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPage;
+use Tarkontech\SivarCart\Admin\AdminPageProps;
+use Tarkontech\SivarCart\Admin\AdminPermissions;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Services\Admin\RoleService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * The data of the roles of the staff of the store.

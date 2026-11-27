@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The notifications the package sends to the buyer.
@@ -29,6 +29,6 @@ enum OrderNotification: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.order_notifications.'.$this->value.'.label');
+        return (string) __('sivarcart::messages.order_notifications.'.$this->value.'.label');
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use SivarcartCore\SivarcartCore\Models\Product;
+use Tarkontech\SivarCart\Models\Product;
 
 /**
  * Gives the table of the images the shape the media library needs.

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\ShippingMethod;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 /**
  * The address a shopper sends when the order is placed.

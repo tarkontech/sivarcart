@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
-use SivarcartCore\SivarcartCore\Admin\AdminBundle;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Admin\AdminBundle;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 it('serves the stylesheet of the panel', function () {

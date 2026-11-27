@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
-use SivarcartCore\SivarcartCore\Tests\Support\FakePaymentGateway;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Payments\PaymentGatewayManager;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Tests\Support\FakePaymentGateway;
 
 /**
  * An order of a buyer that is waiting for a payment link.
@@ -126,5 +126,5 @@ it('does not give a link to pay an order that does not wait for a payment', func
 
     $this->postJson('/api/sivarcart/orders/'.$order->uuid.'/payment')
         ->assertStatus(422)
-        ->assertJsonPath('code', 'sivarcart_core_exception');
+        ->assertJsonPath('code', 'sivar_cart_exception');
 });

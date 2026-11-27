@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Seeders;
+namespace Tarkontech\SivarCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use SivarcartCore\SivarcartCore\Enums\PaymentMethodType;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
+use Tarkontech\SivarCart\Enums\PaymentMethodType;
+use Tarkontech\SivarCart\Models\PaymentMethod;
 
 /**
  * Seeds the payment methods a Salvadoran store usually offers.

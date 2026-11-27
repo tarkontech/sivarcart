@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Storefront;
+namespace Tarkontech\SivarCart\Http\Controllers\Storefront;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Actions\StartPayment;
-use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter;
+use Tarkontech\SivarCart\Actions\StartPayment;
+use Tarkontech\SivarCart\Exceptions\PaymentGatewayFailed;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Storefront\StorefrontPresenter;
 
 /**
  * The orders of the shopper.
@@ -79,7 +79,7 @@ final class OrderController
         }
 
         return redirect()
-            ->route('sivarcart-core.storefront.orders.show', ['order' => $model->uuid])
+            ->route('sivarcart.storefront.orders.show', ['order' => $model->uuid])
             ->with('payment_link', [
                 'url' => $result->url,
                 'reference' => $result->reference,

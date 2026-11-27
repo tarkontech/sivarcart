@@ -1,13 +1,13 @@
 <div align="center">
-    <h1>SivarCart Core</h1>
+    <h1>SivarCart</h1>
 </div>
 
 <p align="center">
-    <a href="https://packagist.org/packages/tarkontech/sivarcart-core"><img src="https://img.shields.io/packagist/v/tarkontech/sivarcart-core.svg?style=flat-square" alt="Packagist"></a>
-    <a href="https://packagist.org/packages/tarkontech/sivarcart-core"><img src="https://img.shields.io/packagist/php-v/tarkontech/sivarcart-core.svg?style=flat-square" alt="PHP from Packagist"></a>
-    <a href="https://packagist.org/packages/tarkontech/sivarcart-core"><img src="https://img.shields.io/badge/laravel-cloud-badge/tarkontech/sivarcart-core?style=flat" alt="Laravel versions"></a>
-    <a href="https://github.com/tarkontech/sivarcart-core/actions"><img alt="GitHub Workflow Status (main)" src="https://img.shields.io/github/actions/workflow/status/tarkontech/sivarcart-core/tests.yml?branch=main&label=Tests&style=flat-square"></a>
-    <a href="https://packagist.org/packages/tarkontech/sivarcart-core"><img src="https://img.shields.io/packagist/dt/tarkontech/sivarcart-core.svg?style=flat-square" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/tarkontech/sivarcart"><img src="https://img.shields.io/packagist/v/tarkontech/sivarcart.svg?style=flat-square" alt="Packagist"></a>
+    <a href="https://packagist.org/packages/tarkontech/sivarcart"><img src="https://img.shields.io/packagist/php-v/tarkontech/sivarcart.svg?style=flat-square" alt="PHP from Packagist"></a>
+    <a href="https://packagist.org/packages/tarkontech/sivarcart"><img src="https://img.shields.io/badge/laravel-cloud-badge/tarkontech/sivarcart?style=flat" alt="Laravel versions"></a>
+    <a href="https://github.com/tarkontech/sivarcart/actions"><img alt="GitHub Workflow Status (main)" src="https://img.shields.io/github/actions/workflow/status/tarkontech/sivarcart/tests.yml?branch=main&label=Tests&style=flat-square"></a>
+    <a href="https://packagist.org/packages/tarkontech/sivarcart"><img src="https://img.shields.io/packagist/dt/tarkontech/sivarcart.svg?style=flat-square" alt="Total Downloads"></a>
 </p>
 
 Tienda en linea para comercios de El Salvador.
@@ -21,13 +21,13 @@ tus servidores, publícalo, y úsalo como quieras.
 Instala el paquete con Composer:
 
 ```bash
-composer require tarkontech/sivarcart-core
+composer require tarkontech/sivarcart
 ```
 
 Y luego instala la tienda con un solo comando:
 
 ```bash
-php artisan sivarcart-core:install
+php artisan sivarcart:install
 ```
 
 El comando publica las migraciones en `database/migrations`, las ejecuta y siembra los
@@ -55,19 +55,19 @@ personal, la tienda, los métodos de pago y los métodos de envío.
 Si prefieres hacerlo paso a paso:
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core-migrations"
+php artisan vendor:publish --tag="sivarcart-migrations"
 php artisan migrate
-php artisan db:seed --class="SivarcartCore\\SivarcartCore\\Database\\Seeders\\DatabaseSeeder"
+php artisan db:seed --class="Tarkontech\\SivarCart\\Database\\Seeders\\DatabaseSeeder"
 ```
 
 ### Dar de alta al personal
 
 El seeder deja los **roles** de la tienda (`owner`, `manager` y `staff`), pero no las personas:
-el personal de la tienda son los usuarios de la aplicación. El comando `sivarcart-core:create-admin`
+el personal de la tienda son los usuarios de la aplicación. El comando `sivarcart:create-admin`
 crea el primero y le da su rol:
 
 ```bash
-php artisan sivarcart-core:create-admin --name="Dueño" --email="dueno@mitienda.test" --role=owner
+php artisan sivarcart:create-admin --name="Dueño" --email="dueno@mitienda.test" --role=owner
 ```
 
 Pregunta lo que no le digas por opción (incluida la contraseña, que no se muestra), y el rol
@@ -76,14 +76,14 @@ viene por defecto en `owner`, que es el que tiene todos los permisos.
 ### Publicar los demás recursos
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core"               # todo
-php artisan vendor:publish --tag="sivarcart-core-config"        # config/sivarcart-core.php
-php artisan vendor:publish --tag="sivarcart-core-views"         # resources/views/vendor/sivarcart-core
-php artisan vendor:publish --tag="sivarcart-core-mailables"     # resources/views/vendor/sivarcart-core/mail
-php artisan vendor:publish --tag="sivarcart-core-lang"          # lang/vendor/sivarcart-core
-php artisan vendor:publish --tag="sivarcart-core-assets"        # public/vendor/sivarcart-core
-php artisan vendor:publish --tag="sivarcart-core-admin-source"  # resources/js/sivarcart
-php artisan vendor:publish --tag="sivarcart-core-panel-view"    # el root view del panel
+php artisan vendor:publish --tag="sivarcart"               # todo
+php artisan vendor:publish --tag="sivarcart-config"        # config/sivarcart.php
+php artisan vendor:publish --tag="sivarcart-views"         # resources/views/vendor/sivarcart
+php artisan vendor:publish --tag="sivarcart-mailables"     # resources/views/vendor/sivarcart/mail
+php artisan vendor:publish --tag="sivarcart-lang"          # lang/vendor/sivarcart
+php artisan vendor:publish --tag="sivarcart-assets"        # public/vendor/sivarcart
+php artisan vendor:publish --tag="sivarcart-admin-source"  # resources/js/sivarcart
+php artisan vendor:publish --tag="sivarcart-panel-view"    # el root view del panel
 ```
 
 > **Las migraciones se publican, no se cargan desde el paquete.** Laravel deriva la clase
@@ -95,7 +95,7 @@ php artisan vendor:publish --tag="sivarcart-core-panel-view"    # el root view d
 ## Modelo de datos
 
 Todas las tablas llevan el prefijo `sivarcart_`. Los modelos viven en
-`SivarcartCore\SivarcartCore\Models`.
+`Tarkontech\SivarCart\Models`.
 
 ### Tienda y configuración
 
@@ -177,7 +177,7 @@ Para que un usuario tenga los roles de la tienda, agregale el trait a tu modelo:
 
 ```php
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreRoles;
+use Tarkontech\SivarCart\Models\Concerns\HasStoreRoles;
 
 class User extends Authenticatable
 {
@@ -198,7 +198,7 @@ $user->revokeStoreRole('manager');          // Se lo quita.
 Y el paquete resuelve el usuario autenticado con el guard configurado:
 
 ```php
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 Auth::user();     // El usuario autenticado, o null.
 Auth::model();    // La clase del modelo de usuario.
@@ -227,7 +227,7 @@ arrancar, así que la aplicación no toca su `config/auth.php`:
 El comprador inicia sesión con el servicio de la cuenta:
 
 ```php
-use SivarcartCore\SivarcartCore\Services\CustomerService;
+use Tarkontech\SivarCart\Services\CustomerService;
 
 $customers = app(CustomerService::class);
 
@@ -268,7 +268,7 @@ tienda cuando la tienda está encendida, y la de la aplicación cuando la aplica
 su ruta. El enlace de la verificación siempre es de la aplicación:
 
 ```php
-// config/sivarcart-core.php
+// config/sivarcart.php
 'buyers' => [
     'password_reset_route' => null,
     'email_verification_route' => 'verification.verify',
@@ -283,8 +283,8 @@ dígito verificador de cada uno: el DUI (módulo 10), el NIT y el RUC (módulo 1
 pasaporte y el resto. La regla está lista para usarla en los formularios:
 
 ```php
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Rules\CustomerDocument;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Rules\CustomerDocument;
 
 'document_number' => [new CustomerDocument(CustomerDocumentType::DUI)],
 ```
@@ -326,7 +326,7 @@ variante sin valores de opción, así el precio, el descuento y el stock siempre
 un solo camino de código:
 
 ```php
-use SivarcartCore\SivarcartCore\Models\Product;
+use Tarkontech\SivarCart\Models\Product;
 
 $product = Product::query()->published()->with('variants')->first();
 
@@ -418,8 +418,8 @@ El ciclo de vida de la orden vive en el enum `OrderStatus`, y el del pago en
 `PaymentStatus`:
 
 ```php
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
 
 $order->transitionTo(OrderStatus::SHIPPED, note: 'Salió con el courier');
 $order->transitionPaymentTo(PaymentStatus::PAID, note: 'Pago recibido');
@@ -462,7 +462,7 @@ El historial de la orden guarda **un renglón por eje**, y la columna `axis` los
 distingue:
 
 ```php
-use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
+use Tarkontech\SivarCart\Enums\OrderHistoryAxis;
 
 $order->statusHistories()->forAxis(OrderHistoryAxis::STATUS)->get();  // el ciclo de la orden
 $order->statusHistories()->forAxis(OrderHistoryAxis::PAYMENT)->get(); // el estado del pago
@@ -491,8 +491,8 @@ español.
 ## Capa de dominio
 
 El paquete no es solo un esquema: es el comportamiento de la tienda. Los servicios viven
-en `SivarcartCore\SivarcartCore\Services` y son la espina dorsal del dominio. Las
-acciones (`SivarcartCore\SivarcartCore\Actions`) orquestan los servicios y emiten los
+en `Tarkontech\SivarCart\Services` y son la espina dorsal del dominio. Las
+acciones (`Tarkontech\SivarCart\Actions`) orquestan los servicios y emiten los
 eventos; los modelos no llevan reglas de negocio.
 
 ### El flujo de una compra
@@ -501,9 +501,9 @@ El comprador inicia sesión antes de comprar: el carrito es de un comprador y la
 sin comprador no existe.
 
 ```php
-use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
-use SivarcartCore\SivarcartCore\Services\CartService;
+use Tarkontech\SivarCart\Actions\PlaceOrder;
+use Tarkontech\SivarCart\Data\CheckoutData;
+use Tarkontech\SivarCart\Services\CartService;
 
 $cart = app(CartService::class)->findOrCreate($customer->getKey());
 
@@ -563,9 +563,9 @@ El catálogo se lee con `CatalogService`: los filtros viven en `CatalogFilters` 
 un paginador de productos.
 
 ```php
-use SivarcartCore\SivarcartCore\Data\CatalogFilters;
-use SivarcartCore\SivarcartCore\Enums\CatalogSort;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
+use Tarkontech\SivarCart\Data\CatalogFilters;
+use Tarkontech\SivarCart\Enums\CatalogSort;
+use Tarkontech\SivarCart\Services\CatalogService;
 
 $products = app(CatalogService::class)->search(new CatalogFilters(
     categoryId: 12,        // incluye los productos de sus subcategorías
@@ -606,7 +606,7 @@ El `MediaService` es el dueño del dominio de los medios: valida el archivo, dec
 producto es la imagen y cuál es la principal.
 
 ```php
-use SivarcartCore\SivarcartCore\Services\MediaService;
+use Tarkontech\SivarCart\Services\MediaService;
 
 $media = app(MediaService::class);
 
@@ -640,7 +640,7 @@ Los tamaños de las miniaturas, el disco, el tamaño máximo y los tipos de arch
 acepta la tienda salen de la sección `media` de la configuración:
 
 ```php
-// config/sivarcart-core.php
+// config/sivarcart.php
 'media' => [
     'disk' => 'public',
     'max_size' => 10240,                 // KB
@@ -714,10 +714,10 @@ El despacho es la mitad física del ciclo de vida de la orden, y lo maneja el pe
 la tienda con las acciones del paquete:
 
 ```php
-use SivarcartCore\SivarcartCore\Actions\DeliverOrder;
-use SivarcartCore\SivarcartCore\Actions\PrepareOrder;
-use SivarcartCore\SivarcartCore\Actions\ReturnOrder;
-use SivarcartCore\SivarcartCore\Actions\ShipOrder;
+use Tarkontech\SivarCart\Actions\DeliverOrder;
+use Tarkontech\SivarCart\Actions\PrepareOrder;
+use Tarkontech\SivarCart\Actions\ReturnOrder;
+use Tarkontech\SivarCart\Actions\ShipOrder;
 
 app(PrepareOrder::class)->execute($order);        // pendiente → en preparación
 app(ShipOrder::class)->execute($order);           // → enviada
@@ -770,7 +770,7 @@ siga siendo la misma.
 ### Cobrar con Wompi
 
 ```php
-use SivarcartCore\SivarcartCore\Actions\StartPayment;
+use Tarkontech\SivarCart\Actions\StartPayment;
 
 $link = app(StartPayment::class)->execute($order);
 
@@ -786,7 +786,7 @@ reintentar no cree un enlace nuevo.
 El paquete registra la ruta del webhook y la application **no** tiene que publicarla:
 
 ```
-POST {config('sivarcart-core.wompi.webhook_path')}   →  sivarcart-core.wompi.webhook
+POST {config('sivarcart.wompi.webhook_path')}   →  sivarcart.wompi.webhook
 ```
 
 El middleware `wompi.webhook` del paquete [`rmirandasv/laravel-wompi`](https://github.com/rmirandasv/laravel-wompi)
@@ -819,7 +819,7 @@ que todavía puede revertirse:
 | `PaymentFailed` | Un pago no pasó. |
 
 ```php
-use SivarcartCore\SivarcartCore\Events\OrderPaid;
+use Tarkontech\SivarCart\Events\OrderPaid;
 
 Event::listen(function (OrderPaid $event): void {
     $event->order;      // la orden que se pagó
@@ -852,8 +852,8 @@ mailer caído no rompe una orden que ya está guardada.
 administración haya cambiado:
 
 ```php
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Models\NotificationSetting;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Models\NotificationSetting;
 
 NotificationSetting::query()->updateOrCreate(
     ['notification' => OrderNotification::ORDER_PLACED],
@@ -862,20 +862,20 @@ NotificationSetting::query()->updateOrCreate(
 ```
 
 Una notificación **sin fila** no está apagada: sigue el valor de
-`config('sivarcart-core.notifications.enabled')`, que viene habilitado. El conjunto de
+`config('sivarcart.notifications.enabled')`, que viene habilitado. El conjunto de
 notificaciones que existen lo define el código, en `OrderNotification::cases()`, que es
 lo que el panel lista.
 
 **Para reescribir un correo**, publica las plantillas y edítalas: las vistas del
-namespace `sivarcart-core` se leen primero en la aplicación, así que la copia gana sin
+namespace `sivarcart` se leen primero en la aplicación, así que la copia gana sin
 tocar una línea de PHP.
 
 ```bash
-php artisan sivarcart-core:publish-mailables
+php artisan sivarcart:publish-mailables
 ```
 
 El comando publica las siete plantillas en
-`resources/views/vendor/sivarcart-core/mail`. Sin `--force` no pisa las que ya están
+`resources/views/vendor/sivarcart/mail`. Sin `--force` no pisa las que ya están
 publicadas; con `--force` las sobrescribe. El texto de los correos vive en los archivos
 de idioma (`lang/en/messages.php` y `lang/es/messages.php`), que también se publican, y
 ahí viven también las etiquetas de los enums.
@@ -883,9 +883,9 @@ ahí viven también las etiquetas de los enums.
 ### Cancelar y reembolsar
 
 ```php
-use SivarcartCore\SivarcartCore\Actions\CancelOrder;
-use SivarcartCore\SivarcartCore\Actions\MarkOrderAsPaid;
-use SivarcartCore\SivarcartCore\Actions\RefundOrder;
+use Tarkontech\SivarCart\Actions\CancelOrder;
+use Tarkontech\SivarCart\Actions\MarkOrderAsPaid;
+use Tarkontech\SivarCart\Actions\RefundOrder;
 
 app(CancelOrder::class)->execute($order, 'El comprador se arrepintió');
 app(MarkOrderAsPaid::class)->execute($order);          // el pago se cobró fuera de línea
@@ -916,8 +916,8 @@ Solo hay dos contratos, y los dos tienen una columna que ya los respalda:
 | `PaymentGateway` | `WompiPaymentGateway`. | Registra un driver en el `PaymentGatewayManager`: `app(PaymentGatewayManager::class)->extend('mi-pasarela', ...)`. |
 
 ```php
-use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
-use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
+use Tarkontech\SivarCart\Contracts\ShippingRateCalculator;
+use Tarkontech\SivarCart\Payments\PaymentGatewayManager;
 
 // Un módulo que cobra según el departamento.
 app()->bind(ShippingRateCalculator::class, MiCalculadora::class);
@@ -927,7 +927,7 @@ app(PaymentGatewayManager::class)->extend('mi-pasarela', fn () => new MiPasarela
 ```
 
 El driver de un método de pago sale de `payment_methods.driver`; cuando no dice nada,
-se usa `config('sivarcart-core.wompi.driver')`.
+se usa `config('sivarcart.wompi.driver')`.
 
 No hay un contrato para el IVA: la tasa sale de la categoría fiscal del producto y, si
 no tiene, del IVA por defecto de la tienda. Un módulo que necesite otra cosa (precios
@@ -940,17 +940,17 @@ La facade solo es azúcar: agrupa los servicios para llegar a ellos desde una pl
 un comando.
 
 ```php
-use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
+use Tarkontech\SivarCart\Facades\SivarCart;
 
-SivarcartCore::carts();       // CartService
-SivarcartCore::customers();   // CustomerService
-SivarcartCore::orders();      // OrderService
-SivarcartCore::payments();    // PaymentService
-SivarcartCore::inventory();   // InventoryService
-SivarcartCore::catalog();     // CatalogService
-SivarcartCore::paymentMethods();  // PaymentMethodService
-SivarcartCore::shippingMethods(); // ShippingMethodService
-SivarcartCore::media();       // MediaService
+SivarCart::carts();       // CartService
+SivarCart::customers();   // CustomerService
+SivarCart::orders();      // OrderService
+SivarCart::payments();    // PaymentService
+SivarCart::inventory();   // InventoryService
+SivarCart::catalog();     // CatalogService
+SivarCart::paymentMethods();  // PaymentMethodService
+SivarCart::shippingMethods(); // ShippingMethodService
+SivarCart::media();       // MediaService
 ```
 
 ## La tienda del comprador
@@ -1047,7 +1047,7 @@ configuración del paquete:
 
 ```bash
 # 1. Publica el fuente de la tienda.
-php artisan vendor:publish --tag="sivarcart-core-storefront-source"
+php artisan vendor:publish --tag="sivarcart-storefront-source"
 
 # 2. Escribe tu propia entrada en resources/js/sivarcart/storefront.tsx
 #    y añade la entrada a tu vite.config.js.
@@ -1067,7 +1067,7 @@ El paquete mira el manifiesto de tu aplicación y, cuando encuentra la entrada
 El fuente de la tienda se publica con su propio tag:
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core-storefront-source"
+php artisan vendor:publish --tag="sivarcart-storefront-source"
 ```
 
 Queda en `resources/js/sivarcart/storefront/`, con los componentes de shadcn, las pantallas y
@@ -1079,7 +1079,7 @@ La vista que monta la tienda se publica con un tag propio, para quien quiera cam
 `<head>`, los datos de la página o el favicon:
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core-storefront-view"
+php artisan vendor:publish --tag="sivarcart-storefront-view"
 ```
 
 ### La tienda no rompe tu Inertia
@@ -1177,7 +1177,7 @@ corresponde:
 | No hay unidades disponibles | 422 | `insufficient_stock` |
 | El documento no tiene el formato de su tipo | 422 | `invalid_document` |
 | La pasarela de pago falló | 502 | `payment_gateway_failed` |
-| Cualquier otro error del dominio | 422 | `sivarcart_core_exception` |
+| Cualquier otro error del dominio | 422 | `sivar_cart_exception` |
 
 Los errores de validación los responde Laravel: un **422** con la lista de los campos que no
 cuadran, en el idioma de la aplicación.
@@ -1206,7 +1206,7 @@ pantalla de entrada del panel es solo la pantalla de ese guard.
 > de instalación, que explica qué hacer.
 
 ```php
-use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreRoles;
+use Tarkontech\SivarCart\Models\Concerns\HasStoreRoles;
 
 class User extends Authenticatable
 {
@@ -1230,7 +1230,7 @@ panel esconde los botones al personal que no los tiene, pero la ruta los negarí
 
 Leer es otra cosa: `catalog.view`, `orders.view`, `customers.view`, `settings.view`, `roles.view`
 y `staff.view` dejan ver. El vocabulario completo está en
-`SivarcartCore\SivarcartCore\Admin\AdminPermissions`, y el seeder de los roles del paquete deja
+`Tarkontech\SivarCart\Admin\AdminPermissions`, y el seeder de los roles del paquete deja
 `catalog.*`, `orders.*` y `customers.*` al administrador y `catalog.view`, `orders.view`,
 `orders.update` y `customers.view` al empleado.
 
@@ -1259,10 +1259,10 @@ El panel tiene un registro de páginas. La aplicación registra las suyas y el p
 la navegación, con el permiso que necesitan:
 
 ```php
-use SivarcartCore\SivarcartCore\Facades\SivarcartCore;
+use Tarkontech\SivarCart\Facades\SivarCart;
 
 // app/Providers/AppServiceProvider.php
-SivarcartCore::admin()->page(
+SivarCart::admin()->page(
     key: 'quick-view',
     label: 'Vista rápida',
     permission: 'orders.view',
@@ -1276,7 +1276,7 @@ componente es el **nombre** del componente, el mismo que resuelve el bundle del 
 Si lo que quieres es una ruta de tu aplicación, pasa la ruta y el paquete solo pone el enlace:
 
 ```php
-SivarcartCore::admin()->page(
+SivarCart::admin()->page(
     key: 'quick-view',
     label: 'Vista rápida',
     route: 'mi.quick-view',
@@ -1286,7 +1286,7 @@ SivarcartCore::admin()->page(
 El tablero también acepta widgets, que se renderizan en una rejilla debajo de los contadores:
 
 ```php
-SivarcartCore::admin()->widget(
+SivarCart::admin()->widget(
     key: 'ventas-de-hoy',
     component: 'Admin/Widgets/VentasDeHoy',
     props: new VentasDeHoyProps(),
@@ -1334,7 +1334,7 @@ configuración del paquete:
 
 ```bash
 # 1. Publica el fuente del panel.
-php artisan vendor:publish --tag="sivarcart-core-admin-source"
+php artisan vendor:publish --tag="sivarcart-admin-source"
 
 # 2. Escribe tu propia entrada en resources/js/sivarcart/admin.tsx
 #    y añade la entrada a tu vite.config.js.
@@ -1356,7 +1356,7 @@ Hay dos caminos, y se complementan.
 **Publicar el fuente.** Lo que el comerciante edita es suyo:
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core-admin-source"
+php artisan vendor:publish --tag="sivarcart-admin-source"
 ```
 
 Queda en `resources/js/sivarcart/`, con los componentes de shadcn, las pantallas y los layouts.
@@ -1366,7 +1366,7 @@ Edita lo que quieras y compila.
 instala el panel de una vez, con sus dependencias y sus variables CSS:
 
 ```bash
-npx shadcn@latest registry add @sivarcart=https://raw.githubusercontent.com/tarkontech/sivarcart-core/main/registry/{name}.json
+npx shadcn@latest registry add @sivarcart=https://raw.githubusercontent.com/tarkontech/sivarcart/main/registry/{name}.json
 npx shadcn@latest add @sivarcart/admin
 ```
 
@@ -1378,7 +1378,7 @@ El root view del panel, que es el archivo de Blade que monta la aplicación, se 
 tag propio, para quien quiera cambiar el `<head>` o el logo:
 
 ```bash
-php artisan vendor:publish --tag="sivarcart-core-panel-view"
+php artisan vendor:publish --tag="sivarcart-panel-view"
 ```
 
 ### Lo que el panel todavía no trae
@@ -1389,7 +1389,7 @@ y son la capa de escritura del catálogo.
 
 ## Configuration
 
-`config/sivarcart-core.php` trae los valores por defecto de la tienda, los prefijos de
+`config/sivarcart.php` trae los valores por defecto de la tienda, los prefijos de
 numeración de órdenes y pagos, la vida del carrito, la sección `api` de la API de tienda, la
 sección `storefront` de la tienda del comprador, la sección `admin` del panel de
 administración, la configuración de Wompi (ruta del webhook, ruta del redirect y las formas
@@ -1529,7 +1529,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Thank you for considering contributing to SivarCart Core! Please review our
+Thank you for considering contributing to SivarCart! Please review our
 [contributing guide](.github/CONTRIBUTING.md) to get started.
 
 ## Security Vulnerabilities
@@ -1543,4 +1543,4 @@ Please review [our security policy](.github/SECURITY.md) on how to report securi
 
 ## License
 
-SivarCart Core is open-sourced software licensed under the [MIT license](LICENSE.md).
+SivarCart is open-sourced software licensed under the [MIT license](LICENSE.md).

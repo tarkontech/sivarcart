@@ -6,11 +6,11 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Http\Controllers\Api\AccountController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Api\CartController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Api\CatalogController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Api\CheckoutController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Api\OrderController;
+use Tarkontech\SivarCart\Http\Controllers\Api\AccountController;
+use Tarkontech\SivarCart\Http\Controllers\Api\CartController;
+use Tarkontech\SivarCart\Http\Controllers\Api\CatalogController;
+use Tarkontech\SivarCart\Http\Controllers\Api\CheckoutController;
+use Tarkontech\SivarCart\Http\Controllers\Api\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,10 +39,10 @@ $session = [
     StartSession::class,
 ];
 
-$middleware = (array) config('sivarcart-core.api.middleware', ['api']);
+$middleware = (array) config('sivarcart.api.middleware', ['api']);
 $middleware[] = 'sivarcart.api';
 
-Route::prefix((string) config('sivarcart-core.api.prefix', 'api/sivarcart'))
+Route::prefix((string) config('sivarcart.api.prefix', 'api/sivarcart'))
     ->middleware($middleware)
     ->group(function () use ($session): void {
         /*
@@ -50,16 +50,16 @@ Route::prefix((string) config('sivarcart-core.api.prefix', 'api/sivarcart'))
         | and these routes do not need a session.
         */
         Route::get('products', [CatalogController::class, 'index'])
-            ->name('sivarcart-core.api.products.index');
+            ->name('sivarcart.api.products.index');
 
         Route::get('products/{product}', [CatalogController::class, 'show'])
-            ->name('sivarcart-core.api.products.show');
+            ->name('sivarcart.api.products.show');
 
         Route::get('categories', [CatalogController::class, 'categories'])
-            ->name('sivarcart-core.api.categories.index');
+            ->name('sivarcart.api.categories.index');
 
         Route::get('brands', [CatalogController::class, 'brands'])
-            ->name('sivarcart-core.api.brands.index');
+            ->name('sivarcart.api.brands.index');
 
         /*
         | The account of the buyer. The registration and the login do not need
@@ -67,29 +67,29 @@ Route::prefix((string) config('sivarcart-core.api.prefix', 'api/sivarcart'))
         */
         Route::middleware($session)->group(function (): void {
             Route::post('account/register', [AccountController::class, 'register'])
-                ->name('sivarcart-core.api.account.register');
+                ->name('sivarcart.api.account.register');
 
             Route::post('account/login', [AccountController::class, 'login'])
-                ->name('sivarcart-core.api.account.login');
+                ->name('sivarcart.api.account.login');
 
             Route::post('account/logout', [AccountController::class, 'logout'])
-                ->name('sivarcart-core.api.account.logout');
+                ->name('sivarcart.api.account.logout');
 
             Route::post('account/password/email', [AccountController::class, 'sendPasswordResetLink'])
-                ->name('sivarcart-core.api.account.password.email');
+                ->name('sivarcart.api.account.password.email');
 
             Route::middleware('sivarcart.buyer')->group(function (): void {
                 Route::get('account', [AccountController::class, 'show'])
-                    ->name('sivarcart-core.api.account.show');
+                    ->name('sivarcart.api.account.show');
 
                 Route::patch('account', [AccountController::class, 'update'])
-                    ->name('sivarcart-core.api.account.update');
+                    ->name('sivarcart.api.account.update');
 
                 Route::put('account/password', [AccountController::class, 'changePassword'])
-                    ->name('sivarcart-core.api.account.password.update');
+                    ->name('sivarcart.api.account.password.update');
 
                 Route::get('account/addresses', [AccountController::class, 'addresses'])
-                    ->name('sivarcart-core.api.account.addresses.index');
+                    ->name('sivarcart.api.account.addresses.index');
             });
         });
 
@@ -99,49 +99,49 @@ Route::prefix((string) config('sivarcart-core.api.prefix', 'api/sivarcart'))
         */
         Route::middleware(array_merge($session, ['sivarcart.buyer']))->group(function (): void {
             Route::get('cart', [CartController::class, 'show'])
-                ->name('sivarcart-core.api.cart.show');
+                ->name('sivarcart.api.cart.show');
 
             Route::post('cart/items', [CartController::class, 'addItem'])
-                ->name('sivarcart-core.api.cart.items.store');
+                ->name('sivarcart.api.cart.items.store');
 
             Route::patch('cart/items/{item}', [CartController::class, 'updateItem'])
-                ->name('sivarcart-core.api.cart.items.update');
+                ->name('sivarcart.api.cart.items.update');
 
             Route::delete('cart/items/{item}', [CartController::class, 'removeItem'])
-                ->name('sivarcart-core.api.cart.items.destroy');
+                ->name('sivarcart.api.cart.items.destroy');
 
             Route::post('cart/coupon', [CartController::class, 'applyCoupon'])
-                ->name('sivarcart-core.api.cart.coupon.store');
+                ->name('sivarcart.api.cart.coupon.store');
 
             Route::delete('cart/coupon', [CartController::class, 'removeCoupon'])
-                ->name('sivarcart-core.api.cart.coupon.destroy');
+                ->name('sivarcart.api.cart.coupon.destroy');
 
             Route::delete('cart', [CartController::class, 'clear'])
-                ->name('sivarcart-core.api.cart.destroy');
+                ->name('sivarcart.api.cart.destroy');
 
             /*
             | The checkout: the options of the store, the price of the
             | shipping and the order itself.
             */
             Route::get('checkout/options', [CheckoutController::class, 'options'])
-                ->name('sivarcart-core.api.checkout.options');
+                ->name('sivarcart.api.checkout.options');
 
             Route::post('checkout/shipping-quote', [CheckoutController::class, 'shippingQuote'])
-                ->name('sivarcart-core.api.checkout.shipping-quote');
+                ->name('sivarcart.api.checkout.shipping-quote');
 
             Route::post('checkout', [CheckoutController::class, 'store'])
-                ->name('sivarcart-core.api.checkout.store');
+                ->name('sivarcart.api.checkout.store');
 
             /*
             | The orders of the buyer.
             */
             Route::get('orders', [OrderController::class, 'index'])
-                ->name('sivarcart-core.api.orders.index');
+                ->name('sivarcart.api.orders.index');
 
             Route::get('orders/{order}', [OrderController::class, 'show'])
-                ->name('sivarcart-core.api.orders.show');
+                ->name('sivarcart.api.orders.show');
 
             Route::post('orders/{order}/payment', [OrderController::class, 'payment'])
-                ->name('sivarcart-core.api.orders.payment.store');
+                ->name('sivarcart.api.orders.payment.store');
         });
     });

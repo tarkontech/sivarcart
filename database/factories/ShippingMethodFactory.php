@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use Tarkontech\SivarCart\Enums\ShippingMethodType;
+use Tarkontech\SivarCart\Models\ShippingMethod;
 
 /**
  * @extends Factory<ShippingMethod>

@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
-use SivarcartCore\SivarcartCore\Actions\DeliverOrder;
-use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Events\OrderDelivered;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidOrderStatusTransition;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Actions\DeliverOrder;
+use Tarkontech\SivarCart\Enums\OrderHistoryAxis;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Events\OrderDelivered;
+use Tarkontech\SivarCart\Exceptions\InvalidOrderStatusTransition;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 it('delivers the order', function () {
     Event::fake([OrderDelivered::class]);

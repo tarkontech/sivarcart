@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin;
+namespace Tarkontech\SivarCart\Admin;
 
 /**
  * The vocabulary of the permissions of the store.

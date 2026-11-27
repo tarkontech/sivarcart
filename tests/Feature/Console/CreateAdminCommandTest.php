@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Hash;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 it('creates a member of the staff of the store', function () {
     StoreRole::factory()->create(['slug' => 'owner', 'permissions' => ['*']]);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Dueño',
         '--name' => 'Dueño',
         '--email' => 'dueno@tienda.test',
@@ -26,7 +26,7 @@ it('creates a member of the staff of the store', function () {
 it('hashes the password of the member of the staff', function () {
     StoreRole::factory()->create(['slug' => 'owner']);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Dueño',
         '--email' => 'dueno@tienda.test',
         '--password' => 'una-clave-larga',
@@ -41,7 +41,7 @@ it('hashes the password of the member of the staff', function () {
 it('gives the member of the staff the role it was told', function () {
     StoreRole::factory()->create(['slug' => 'staff', 'permissions' => ['orders.view']]);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Empleado',
         '--email' => 'empleado@tienda.test',
         '--password' => 'una-clave-larga',
@@ -60,7 +60,7 @@ it('does not create a member of the staff with an email that is in use', functio
 
     User::factory()->create(['email' => 'dueno@tienda.test']);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Dueño',
         '--email' => 'dueno@tienda.test',
         '--password' => 'una-clave-larga',
@@ -72,7 +72,7 @@ it('does not create a member of the staff with an email that is in use', functio
 it('does not create a member of the staff with an email that is not one', function () {
     StoreRole::factory()->create(['slug' => 'owner']);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Dueño',
         '--email' => 'esto-no-es-un-correo',
         '--password' => 'una-clave-larga',
@@ -84,7 +84,7 @@ it('does not create a member of the staff with an email that is not one', functi
 it('does not create a member of the staff with a role that does not exist', function () {
     StoreRole::factory()->create(['slug' => 'owner']);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Dueño',
         '--email' => 'dueno@tienda.test',
         '--password' => 'una-clave-larga',
@@ -97,7 +97,7 @@ it('does not create a member of the staff with a role that does not exist', func
 it('does not create a member of the staff with a short password', function () {
     StoreRole::factory()->create(['slug' => 'owner']);
 
-    $this->artisan('sivarcart-core:create-admin', [
+    $this->artisan('sivarcart:create-admin', [
         '--name' => 'Dueño',
         '--email' => 'dueno@tienda.test',
         '--password' => 'corta',

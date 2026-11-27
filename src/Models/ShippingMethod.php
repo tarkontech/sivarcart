@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
-use SivarcartCore\SivarcartCore\Database\Factories\ShippingMethodFactory;
-use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\ShippingMethodFactory;
+use Tarkontech\SivarCart\Enums\ShippingMethodType;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * A way of delivering an order.

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Seeders;
+namespace Tarkontech\SivarCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use SivarcartCore\SivarcartCore\Models\Department;
+use Tarkontech\SivarCart\Models\Department;
 
 /**
  * Seeds the fourteen departments of El Salvador.

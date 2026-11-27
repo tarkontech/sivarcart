@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The kind of document a sequence counter tracks.
@@ -20,6 +20,6 @@ enum DocumentSequenceType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.document_sequence_type.'.$this->value);
+        return (string) __('sivarcart::messages.document_sequence_type.'.$this->value);
     }
 }

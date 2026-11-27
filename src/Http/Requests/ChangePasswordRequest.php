@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Requests;
+namespace Tarkontech\SivarCart\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

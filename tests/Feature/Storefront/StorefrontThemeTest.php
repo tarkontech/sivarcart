@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontTheme;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Storefront\StorefrontTheme;
 
 it('puts the tokens of la tienda in the page', function () {
     Store::factory()->create();
 
-    config()->set('sivarcart-core.storefront.theme', [
+    config()->set('sivarcart.storefront.theme', [
         'primary' => '#ff0000',
         'radius' => '0.75rem',
     ]);
@@ -21,11 +21,11 @@ it('puts the tokens of la tienda in the page', function () {
 it('puts the tokens of la tienda in the dark theme after the light one', function () {
     Store::factory()->create();
 
-    config()->set('sivarcart-core.storefront.theme', [
+    config()->set('sivarcart.storefront.theme', [
         'primary' => '#ff0000',
     ]);
 
-    config()->set('sivarcart-core.storefront.theme_dark', [
+    config()->set('sivarcart.storefront.theme_dark', [
         'primary' => '#00ff00',
     ]);
 
@@ -35,7 +35,7 @@ it('puts the tokens of la tienda in the dark theme after the light one', functio
 });
 
 it('reads the tokens of la configuration', function () {
-    config()->set('sivarcart-core.storefront.theme', [
+    config()->set('sivarcart.storefront.theme', [
         'primary' => '#ff0000',
         'font' => 'Inter, sans-serif',
     ]);
@@ -47,7 +47,7 @@ it('reads the tokens of la configuration', function () {
 });
 
 it('leaves out the tokens that are empty', function () {
-    config()->set('sivarcart-core.storefront.theme', [
+    config()->set('sivarcart.storefront.theme', [
         'primary' => '',
         'radius' => '0.5rem',
     ]);
@@ -56,11 +56,11 @@ it('leaves out the tokens that are empty', function () {
 });
 
 it('does not mix the theme of la tienda with the theme of the panel', function () {
-    config()->set('sivarcart-core.storefront.theme', [
+    config()->set('sivarcart.storefront.theme', [
         'primary' => '#ff0000',
     ]);
 
-    config()->set('sivarcart-core.admin.theme', [
+    config()->set('sivarcart.admin.theme', [
         'primary' => '#0000ff',
     ]);
 

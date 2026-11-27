@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use SivarcartCore\SivarcartCore\Models\Department;
+use Tarkontech\SivarCart\Models\Department;
 
 /**
  * @extends Factory<Department>

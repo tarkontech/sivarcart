@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 return new class extends Migration
 {

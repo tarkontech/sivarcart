@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Http\Controllers\WompiWebhookController;
+use Tarkontech\SivarCart\Http\Controllers\WompiWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +21,8 @@ use SivarcartCore\SivarcartCore\Http\Controllers\WompiWebhookController;
 */
 
 Route::post(
-    (string) config('sivarcart-core.wompi.webhook_path', 'webhooks/wompi'),
+    (string) config('sivarcart.wompi.webhook_path', 'webhooks/wompi'),
     WompiWebhookController::class,
 )
-    ->name('sivarcart-core.wompi.webhook')
+    ->name('sivarcart.wompi.webhook')
     ->middleware(['wompi.webhook']);

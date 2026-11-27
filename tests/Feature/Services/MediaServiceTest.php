@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidMediaFile;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductImage;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Services\MediaService;
+use Tarkontech\SivarCart\Exceptions\InvalidMediaFile;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductImage;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Services\MediaService;
 
 beforeEach(function (): void {
     Storage::fake('public');

@@ -1,13 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "tarkontech/sivarcart-core",
+    "name": "tarkontech/sivarcart",
     "description": "Tienda en linea para comercios de El Salvador",
     "keywords": [
         "laravel",
         "tarkontech",
-        "sivarcart-core"
+        "sivarcart"
     ],
-    "homepage": "https://github.com/tarkontech/sivarcart-core",
+    "homepage": "https://github.com/tarkontech/sivarcart",
     "license": "MIT",
     "authors": [
         {
@@ -35,14 +35,14 @@
     },
     "autoload": {
         "psr-4": {
-            "SivarcartCore\\SivarcartCore\\": "src/",
-            "SivarcartCore\\SivarcartCore\\Database\\Factories\\": "database/factories/"
+            "Tarkontech\\SivarCart\\": "src/",
+            "Tarkontech\\SivarCart\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SivarcartCore\\SivarcartCore\\Tests\\": "tests/",
-            "SivarcartCore\\SivarcartCore\\Tools\\": "tools/src/",
+            "Tarkontech\\SivarCart\\Tests\\": "tests/",
+            "Tarkontech\\SivarCart\\Tools\\": "tools/src/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -96,10 +96,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "SivarcartCore\\SivarcartCore\\SivarcartCoreServiceProvider"
+                "Tarkontech\\SivarCart\\SivarCartServiceProvider"
             ],
             "aliases": {
-                "SivarcartCore": "SivarcartCore\\SivarcartCore\\Facades\\SivarcartCore"
+                "SivarCart": "Tarkontech\\SivarCart\\Facades\\SivarCart"
             }
         }
     },

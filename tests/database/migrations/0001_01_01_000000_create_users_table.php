@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 | The users of the host application
 |--------------------------------------------------------------------------
 |
-| SivarCart Core does not authenticate anybody: the staff of the store are
+| SivarCart does not authenticate anybody: the staff of the store are
 | the users of the application that installs the package. The tests play the
 | role of that application, so they need their own table of users before the
 | migrations of the package run.

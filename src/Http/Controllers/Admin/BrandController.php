@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Services\Admin\BrandService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Services\Admin\BrandService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Writes the brands of the catalog.
@@ -38,11 +38,11 @@ final class BrandController
 
         $brand = app(BrandService::class)->create($attributes);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.brands.created', [
+        Inertia::flash('notice', __('sivarcart::admin.brands.created', [
             'name' => (string) $brand->name,
         ]));
 
-        return redirect()->route('sivarcart-core.admin.brands.edit', [
+        return redirect()->route('sivarcart.admin.brands.edit', [
             'brand' => (int) $brand->getKey(),
         ])->setStatusCode(303);
     }
@@ -55,7 +55,7 @@ final class BrandController
         $model = app(BrandService::class)->find($brand);
 
         if (! $model instanceof Brand) {
-            abort(404, __('sivarcart-core::admin.brands.not_found'));
+            abort(404, __('sivarcart::admin.brands.not_found'));
         }
 
         return $this->form($model);
@@ -69,14 +69,14 @@ final class BrandController
         $model = app(BrandService::class)->find($brand);
 
         if (! $model instanceof Brand) {
-            abort(404, __('sivarcart-core::admin.brands.not_found'));
+            abort(404, __('sivarcart::admin.brands.not_found'));
         }
 
         $attributes = $request->validate($this->rules());
 
         app(BrandService::class)->update($model, $attributes);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.brands.saved', [
+        Inertia::flash('notice', __('sivarcart::admin.brands.saved', [
             'name' => (string) $model->name,
         ]));
 
@@ -91,16 +91,16 @@ final class BrandController
         $model = app(BrandService::class)->find($brand);
 
         if (! $model instanceof Brand) {
-            abort(404, __('sivarcart-core::admin.brands.not_found'));
+            abort(404, __('sivarcart::admin.brands.not_found'));
         }
 
         app(BrandService::class)->delete($model);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.brands.deleted', [
+        Inertia::flash('notice', __('sivarcart::admin.brands.deleted', [
             'name' => (string) $model->name,
         ]));
 
-        return redirect()->route('sivarcart-core.admin.page', ['page' => 'brands'])
+        return redirect()->route('sivarcart.admin.page', ['page' => 'brands'])
             ->setStatusCode(303);
     }
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Actions;
+namespace Tarkontech\SivarCart\Actions;
 
 use Illuminate\Support\Facades\DB;
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
-use SivarcartCore\SivarcartCore\Events\OrderPlaced;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\OrderService;
+use Tarkontech\SivarCart\Data\CheckoutData;
+use Tarkontech\SivarCart\Events\OrderPlaced;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\OrderService;
 
 /**
  * Turns the cart of a shopper into an order.

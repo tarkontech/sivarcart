@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Notifications;
+namespace Tarkontech\SivarCart\Notifications;
 
 use Illuminate\Contracts\Mail\Mailable;
-use SivarcartCore\SivarcartCore\Mail\OrderPlacedMail;
+use Tarkontech\SivarCart\Mail\OrderPlacedMail;
 
 /**
  * Tells the buyer that the order moved.

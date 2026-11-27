@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\Tax;
-use SivarcartCore\SivarcartCore\Services\PricingService;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\Tax;
+use Tarkontech\SivarCart\Services\PricingService;
 
 it('keeps the tax inside the price when the catalog includes it', function () {
     $pricing = app(PricingService::class);

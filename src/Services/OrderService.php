@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Log;
-use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
-use SivarcartCore\SivarcartCore\Data\ShippingQuote;
-use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerRequired;
-use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidCartState;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\CartItem;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use Tarkontech\SivarCart\Contracts\ShippingRateCalculator;
+use Tarkontech\SivarCart\Data\CheckoutData;
+use Tarkontech\SivarCart\Data\ShippingQuote;
+use Tarkontech\SivarCart\Enums\DocumentSequenceType;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentRecordStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Exceptions\CustomerRequired;
+use Tarkontech\SivarCart\Exceptions\InsufficientStock;
+use Tarkontech\SivarCart\Exceptions\InvalidCartState;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\CartItem;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\ShippingMethod;
 
 /**
  * Keeps the orders of the store.
@@ -61,7 +61,7 @@ final class OrderService
      *
      * @throws CustomerRequired
      * @throws InvalidCartState
-     * @throws SivarcartCoreException
+     * @throws SivarCartException
      */
     public function place(Cart $cart, CheckoutData $data): Order
     {
@@ -351,19 +351,19 @@ final class OrderService
     public function refund(Order $order, float $amount, ?string $reason = null, ?Authenticatable $user = null): Order
     {
         if ($amount <= 0) {
-            throw new SivarcartCoreException('El monto del reembolso tiene que ser mayor que cero.');
+            throw new SivarCartException('El monto del reembolso tiene que ser mayor que cero.');
         }
 
         $payment = $order->payments()->first();
 
         if ($payment === null) {
-            throw new SivarcartCoreException('La orden no tiene ningún pago que reembolsar.');
+            throw new SivarCartException('La orden no tiene ningún pago que reembolsar.');
         }
 
         $available = round((float) $payment->amount - (float) $payment->refunded_amount, 2);
 
         if ($amount > $available) {
-            throw new SivarcartCoreException(sprintf(
+            throw new SivarCartException(sprintf(
                 'El reembolso no puede ser mayor que %s.',
                 number_format($available, 2),
             ));
@@ -482,7 +482,7 @@ final class OrderService
     /**
      * The shipping method the shopper chose.
      *
-     * @throws SivarcartCoreException
+     * @throws SivarCartException
      */
     private function shippingMethod(CheckoutData $data, float $subtotal): ?ShippingMethod
     {
@@ -496,14 +496,14 @@ final class OrderService
             ->first();
 
         if ($method === null) {
-            throw new SivarcartCoreException(sprintf(
+            throw new SivarCartException(sprintf(
                 'El método de envío "%s" no está disponible.',
                 $data->shippingMethodCode,
             ));
         }
 
         if (! $method->appliesTo($subtotal)) {
-            throw new SivarcartCoreException(sprintf(
+            throw new SivarCartException(sprintf(
                 'El método de envío "%s" no aplica a esta orden.',
                 $method->code,
             ));
@@ -515,7 +515,7 @@ final class OrderService
     /**
      * The payment method the shopper chose.
      *
-     * @throws SivarcartCoreException
+     * @throws SivarCartException
      */
     private function paymentMethod(CheckoutData $data): ?PaymentMethod
     {
@@ -529,7 +529,7 @@ final class OrderService
             ->first();
 
         if ($method === null) {
-            throw new SivarcartCoreException(sprintf(
+            throw new SivarCartException(sprintf(
                 'El método de pago "%s" no está disponible.',
                 $data->paymentMethodCode,
             ));

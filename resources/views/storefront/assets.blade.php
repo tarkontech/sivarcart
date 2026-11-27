@@ -8,9 +8,9 @@
      * of the application and, when the entry of the merchant is in it, loads
      * that one instead.
      */
-    $bundle = \SivarcartCore\SivarcartCore\Storefront\StorefrontBundle::resolve();
+    $bundle = \Tarkontech\SivarCart\Storefront\StorefrontBundle::resolve();
 @endphp
-@if ($bundle->type === \SivarcartCore\SivarcartCore\Storefront\StorefrontBundle::TYPE_VITE)
+@if ($bundle->type === \Tarkontech\SivarCart\Storefront\StorefrontBundle::TYPE_VITE)
     @vite([$bundle->entry])
 @else
     {{--
@@ -19,6 +19,6 @@
         address, so the folder travels with them and the browser never mixes
         the bundle of a previous version with the one that is installed.
     --}}
-    <link rel="stylesheet" href="{{ route('sivarcart-core.storefront.assets.css', ['version' => $bundle->version]) }}">
-    <script type="module" src="{{ route('sivarcart-core.storefront.assets.js', ['version' => $bundle->version]) }}"></script>
+    <link rel="stylesheet" href="{{ route('sivarcart.storefront.assets.css', ['version' => $bundle->version]) }}">
+    <script type="module" src="{{ route('sivarcart.storefront.assets.js', ['version' => $bundle->version]) }}"></script>
 @endif

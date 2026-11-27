@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\PaymentTransactionStatus;
-use SivarcartCore\SivarcartCore\Models\PaymentTransaction;
+use Tarkontech\SivarCart\Enums\PaymentTransactionStatus;
+use Tarkontech\SivarCart\Models\PaymentTransaction;
 
 /**
  * @extends Factory<PaymentTransaction>

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Mail\OrderPaidMail;
-use SivarcartCore\SivarcartCore\Mail\OrderPlacedMail;
-use SivarcartCore\SivarcartCore\Mail\OrderRefundedMail;
-use SivarcartCore\SivarcartCore\Mail\PaymentFailedMail;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Mail\OrderPaidMail;
+use Tarkontech\SivarCart\Mail\OrderPlacedMail;
+use Tarkontech\SivarCart\Mail\OrderRefundedMail;
+use Tarkontech\SivarCart\Mail\PaymentFailedMail;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 /**
  * An order of a guest checkout.
@@ -37,13 +37,13 @@ it('writes to the address the mailable carries', function () use ($placedOrder) 
     $mail = new OrderPlacedMail($order, 'ana@example.test');
 
     $mail->assertTo('ana@example.test');
-    $mail->assertHasSubject((string) trans('sivarcart-core::messages.order_notifications.order_placed.subject', [
+    $mail->assertHasSubject((string) trans('sivarcart::messages.order_notifications.order_placed.subject', [
         'number' => $order->order_number,
     ]));
 });
 
 it('writes from the address the configuration names', function () use ($placedOrder) {
-    config()->set('sivarcart-core.notifications.from', 'hola@tienda.test');
+    config()->set('sivarcart.notifications.from', 'hola@tienda.test');
 
     $mail = new OrderPlacedMail($placedOrder(), 'ana@example.test');
 
@@ -86,25 +86,25 @@ it('writes how much the order cost', function () use ($placedOrder) {
 });
 
 it('lets the merchant rewrite the template', function () use ($placedOrder) {
-    $published = sys_get_temp_dir().DIRECTORY_SEPARATOR.'sivarcart-core-published'.DIRECTORY_SEPARATOR.Str::uuid()->toString();
+    $published = sys_get_temp_dir().DIRECTORY_SEPARATOR.'sivarcart-published'.DIRECTORY_SEPARATOR.Str::uuid()->toString();
 
-    File::ensureDirectoryExists($published.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'sivarcart-core'.DIRECTORY_SEPARATOR.'mail');
+    File::ensureDirectoryExists($published.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'sivarcart'.DIRECTORY_SEPARATOR.'mail');
 
     File::put(
-        $published.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'sivarcart-core'.DIRECTORY_SEPARATOR.'mail'.DIRECTORY_SEPARATOR.'order-placed.blade.php',
+        $published.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'sivarcart'.DIRECTORY_SEPARATOR.'mail'.DIRECTORY_SEPARATOR.'order-placed.blade.php',
         '<x-mail::message>El correo que escribio el comerciante.</x-mail::message>',
     );
 
     app('view')->getFinder()->prependNamespace(
-        'sivarcart-core',
-        $published.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'sivarcart-core',
+        'sivarcart',
+        $published.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'sivarcart',
     );
 
     try {
         $mail = new OrderPlacedMail($placedOrder(), 'ana@example.test');
 
         $mail->assertSeeInHtml('El correo que escribio el comerciante.');
-        $mail->assertDontSeeInHtml((string) trans('sivarcart-core::messages.order_notifications.order_placed.cta'));
+        $mail->assertDontSeeInHtml((string) trans('sivarcart::messages.order_notifications.order_placed.cta'));
     } finally {
         File::deleteDirectory($published);
     }

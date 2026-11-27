@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as AuthFacade;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Signs the staff of the store into the administration panel.
@@ -26,7 +26,7 @@ final class LoginController
     public function show(Request $request): Response|RedirectResponse
     {
         if (AuthFacade::guard(Auth::guard())->check()) {
-            return redirect()->route('sivarcart-core.admin.index');
+            return redirect()->route('sivarcart.admin.index');
         }
 
         $email = $request->old('email', '');
@@ -52,12 +52,12 @@ final class LoginController
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors([
-                    'email' => __('sivarcart-core::admin.login.failed'),
+                    'email' => __('sivarcart::admin.login.failed'),
                 ]);
         }
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('sivarcart-core.admin.index'));
+        return redirect()->intended(route('sivarcart.admin.index'));
     }
 }

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * @extends Factory<Order>

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Notifications;
+namespace Tarkontech\SivarCart\Notifications;
 
 use Illuminate\Contracts\Mail\Mailable;
-use SivarcartCore\SivarcartCore\Mail\PaymentFailedMail;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Mail\PaymentFailedMail;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * Tells the buyer that the payment of the order did not go through.

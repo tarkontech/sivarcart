@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\PaymentTransaction;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\PaymentTransaction;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 beforeEach(function () {
     config([
@@ -59,9 +59,9 @@ function wompiSignature(string $body): string
 }
 
 it('registers the route of the webhook', function () {
-    expect(Route::has('sivarcart-core.wompi.webhook'))->toBeTrue();
+    expect(Route::has('sivarcart.wompi.webhook'))->toBeTrue();
 
-    $route = Route::getRoutes()->getByName('sivarcart-core.wompi.webhook');
+    $route = Route::getRoutes()->getByName('sivarcart.wompi.webhook');
 
     expect($route)->not->toBeNull()
         ->and($route->uri())->toBe('webhooks/wompi')

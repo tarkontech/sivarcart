@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Enums\ProductStatus;
-use SivarcartCore\SivarcartCore\Enums\ProductType;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidOrderStatusTransition;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductOption;
-use SivarcartCore\SivarcartCore\Models\ProductOptionValue;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Enums\OrderHistoryAxis;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Enums\ProductStatus;
+use Tarkontech\SivarCart\Enums\ProductType;
+use Tarkontech\SivarCart\Exceptions\InvalidOrderStatusTransition;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductOption;
+use Tarkontech\SivarCart\Models\ProductOptionValue;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 it('gives every product a sellable unit', function () {

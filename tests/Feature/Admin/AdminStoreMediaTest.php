@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 /**

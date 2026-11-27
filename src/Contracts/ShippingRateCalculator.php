@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Contracts;
+namespace Tarkontech\SivarCart\Contracts;
 
-use SivarcartCore\SivarcartCore\Data\ShippingQuote;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use Tarkontech\SivarCart\Data\ShippingQuote;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\ShippingMethod;
 
 /**
  * Calculates what the delivery of an order costs.

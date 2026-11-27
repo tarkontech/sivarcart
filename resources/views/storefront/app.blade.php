@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title data-inertia="title">{{ config('sivarcart-core.store.name', 'SivarCart') }}</title>
+    <title data-inertia="title">{{ config('sivarcart.store.name', 'SivarCart') }}</title>
 
     @php
-        $favicon = \SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter::fileUrl(
-            app(\SivarcartCore\SivarcartCore\Services\StoreService::class)->current()?->favicon_path,
+        $favicon = \Tarkontech\SivarCart\Storefront\StorefrontPresenter::fileUrl(
+            app(\Tarkontech\SivarCart\Services\StoreService::class)->current()?->favicon_path,
         );
     @endphp
 
@@ -17,10 +17,10 @@
         <link rel="icon" href="{{ $favicon }}">
     @endif
 
-    @include('sivarcart-core-storefront::theme')
-    @include('sivarcart-core-storefront::assets')
+    @include('sivarcart-storefront::theme')
+    @include('sivarcart-storefront::assets')
 
-    @foreach ((array) config('sivarcart-core.storefront.stylesheets', []) as $stylesheet)
+    @foreach ((array) config('sivarcart.storefront.stylesheets', []) as $stylesheet)
         <link rel="stylesheet" href="{{ $stylesheet }}">
     @endforeach
 

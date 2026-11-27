@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use SivarcartCore\SivarcartCore\Database\Factories\ProductFactory;
-use SivarcartCore\SivarcartCore\Enums\ProductStatus;
-use SivarcartCore\SivarcartCore\Enums\ProductType;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
 use Spatie\MediaLibrary\HasMedia;
+use Tarkontech\SivarCart\Database\Factories\ProductFactory;
+use Tarkontech\SivarCart\Enums\ProductStatus;
+use Tarkontech\SivarCart\Enums\ProductType;
+use Tarkontech\SivarCart\Models\Concerns\HasStoreMedia;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * A product of the catalog.

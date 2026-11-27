@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
-use SivarcartCore\SivarcartCore\Database\Factories\NotificationSettingFactory;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\NotificationSettingFactory;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * Whether the store sends one of the notifications of the buyer.

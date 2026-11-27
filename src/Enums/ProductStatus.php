@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The publication state of a product.
@@ -29,6 +29,6 @@ enum ProductStatus: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.product_status.'.$this->value);
+        return (string) __('sivarcart::messages.product_status.'.$this->value);
     }
 }

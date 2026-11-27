@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
 /**
  * The email the buyer receives to verify the email address of the account.
@@ -19,7 +19,7 @@ final class AccountVerifyEmailMail extends BuyerAccountMail
      */
     protected function template(): string
     {
-        return 'sivarcart-core::mail.account-verify-email';
+        return 'sivarcart::mail.account-verify-email';
     }
 
     /**
@@ -47,7 +47,7 @@ final class AccountVerifyEmailMail extends BuyerAccountMail
      */
     private function verificationUrl(): string
     {
-        $route = (string) config('sivarcart-core.buyers.email_verification_route', 'verification.verify');
+        $route = (string) config('sivarcart.buyers.email_verification_route', 'verification.verify');
 
         return $this->signedApplicationUrl($route, [
             'id' => $this->customer->getKey(),

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Seeders;
+namespace Tarkontech\SivarCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\Store;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\Store;
 
 /**
  * Seeds the profile of the single store this installation serves.
@@ -18,7 +18,7 @@ class StoreSeeder extends Seeder
      */
     public function run(): void
     {
-        $config = config('sivarcart-core.store');
+        $config = config('sivarcart.store');
 
         $department = Department::query()->where('code', 'SS')->first();
 

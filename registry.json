@@ -1,13 +1,13 @@
 {
     "$schema": "https://ui.shadcn.com/schema/registry.json",
     "name": "sivarcart",
-    "homepage": "https://github.com/tarkontech/sivarcart-core",
+    "homepage": "https://github.com/tarkontech/sivarcart",
     "items": [
         {
             "name": "button",
             "type": "registry:ui",
             "title": "Button",
-            "description": "El componente button del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente button del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -27,7 +27,7 @@
             "name": "card",
             "type": "registry:ui",
             "title": "Card",
-            "description": "El componente card del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente card del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -47,7 +47,7 @@
             "name": "input",
             "type": "registry:ui",
             "title": "Input",
-            "description": "El componente input del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente input del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -67,7 +67,7 @@
             "name": "label",
             "type": "registry:ui",
             "title": "Label",
-            "description": "El componente label del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente label del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -87,7 +87,7 @@
             "name": "table",
             "type": "registry:ui",
             "title": "Table",
-            "description": "El componente table del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente table del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -107,7 +107,7 @@
             "name": "badge",
             "type": "registry:ui",
             "title": "Badge",
-            "description": "El componente badge del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente badge del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -127,7 +127,7 @@
             "name": "separator",
             "type": "registry:ui",
             "title": "Separator",
-            "description": "El componente separator del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente separator del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -147,7 +147,7 @@
             "name": "skeleton",
             "type": "registry:ui",
             "title": "Skeleton",
-            "description": "El componente skeleton del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente skeleton del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -167,7 +167,7 @@
             "name": "alert",
             "type": "registry:ui",
             "title": "Alert",
-            "description": "El componente alert del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente alert del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -187,7 +187,7 @@
             "name": "select",
             "type": "registry:ui",
             "title": "Select",
-            "description": "El componente select del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente select del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -207,7 +207,7 @@
             "name": "checkbox",
             "type": "registry:ui",
             "title": "Checkbox",
-            "description": "El componente checkbox del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente checkbox del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -227,7 +227,7 @@
             "name": "textarea",
             "type": "registry:ui",
             "title": "Textarea",
-            "description": "El componente textarea del panel de SivarCart Core, con tokens semanticos.",
+            "description": "El componente textarea del panel de SivarCart, con tokens semanticos.",
             "dependencies": [
                 "@base-ui/react",
                 "class-variance-authority",
@@ -246,8 +246,8 @@
         {
             "name": "admin",
             "type": "registry:base",
-            "title": "El panel de administracion de SivarCart Core",
-            "description": "El panel de administracion de SivarCart Core, en React, con Inertia y Tailwind 4.",
+            "title": "El panel de administracion de SivarCart",
+            "description": "El panel de administracion de SivarCart, en React, con Inertia y Tailwind 4.",
             "dependencies": [
                 "@base-ui/react",
                 "@inertiajs/react",
@@ -552,8 +552,8 @@
         {
             "name": "storefront",
             "type": "registry:base",
-            "title": "La tienda del comprador de SivarCart Core",
-            "description": "La tienda del comprador de SivarCart Core, en React, con Inertia y Tailwind 4.",
+            "title": "La tienda del comprador de SivarCart",
+            "description": "La tienda del comprador de SivarCart, en React, con Inertia y Tailwind 4.",
             "dependencies": [
                 "@base-ui/react",
                 "@inertiajs/react",

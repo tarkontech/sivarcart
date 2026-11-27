@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Actions;
+namespace Tarkontech\SivarCart\Actions;
 
-use SivarcartCore\SivarcartCore\Data\PaymentLinkResult;
-use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
+use Tarkontech\SivarCart\Data\PaymentLinkResult;
+use Tarkontech\SivarCart\Enums\PaymentRecordStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Exceptions\PaymentGatewayFailed;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Payments\PaymentGatewayManager;
 use Throwable;
 
 /**
@@ -35,7 +35,7 @@ final class StartPayment
      * Create the payment link of an order.
      *
      * @throws PaymentGatewayFailed
-     * @throws SivarcartCoreException
+     * @throws SivarCartException
      */
     public function execute(Order $order): PaymentLinkResult
     {
@@ -44,7 +44,7 @@ final class StartPayment
             ->first();
 
         if ($payment === null) {
-            throw new SivarcartCoreException('La orden no tiene ningún pago pendiente.');
+            throw new SivarCartException('La orden no tiene ningún pago pendiente.');
         }
 
         /** @var array<string, mixed> $meta */

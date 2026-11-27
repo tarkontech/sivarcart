@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * The base of the emails the buyer receives.
@@ -59,7 +59,7 @@ abstract class OrderMail extends Mailable
      */
     protected function mailSubject(): string
     {
-        return (string) __('sivarcart-core::messages.order_notifications.'.$this->notification()->value.'.subject', [
+        return (string) __('sivarcart::messages.order_notifications.'.$this->notification()->value.'.subject', [
             'number' => $this->order->order_number,
         ]);
     }
@@ -72,7 +72,7 @@ abstract class OrderMail extends Mailable
      */
     protected function sender(): ?Address
     {
-        $from = config('sivarcart-core.notifications.from');
+        $from = config('sivarcart.notifications.from');
 
         if (! is_string($from) || trim($from) === '') {
             return null;

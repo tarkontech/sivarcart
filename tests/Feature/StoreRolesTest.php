@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use SivarcartCore\SivarcartCore\Database\Seeders\StoreRoleSeeder;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\InventoryMovement;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Support\Auth;
-use SivarcartCore\SivarcartCore\Tests\Fixtures\UuidUser;
+use Tarkontech\SivarCart\Database\Seeders\StoreRoleSeeder;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Models\InventoryMovement;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Support\Auth;
+use Tarkontech\SivarCart\Tests\Fixtures\UuidUser;
 use Workbench\App\Models\User;
 
 it('takes the user of the application from the provider of the auth configuration', function () {
@@ -21,8 +21,8 @@ it('takes the user of the application from the provider of the auth configuratio
 
 it('lets the application name another user model and another guard', function () {
     config([
-        'sivarcart-core.auth.model' => User::class,
-        'sivarcart-core.auth.guard' => 'admin',
+        'sivarcart.auth.model' => User::class,
+        'sivarcart.auth.guard' => 'admin',
     ]);
 
     expect(Auth::model())->toBe(User::class);

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 it('writes the theme of the package in the page', function () {
@@ -23,7 +23,7 @@ it('writes the theme of the package in the page', function () {
 });
 
 it('lets the merchant change the theme of the package', function () {
-    config(['sivarcart-core.admin.theme.primary' => '#ff0000']);
+    config(['sivarcart.admin.theme.primary' => '#ff0000']);
 
     $user = User::factory()->create();
 
@@ -36,7 +36,7 @@ it('lets the merchant change the theme of the package', function () {
 });
 
 it('publishes the source of the panel for the merchant to edit it', function () {
-    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-core-admin-source'])->assertSuccessful();
+    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-admin-source'])->assertSuccessful();
 
     expect(File::exists(resource_path('js/sivarcart/admin.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/sivarcart/pages/Admin/Dashboard.tsx')))->toBeTrue()
@@ -44,25 +44,25 @@ it('publishes the source of the panel for the merchant to edit it', function () 
 });
 
 it('does not overwrite the source of the panel the merchant already edited', function () {
-    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-core-admin-source'])->assertSuccessful();
+    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-admin-source'])->assertSuccessful();
 
     $path = resource_path('js/sivarcart/admin.tsx');
 
     File::put($path, '// MI ADMIN');
 
-    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-core-admin-source'])->assertSuccessful();
+    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-admin-source'])->assertSuccessful();
 
     expect(File::get($path))->toBe('// MI ADMIN');
 });
 
 it('publishes the root view of the panel with a tag of its own', function () {
-    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-core-panel-view'])->assertSuccessful();
+    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-panel-view'])->assertSuccessful();
 
-    expect(File::exists(resource_path('views/vendor/sivarcart-core-panel/app.blade.php')))->toBeTrue();
+    expect(File::exists(resource_path('views/vendor/sivarcart-panel/app.blade.php')))->toBeTrue();
 });
 
 it('does not let the views the merchant publishes reach the root view of the panel', function () {
-    $path = resource_path('views/vendor/sivarcart-core/app.blade.php');
+    $path = resource_path('views/vendor/sivarcart/app.blade.php');
 
     File::ensureDirectoryExists(dirname($path));
     File::put($path, '<html><body>UNA VISTA QUE NO ES</body></html>');
@@ -81,7 +81,7 @@ it('does not let the views the merchant publishes reach the root view of the pan
 });
 
 it('does not publish the source of the panel with the views of the package', function () {
-    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-core-views'])->assertSuccessful();
+    $this->artisan('vendor:publish', ['--tag' => 'sivarcart-views'])->assertSuccessful();
 
     expect(File::exists(resource_path('js/sivarcart/admin.tsx')))->toBeFalse();
 });

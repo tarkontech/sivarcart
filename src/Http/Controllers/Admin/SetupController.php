@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Auth as AuthFacade;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Explains what the application has to do for the panel to know its staff.

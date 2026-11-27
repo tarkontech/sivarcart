@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SivarcartCore\SivarcartCore\Database\Factories\TaxFactory;
+use Tarkontech\SivarCart\Database\Factories\TaxFactory;
 
 /**
  * A tax category and the rate it applies.

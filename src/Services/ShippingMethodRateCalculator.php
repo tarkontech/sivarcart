@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
-use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
-use SivarcartCore\SivarcartCore\Data\ShippingQuote;
-use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use Tarkontech\SivarCart\Contracts\ShippingRateCalculator;
+use Tarkontech\SivarCart\Data\ShippingQuote;
+use Tarkontech\SivarCart\Enums\ShippingMethodType;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\ShippingMethod;
 
 /**
  * Quotes the shipping with the price the store configured for the method.

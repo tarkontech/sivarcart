@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Console\Commands;
+namespace Tarkontech\SivarCart\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use SivarcartCore\SivarcartCore\Database\Seeders\DatabaseSeeder;
+use Tarkontech\SivarCart\Database\Seeders\DatabaseSeeder;
 
 /**
- * Installs SivarCart Core into the host application.
+ * Installs SivarCart into the host application.
  *
  * The migrations are published instead of being loaded from the package, so
  * the merchant owns the schema and can extend it. Publishing the same tag
  * again never overwrites an already published file.
  */
-class SivarcartCoreInstallCommand extends Command
+class SivarCartInstallCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sivarcart-core:install
+    protected $signature = 'sivarcart:install
                             {--force : Overwrite the migrations that were already published}
                             {--no-seed : Do not seed the base data}';
 
@@ -31,17 +31,17 @@ class SivarcartCoreInstallCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Publish the SivarCart Core migrations, run them and seed the base data';
+    protected $description = 'Publish the SivarCart migrations, run them and seed the base data';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->components->info('Publishing the SivarCart Core migrations...');
+        $this->components->info('Publishing the SivarCart migrations...');
 
         Artisan::call('vendor:publish', [
-            '--tag' => 'sivarcart-core-migrations',
+            '--tag' => 'sivarcart-migrations',
             '--force' => (bool) $this->option('force'),
         ]);
 
@@ -60,7 +60,7 @@ class SivarcartCoreInstallCommand extends Command
             ]);
         }
 
-        $this->components->info('SivarCart Core is installed.');
+        $this->components->info('SivarCart is installed.');
 
         return self::SUCCESS;
     }

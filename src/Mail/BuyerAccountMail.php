@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use RuntimeException;
-use SivarcartCore\SivarcartCore\Models\Customer;
+use Tarkontech\SivarCart\Models\Customer;
 
 /**
  * The base of the emails the account of a buyer receives.
@@ -54,7 +54,7 @@ abstract class BuyerAccountMail extends Mailable
     protected function templateData(): array
     {
         return [
-            'store' => (string) config('sivarcart-core.store.name', 'SivarCart'),
+            'store' => (string) config('sivarcart.store.name', 'SivarCart'),
         ];
     }
 
@@ -63,8 +63,8 @@ abstract class BuyerAccountMail extends Mailable
      */
     protected function mailSubject(): string
     {
-        return (string) __('sivarcart-core::messages.account_notifications.'.$this->subjectKey().'.subject', [
-            'store' => (string) config('sivarcart-core.store.name', 'SivarCart'),
+        return (string) __('sivarcart::messages.account_notifications.'.$this->subjectKey().'.subject', [
+            'store' => (string) config('sivarcart.store.name', 'SivarCart'),
         ]);
     }
 
@@ -76,7 +76,7 @@ abstract class BuyerAccountMail extends Mailable
      */
     protected function sender(): ?Address
     {
-        $from = config('sivarcart-core.notifications.from');
+        $from = config('sivarcart.notifications.from');
 
         if (! is_string($from) || trim($from) === '') {
             return null;
@@ -139,7 +139,7 @@ abstract class BuyerAccountMail extends Mailable
         }
 
         throw new RuntimeException(sprintf(
-            'SivarCart Core necesita la ruta "%s" para escribirle al comprador. Declárala en tu aplicación o cambia el nombre de la ruta en la sección "buyers" de la configuración del paquete.',
+            'SivarCart necesita la ruta "%s" para escribirle al comprador. Declárala en tu aplicación o cambia el nombre de la ruta en la sección "buyers" de la configuración del paquete.',
             $routeName,
         ));
     }

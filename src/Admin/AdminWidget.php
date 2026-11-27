@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin;
+namespace Tarkontech\SivarCart\Admin;
 
 /**
  * A widget of the dashboard of the administration panel.

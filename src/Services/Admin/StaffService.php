@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services\Admin;
+namespace Tarkontech\SivarCart\Services\Admin;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * The staff of the store, as the panel sees them.

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Api;
+namespace Tarkontech\SivarCart\Http\Controllers\Api;
 
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use SivarcartCore\SivarcartCore\Data\CatalogFilters;
-use SivarcartCore\SivarcartCore\Enums\CatalogSort;
-use SivarcartCore\SivarcartCore\Http\Requests\CatalogRequest;
-use SivarcartCore\SivarcartCore\Http\Resources\BrandResource;
-use SivarcartCore\SivarcartCore\Http\Resources\CategoryResource;
-use SivarcartCore\SivarcartCore\Http\Resources\ProductResource;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
+use Tarkontech\SivarCart\Data\CatalogFilters;
+use Tarkontech\SivarCart\Enums\CatalogSort;
+use Tarkontech\SivarCart\Http\Requests\CatalogRequest;
+use Tarkontech\SivarCart\Http\Resources\BrandResource;
+use Tarkontech\SivarCart\Http\Resources\CategoryResource;
+use Tarkontech\SivarCart\Http\Resources\ProductResource;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Services\CatalogService;
 
 /**
  * Reads the catalog of the store.

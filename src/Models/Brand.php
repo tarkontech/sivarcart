@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SivarcartCore\SivarcartCore\Database\Factories\BrandFactory;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasStoreMedia;
 use Spatie\MediaLibrary\HasMedia;
+use Tarkontech\SivarCart\Database\Factories\BrandFactory;
+use Tarkontech\SivarCart\Models\Concerns\HasStoreMedia;
 
 /**
  * A brand of the catalog.

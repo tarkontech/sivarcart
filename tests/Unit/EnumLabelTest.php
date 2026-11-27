@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\CatalogSort;
-use SivarcartCore\SivarcartCore\Enums\CouponType;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
-use SivarcartCore\SivarcartCore\Enums\InventoryMovementType;
-use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentMethodType;
-use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentTransactionStatus;
-use SivarcartCore\SivarcartCore\Enums\ProductOptionType;
-use SivarcartCore\SivarcartCore\Enums\ProductStatus;
-use SivarcartCore\SivarcartCore\Enums\ProductType;
-use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
+use Tarkontech\SivarCart\Enums\CatalogSort;
+use Tarkontech\SivarCart\Enums\CouponType;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Enums\DocumentSequenceType;
+use Tarkontech\SivarCart\Enums\InventoryMovementType;
+use Tarkontech\SivarCart\Enums\OrderHistoryAxis;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentMethodType;
+use Tarkontech\SivarCart\Enums\PaymentRecordStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Enums\PaymentTransactionStatus;
+use Tarkontech\SivarCart\Enums\ProductOptionType;
+use Tarkontech\SivarCart\Enums\ProductStatus;
+use Tarkontech\SivarCart\Enums\ProductType;
+use Tarkontech\SivarCart\Enums\ShippingMethodType;
 
 /**
  * The label of every case of every enum, in Spanish and in English.
@@ -137,7 +137,7 @@ it('never shows the key of the translation', function (string $enum) {
     app()->setLocale('es');
 
     foreach ($enum::cases() as $case) {
-        expect($case->label())->not->toContain('sivarcart-core::');
+        expect($case->label())->not->toContain('sivarcart::');
     }
 })->with($enums);
 

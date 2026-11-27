@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models\Concerns;
+namespace Tarkontech\SivarCart\Models\Concerns;
 
 use Spatie\MediaLibrary\InteractsWithMedia;
 

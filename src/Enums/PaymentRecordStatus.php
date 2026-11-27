@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The lifecycle of a payment record.
@@ -33,6 +33,6 @@ enum PaymentRecordStatus: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.payment_record_status.'.$this->value);
+        return (string) __('sivarcart::messages.payment_record_status.'.$this->value);
     }
 }

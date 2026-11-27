@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Api;
+namespace Tarkontech\SivarCart\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use SivarcartCore\SivarcartCore\Actions\StartPayment;
-use SivarcartCore\SivarcartCore\Http\Resources\OrderResource;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Actions\StartPayment;
+use Tarkontech\SivarCart\Http\Resources\OrderResource;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * The orders of a shopper.

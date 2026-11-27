@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use SivarcartCore\SivarcartCore\Services\Admin\StaffService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Services\Admin\StaffService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Writes the staff of the store.
@@ -32,7 +32,7 @@ final class StaffController
         $model = app(StaffService::class)->find($staff);
 
         if (! $model instanceof Model) {
-            abort(404, __('sivarcart-core::admin.staff.not_found'));
+            abort(404, __('sivarcart::admin.staff.not_found'));
         }
 
         $attributes = $request->validate([
@@ -42,7 +42,7 @@ final class StaffController
 
         app(StaffService::class)->setRoles($model, $attributes['roles'] ?? []);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.staff.saved'));
+        Inertia::flash('notice', __('sivarcart::admin.staff.saved'));
 
         return back()->setStatusCode(303);
     }
@@ -55,12 +55,12 @@ final class StaffController
         $model = app(StaffService::class)->find($staff);
 
         if (! $model instanceof Model) {
-            abort(404, __('sivarcart-core::admin.staff.not_found'));
+            abort(404, __('sivarcart::admin.staff.not_found'));
         }
 
         app(StaffService::class)->removeRoles($model);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.staff.removed'));
+        Inertia::flash('notice', __('sivarcart::admin.staff.removed'));
 
         return back()->setStatusCode(303);
     }
@@ -69,7 +69,7 @@ final class StaffController
      * Create a member of the staff of the store.
      *
      * The user is created with the model of the application, the same way the
-     * "sivarcart-core:create-admin" command does it.
+     * "sivarcart:create-admin" command does it.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -89,7 +89,7 @@ final class StaffController
         ]);
 
         if (! method_exists($model, 'assignStoreRole')) {
-            abort(403, __('sivarcart-core::admin.staff.without_roles'));
+            abort(403, __('sivarcart::admin.staff.without_roles'));
         }
 
         $user = $model->newInstance();
@@ -102,7 +102,7 @@ final class StaffController
 
         app(StaffService::class)->assignRoles($user, $attributes['roles'] ?? []);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.staff.created', [
+        Inertia::flash('notice', __('sivarcart::admin.staff.created', [
             'name' => (string) $attributes['name'],
         ]));
 

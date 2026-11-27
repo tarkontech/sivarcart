@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Middleware;
+namespace Tarkontech\SivarCart\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as AuthFacade;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Lets the staff of the store into the administration panel.
@@ -42,7 +42,7 @@ final class EnsureStoreAdmin
                 abort(403, 'El modelo del usuario no tiene los roles de la tienda.');
             }
 
-            return redirect()->route('sivarcart-core.admin.setup');
+            return redirect()->route('sivarcart.admin.setup');
         }
 
         return $next($request);
@@ -53,16 +53,16 @@ final class EnsureStoreAdmin
      */
     private function loginUrl(): string
     {
-        $route = config('sivarcart-core.admin.login.route');
+        $route = config('sivarcart.admin.login.route');
 
         if (is_string($route) && $route !== '') {
             return route($route);
         }
 
-        if (! (bool) config('sivarcart-core.admin.login.enabled', true)) {
+        if (! (bool) config('sivarcart.admin.login.enabled', true)) {
             return url('/');
         }
 
-        return route('sivarcart-core.admin.login');
+        return route('sivarcart.admin.login');
     }
 }

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Storefront;
+namespace Tarkontech\SivarCart\Http\Controllers\Storefront;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Data\CatalogFilters;
-use SivarcartCore\SivarcartCore\Enums\CatalogSort;
-use SivarcartCore\SivarcartCore\Http\Requests\CatalogRequest;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter;
+use Tarkontech\SivarCart\Data\CatalogFilters;
+use Tarkontech\SivarCart\Enums\CatalogSort;
+use Tarkontech\SivarCart\Http\Requests\CatalogRequest;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Services\CatalogService;
+use Tarkontech\SivarCart\Storefront\StorefrontPresenter;
 
 /**
  * The catalog the shopper browses.
@@ -38,7 +38,7 @@ final class CatalogController
     public function home(Request $request): Response
     {
         $featured = $this->catalog->search(new CatalogFilters(
-            perPage: (int) config('sivarcart-core.storefront.per_page', 15),
+            perPage: (int) config('sivarcart.storefront.per_page', 15),
         ));
 
         return Inertia::render('Storefront/Home', [
@@ -104,7 +104,7 @@ final class CatalogController
             inStockOnly: $request->boolean('in_stock'),
             search: $request->string('search')->toString() ?: null,
             sort: CatalogSort::tryFrom($request->string('sort')->toString()) ?? CatalogSort::RECENT,
-            perPage: (int) config('sivarcart-core.storefront.per_page', 15),
+            perPage: (int) config('sivarcart.storefront.per_page', 15),
             page: max(1, $request->integer('page', 1)),
         );
     }
@@ -124,7 +124,7 @@ final class CatalogController
                 $relation->getQuery()->active()->orderBy('price');
             }])
             ->orderByDesc('id')
-            ->limit((int) config('sivarcart-core.storefront.per_page', 15))
+            ->limit((int) config('sivarcart.storefront.per_page', 15))
             ->get();
 
         $featured = [];

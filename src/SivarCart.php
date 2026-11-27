@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore;
+namespace Tarkontech\SivarCart;
 
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
-use SivarcartCore\SivarcartCore\Services\CartService;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Services\InventoryService;
-use SivarcartCore\SivarcartCore\Services\MediaService;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
-use SivarcartCore\SivarcartCore\Services\PaymentService;
-use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
+use Tarkontech\SivarCart\Admin\AdminPanel;
+use Tarkontech\SivarCart\Services\CartService;
+use Tarkontech\SivarCart\Services\CatalogService;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Services\InventoryService;
+use Tarkontech\SivarCart\Services\MediaService;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Services\PaymentMethodService;
+use Tarkontech\SivarCart\Services\PaymentService;
+use Tarkontech\SivarCart\Services\ShippingMethodService;
 
 /**
  * The entry point of the package.
@@ -22,7 +22,7 @@ use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
  * reach them with a facade. The services are injected in the constructor:
  * that is the way the package itself uses them.
  */
-class SivarcartCore
+class SivarCart
 {
     public function __construct(
         private readonly AdminPanel $admin,
@@ -44,7 +44,7 @@ class SivarcartCore
      *
      * The host application registers its own pages and widgets here:
      *
-     *     SivarcartCore::admin()->page(
+     *     SivarCart::admin()->page(
      *         key: 'quick-view',
      *         label: 'Vista rápida',
      *         permission: 'orders.view',

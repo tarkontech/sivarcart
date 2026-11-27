@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerRequired;
-use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidCartState;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
-use SivarcartCore\SivarcartCore\Services\CartService;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Services\PaymentService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Data\CheckoutData;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Exceptions\CustomerRequired;
+use Tarkontech\SivarCart\Exceptions\InsufficientStock;
+use Tarkontech\SivarCart\Exceptions\InvalidCartState;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\ShippingMethod;
+use Tarkontech\SivarCart\Services\CartService;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Services\PaymentService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 it('turns a cart into an order', function () {
     $scenario = CheckoutScenario::buyer();
@@ -141,7 +141,7 @@ it('refuses a shipping method that is not available', function () {
     $scenario = CheckoutScenario::buyer('inexistente');
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('refuses a shipping method that does not apply to the amount of the order', function () {
@@ -149,7 +149,7 @@ it('refuses a shipping method that does not apply to the amount of the order', f
     $scenario = CheckoutScenario::buyer($method->code);
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('creates the pending payment of the order', function () {
@@ -168,7 +168,7 @@ it('refuses a payment method that is not available', function () {
     $scenario = CheckoutScenario::buyer(paymentMethodCode: 'inexistente');
 
     expect(fn () => app(OrderService::class)->place($scenario->cart, $scenario->data))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('belongs the order to the customer of the checkout', function () {
@@ -285,7 +285,7 @@ it('refuses a refund bigger than what was paid', function () {
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
     expect(fn () => app(OrderService::class)->refund($order, 100.00))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('refuses a refund of no money', function () {
@@ -295,7 +295,7 @@ it('refuses a refund of no money', function () {
     $order = app(OrderService::class)->place($scenario->cart, $scenario->data);
 
     expect(fn () => app(OrderService::class)->refund($order, 0))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('prepares an order', function () {

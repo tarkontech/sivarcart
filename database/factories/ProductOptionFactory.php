@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use SivarcartCore\SivarcartCore\Enums\ProductOptionType;
-use SivarcartCore\SivarcartCore\Models\ProductOption;
+use Tarkontech\SivarCart\Enums\ProductOptionType;
+use Tarkontech\SivarCart\Models\ProductOption;
 
 /**
  * @extends Factory<ProductOption>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Middleware;
+namespace Tarkontech\SivarCart\Http\Middleware;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
@@ -13,13 +13,13 @@ use Inertia\Middleware;
 use Inertia\Response;
 use ReflectionProperty;
 use RuntimeException;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Services\CartService;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Services\StoreService;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontBundle;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Services\CartService;
+use Tarkontech\SivarCart\Services\CatalogService;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Services\StoreService;
+use Tarkontech\SivarCart\Storefront\StorefrontBundle;
+use Tarkontech\SivarCart\Storefront\StorefrontPresenter;
 
 /**
  * The props the store shares with every page.
@@ -59,11 +59,11 @@ final class HandleStorefrontInertiaRequests extends Middleware
      * The root view of the store.
      *
      * It lives in a namespace of its own, so the views the merchant publishes
-     * in "resources/views/vendor/sivarcart-core" never reach it by accident.
+     * in "resources/views/vendor/sivarcart" never reach it by accident.
      *
      * @var string
      */
-    protected $rootView = 'sivarcart-core-storefront::app';
+    protected $rootView = 'sivarcart-storefront::app';
 
     /**
      * The version of the assets of the store.
@@ -103,7 +103,7 @@ final class HandleStorefrontInertiaRequests extends Middleware
      */
     private function prefix(): string
     {
-        $prefix = (string) config('sivarcart-core.storefront.prefix', 'tienda');
+        $prefix = (string) config('sivarcart.storefront.prefix', 'tienda');
 
         return '/'.trim($prefix, '/');
     }
@@ -119,7 +119,7 @@ final class HandleStorefrontInertiaRequests extends Middleware
      */
     private function text(): array
     {
-        $text = __('sivarcart-core::storefront');
+        $text = __('sivarcart::storefront');
 
         return is_array($text) ? $text : [];
     }
@@ -163,7 +163,7 @@ final class HandleStorefrontInertiaRequests extends Middleware
         }
 
         $message = sprintf(
-            'SivarCart Core: la página [%s] usa los nombres [%s] que la tienda del comprador posee. La tienda los comparte con todas sus páginas, así que la página se los quita. Renómbralos.',
+            'SivarCart: la página [%s] usa los nombres [%s] que la tienda del comprador posee. La tienda los comparte con todas sus páginas, así que la página se los quita. Renómbralos.',
             $this->propertyOf($response, 'component') ?? 'unknown',
             implode(', ', $used),
         );
@@ -328,10 +328,10 @@ final class HandleStorefrontInertiaRequests extends Middleware
 
         $name = $route->getName();
 
-        if (! is_string($name) || ! str_starts_with($name, 'sivarcart-core.storefront.')) {
+        if (! is_string($name) || ! str_starts_with($name, 'sivarcart.storefront.')) {
             return null;
         }
 
-        return substr($name, strlen('sivarcart-core.storefront.'));
+        return substr($name, strlen('sivarcart.storefront.'));
     }
 }

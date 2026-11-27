@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
-use SivarcartCore\SivarcartCore\Actions\MarkOrderAsPaid;
-use SivarcartCore\SivarcartCore\Actions\RefundOrder;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentRecordStatus;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Events\OrderRefunded;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Actions\MarkOrderAsPaid;
+use Tarkontech\SivarCart\Actions\RefundOrder;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Enums\PaymentRecordStatus;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Events\OrderRefunded;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 /**
  * An order that was paid and can be refunded.
@@ -66,12 +66,12 @@ it('refuses a refund bigger than what was paid', function () use ($paidOrder) {
     [$order] = $paidOrder();
 
     expect(fn () => app(RefundOrder::class)->execute($order, 100.00))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('refuses a refund of no money', function () use ($paidOrder) {
     [$order] = $paidOrder();
 
     expect(fn () => app(RefundOrder::class)->execute($order, 0))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });

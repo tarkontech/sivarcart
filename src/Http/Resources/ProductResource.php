@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Resources;
+namespace Tarkontech\SivarCart\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductImage;
-use SivarcartCore\SivarcartCore\Support\Media;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductImage;
+use Tarkontech\SivarCart\Support\Media;
 
 /**
  * A product of the catalog, as the store API shows it.

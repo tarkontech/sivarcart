@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\Admin\OrderService as AdminOrderService;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\Admin\OrderService as AdminOrderService;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Support\Auth;
 use Throwable;
 
 /**
@@ -31,7 +31,7 @@ final class OrderRefundController
         $model = app(AdminOrderService::class)->find($order);
 
         if (! $model instanceof Order) {
-            abort(404, __('sivarcart-core::admin.orders.not_found'));
+            abort(404, __('sivarcart::admin.orders.not_found'));
         }
 
         $attributes = $request->validate([
@@ -52,7 +52,7 @@ final class OrderRefundController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.orders.refunded', [
+        Inertia::flash('notice', __('sivarcart::admin.orders.refunded', [
             'number' => (string) $model->order_number,
         ]));
 
@@ -67,7 +67,7 @@ final class OrderRefundController
         $model = app(AdminOrderService::class)->find($order);
 
         if (! $model instanceof Order) {
-            abort(404, __('sivarcart-core::admin.orders.not_found'));
+            abort(404, __('sivarcart::admin.orders.not_found'));
         }
 
         $attributes = $request->validate([
@@ -86,7 +86,7 @@ final class OrderRefundController
                 ->setStatusCode(303);
         }
 
-        Inertia::flash('notice', __('sivarcart-core::admin.orders.returned', [
+        Inertia::flash('notice', __('sivarcart::admin.orders.returned', [
             'number' => (string) $model->order_number,
         ]));
 

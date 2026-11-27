@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title data-inertia="title">{{ __('sivarcart-core::admin.title') }}</title>
+    <title data-inertia="title">{{ __('sivarcart::admin.title') }}</title>
 
-    @include('sivarcart-core-panel::theme')
-    @include('sivarcart-core-panel::assets')
+    @include('sivarcart-panel::theme')
+    @include('sivarcart-panel::assets')
 
-    @foreach ((array) config('sivarcart-core.admin.stylesheets', []) as $stylesheet)
+    @foreach ((array) config('sivarcart.admin.stylesheets', []) as $stylesheet)
         <link rel="stylesheet" href="{{ $stylesheet }}">
     @endforeach
 

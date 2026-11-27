@@ -6,19 +6,19 @@ use Illuminate\Cache\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
 it('registers the routes of the store API', function () {
-    expect(Route::has('sivarcart-core.api.products.index'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.products.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.categories.index'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.brands.index'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.account.register'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.account.login'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.cart.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.checkout.store'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.api.orders.index'))->toBeTrue();
+    expect(Route::has('sivarcart.api.products.index'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.products.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.categories.index'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.brands.index'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.account.register'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.account.login'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.cart.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.checkout.store'))->toBeTrue()
+        ->and(Route::has('sivarcart.api.orders.index'))->toBeTrue();
 });
 
 it('mounts the API under the configured prefix', function () {
-    $route = Route::getRoutes()->getByName('sivarcart-core.api.products.index');
+    $route = Route::getRoutes()->getByName('sivarcart.api.products.index');
 
     expect($route)->not->toBeNull()
         ->and($route->uri())->toBe('api/sivarcart/products')
@@ -27,7 +27,7 @@ it('mounts the API under the configured prefix', function () {
 
 it('gives the API the middleware of the package', function () {
     $middleware = Route::getRoutes()
-        ->getByName('sivarcart-core.api.cart.show')
+        ->getByName('sivarcart.api.cart.show')
         ->gatherMiddleware();
 
     expect($middleware)->toContain('sivarcart.api')
@@ -36,7 +36,7 @@ it('gives the API the middleware of the package', function () {
 
 it('leaves the catalog of the store open', function () {
     $middleware = Route::getRoutes()
-        ->getByName('sivarcart-core.api.products.index')
+        ->getByName('sivarcart.api.products.index')
         ->gatherMiddleware();
 
     expect($middleware)->toContain('sivarcart.api')
@@ -44,9 +44,9 @@ it('leaves the catalog of the store open', function () {
 });
 
 it('keeps the route of the webhook of Wompi', function () {
-    expect(Route::has('sivarcart-core.wompi.webhook'))->toBeTrue();
+    expect(Route::has('sivarcart.wompi.webhook'))->toBeTrue();
 
-    $route = Route::getRoutes()->getByName('sivarcart-core.wompi.webhook');
+    $route = Route::getRoutes()->getByName('sivarcart.wompi.webhook');
 
     expect($route->uri())->toBe('webhooks/wompi')
         ->and($route->gatherMiddleware())->toContain('wompi.webhook');

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Tests\TestCase;
+use Tarkontech\SivarCart\Tests\TestCase;
 
 /**
  * The API of the store, turned off.
@@ -20,7 +20,7 @@ final class RoutesDisabledTest extends TestCase
     {
         parent::defineEnvironment($app);
 
-        $app['config']->set('sivarcart-core.api', [
+        $app['config']->set('sivarcart.api', [
             'enabled' => false,
             'prefix' => 'api/sivarcart',
             'middleware' => ['api'],
@@ -30,8 +30,8 @@ final class RoutesDisabledTest extends TestCase
 
     public function test_it_does_not_register_the_routes_of_the_api(): void
     {
-        $this->assertFalse(Route::has('sivarcart-core.api.products.index'));
-        $this->assertFalse(Route::has('sivarcart-core.api.cart.show'));
+        $this->assertFalse(Route::has('sivarcart.api.products.index'));
+        $this->assertFalse(Route::has('sivarcart.api.cart.show'));
     }
 
     public function test_it_keeps_the_route_of_the_webhook_of_wompi(): void
@@ -41,7 +41,7 @@ final class RoutesDisabledTest extends TestCase
             'wompi.client_secret' => 'secreto-de-prueba',
         ]);
 
-        $this->assertTrue(Route::has('sivarcart-core.wompi.webhook'));
+        $this->assertTrue(Route::has('sivarcart.wompi.webhook'));
 
         $this->postJson('/webhooks/wompi', [])->assertStatus(400);
     }

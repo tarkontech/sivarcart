@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Tests;
+namespace Tarkontech\SivarCart\Tests;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
@@ -11,8 +11,8 @@ use Inertia\Inertia;
 use Inertia\ServiceProvider as InertiaServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Rmirandasv\Wompi\WompiServiceProvider;
-use SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
+use Tarkontech\SivarCart\SivarCartServiceProvider;
 use Workbench\App\Models\User;
 
 abstract class TestCase extends Orchestra
@@ -33,11 +33,11 @@ abstract class TestCase extends Orchestra
     protected function setUp(): void
     {
         $this->temporaryDatabasePath = sys_get_temp_dir()
-            .DIRECTORY_SEPARATOR.'sivarcart-core-tests'
+            .DIRECTORY_SEPARATOR.'sivarcart-tests'
             .DIRECTORY_SEPARATOR.Str::uuid()->toString();
 
         $this->temporaryBasePath = sys_get_temp_dir()
-            .DIRECTORY_SEPARATOR.'sivarcart-core-tests'
+            .DIRECTORY_SEPARATOR.'sivarcart-tests'
             .DIRECTORY_SEPARATOR.Str::uuid()->toString();
 
         parent::setUp();
@@ -59,7 +59,7 @@ abstract class TestCase extends Orchestra
             // package sets the model of the media.
             MediaLibraryServiceProvider::class,
             InertiaServiceProvider::class,
-            SivarcartCoreServiceProvider::class,
+            SivarCartServiceProvider::class,
             WompiServiceProvider::class,
         ];
     }
@@ -92,7 +92,7 @@ abstract class TestCase extends Orchestra
         /*
         | The views of the application come from the temporary base path too,
         | so the views the merchant publishes in
-        | "resources/views/vendor/sivarcart-core" are found the same way they
+        | "resources/views/vendor/sivarcart" are found the same way they
         | are found in a real application.
         */
         $app['config']->set('view.paths', [
@@ -163,7 +163,7 @@ abstract class TestCase extends Orchestra
             .DIRECTORY_SEPARATOR.'resources'
             .DIRECTORY_SEPARATOR.'views'
             .DIRECTORY_SEPARATOR.'vendor'
-            .DIRECTORY_SEPARATOR.'sivarcart-core',
+            .DIRECTORY_SEPARATOR.'sivarcart',
         );
 
         File::put(

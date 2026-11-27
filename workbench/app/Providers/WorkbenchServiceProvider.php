@@ -22,7 +22,7 @@ class WorkbenchServiceProvider extends ServiceProvider
         config(['database.default' => 'sqlite']);
 
         // The workbench plays the role of the host application, so the staff
-        // of the store are its own users. SivarCart Core reads the model of
+        // of the store are its own users. SivarCart reads the model of
         // the "users" provider of "config/auth.php" to relate them.
         config(['auth.providers.users.model' => User::class]);
     }

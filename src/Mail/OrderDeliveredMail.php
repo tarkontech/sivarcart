@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
+use Tarkontech\SivarCart\Enums\OrderNotification;
 
 /**
  * The email the buyer receives when the order is delivered.
@@ -24,6 +24,6 @@ final class OrderDeliveredMail extends OrderMail
      */
     protected function template(): string
     {
-        return 'sivarcart-core::mail.order-delivered';
+        return 'sivarcart::mail.order-delivered';
     }
 }

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Data\CatalogFilters;
-use SivarcartCore\SivarcartCore\Enums\CatalogSort;
-use SivarcartCore\SivarcartCore\Enums\ProductStatus;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Category;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
+use Tarkontech\SivarCart\Data\CatalogFilters;
+use Tarkontech\SivarCart\Enums\CatalogSort;
+use Tarkontech\SivarCart\Enums\ProductStatus;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Category;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Services\CatalogService;
 
 /**
  * The ids of the products of a page of the catalog.

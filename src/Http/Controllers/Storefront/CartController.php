@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Storefront;
+namespace Tarkontech\SivarCart\Http\Controllers\Storefront;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Http\Requests\ApplyCouponRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\StorefrontCartItemRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\UpdateCartItemRequest;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\CartItem;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Services\CartService;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Http\Requests\ApplyCouponRequest;
+use Tarkontech\SivarCart\Http\Requests\StorefrontCartItemRequest;
+use Tarkontech\SivarCart\Http\Requests\UpdateCartItemRequest;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\CartItem;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Services\CartService;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Storefront\StorefrontPresenter;
 
 /**
  * Keeps the cart of the shopper.
@@ -59,7 +59,7 @@ final class CartController
 
         try {
             $this->carts->addItem($cart, $variant, (int) $request->validated('quantity', 1));
-        } catch (SivarcartCoreException $exception) {
+        } catch (SivarCartException $exception) {
             return back()->withErrors(['variant_id' => $exception->getMessage()]);
         }
 
@@ -79,7 +79,7 @@ final class CartController
                 $this->line($cart, $item),
                 (int) $request->validated('quantity'),
             );
-        } catch (SivarcartCoreException $exception) {
+        } catch (SivarCartException $exception) {
             return back()->withErrors(['quantity' => $exception->getMessage()]);
         }
 
@@ -107,7 +107,7 @@ final class CartController
 
         try {
             $this->carts->applyCoupon($cart, (string) $request->validated('code'));
-        } catch (SivarcartCoreException $exception) {
+        } catch (SivarCartException $exception) {
             return back()->withErrors(['code' => $exception->getMessage()]);
         }
 

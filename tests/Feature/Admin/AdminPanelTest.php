@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
-use SivarcartCore\SivarcartCore\Admin\AdminWidgetProps;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Admin\AdminPanel;
+use Tarkontech\SivarCart\Admin\AdminWidgetProps;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 it('registers the pages of the package', function () {

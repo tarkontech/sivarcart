@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
-use SivarcartCore\SivarcartCore\Data\OrderTotals;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\Tax;
+use Tarkontech\SivarCart\Data\OrderTotals;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\Tax;
 
 /**
  * Prices the lines of a cart or of an order.

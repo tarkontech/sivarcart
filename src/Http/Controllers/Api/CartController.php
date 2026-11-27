@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Api;
+namespace Tarkontech\SivarCart\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use SivarcartCore\SivarcartCore\Http\Requests\ApplyCouponRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\StoreCartItemRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\UpdateCartItemRequest;
-use SivarcartCore\SivarcartCore\Http\Resources\CartResource;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\CartItem;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Services\CartService;
+use Tarkontech\SivarCart\Http\Requests\ApplyCouponRequest;
+use Tarkontech\SivarCart\Http\Requests\StoreCartItemRequest;
+use Tarkontech\SivarCart\Http\Requests\UpdateCartItemRequest;
+use Tarkontech\SivarCart\Http\Resources\CartResource;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\CartItem;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Services\CartService;
 
 /**
  * Keeps the cart of a shopper.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Support;
+namespace Tarkontech\SivarCart\Support;
 
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;

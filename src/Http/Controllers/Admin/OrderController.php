@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\Admin\OrderService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\Admin\OrderService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Shows one order of the store.
@@ -29,7 +29,7 @@ final class OrderController
         $model = app(OrderService::class)->find($order);
 
         if (! $model instanceof Order) {
-            abort(404, __('sivarcart-core::admin.orders.not_found'));
+            abort(404, __('sivarcart::admin.orders.not_found'));
         }
 
         $canUpdate = Auth::hasStorePermission(Auth::user(), 'orders.update');

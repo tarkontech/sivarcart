@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 use Throwable;
 
 /**
  * The payment gateway refused to create the payment.
  */
-class PaymentGatewayFailed extends SivarcartCoreException
+class PaymentGatewayFailed extends SivarCartException
 {
     /**
      * Wrap the error the gateway reported.

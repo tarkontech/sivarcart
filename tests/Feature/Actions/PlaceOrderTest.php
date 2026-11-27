@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
-use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Events\OrderPlaced;
-use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidCartState;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Actions\PlaceOrder;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Events\OrderPlaced;
+use Tarkontech\SivarCart\Exceptions\InsufficientStock;
+use Tarkontech\SivarCart\Exceptions\InvalidCartState;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 it('places the order of a cart', function () {
     Event::fake([OrderPlaced::class]);

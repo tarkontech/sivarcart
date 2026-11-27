@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ShippingMethod;
 
 it('shows the screen of the checkout', function () {
     shopper();
@@ -81,7 +81,7 @@ it('sends the shopper to the confirmation of the order', function () {
 
     $order = Order::query()->firstOrFail();
 
-    $response->assertRedirect(route('sivarcart-core.storefront.orders.show', [
+    $response->assertRedirect(route('sivarcart.storefront.orders.show', [
         'order' => $order->uuid,
     ]));
 });

@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Support\Facades\Notification;
-use SivarcartCore\SivarcartCore\Actions\CancelOrder;
-use SivarcartCore\SivarcartCore\Actions\DeliverOrder;
-use SivarcartCore\SivarcartCore\Actions\HandleWompiPayment;
-use SivarcartCore\SivarcartCore\Actions\MarkOrderAsPaid;
-use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
-use SivarcartCore\SivarcartCore\Actions\RefundOrder;
-use SivarcartCore\SivarcartCore\Actions\ShipOrder;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Notifications\OrderCancelledNotification;
-use SivarcartCore\SivarcartCore\Notifications\OrderDeliveredNotification;
-use SivarcartCore\SivarcartCore\Notifications\OrderPaidNotification;
-use SivarcartCore\SivarcartCore\Notifications\OrderPlacedNotification;
-use SivarcartCore\SivarcartCore\Notifications\OrderRefundedNotification;
-use SivarcartCore\SivarcartCore\Notifications\OrderShippedNotification;
-use SivarcartCore\SivarcartCore\Notifications\PaymentFailedNotification;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
-use SivarcartCore\SivarcartCore\Tests\Support\WompiPayload;
+use Tarkontech\SivarCart\Actions\CancelOrder;
+use Tarkontech\SivarCart\Actions\DeliverOrder;
+use Tarkontech\SivarCart\Actions\HandleWompiPayment;
+use Tarkontech\SivarCart\Actions\MarkOrderAsPaid;
+use Tarkontech\SivarCart\Actions\PlaceOrder;
+use Tarkontech\SivarCart\Actions\RefundOrder;
+use Tarkontech\SivarCart\Actions\ShipOrder;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Notifications\OrderCancelledNotification;
+use Tarkontech\SivarCart\Notifications\OrderDeliveredNotification;
+use Tarkontech\SivarCart\Notifications\OrderPaidNotification;
+use Tarkontech\SivarCart\Notifications\OrderPlacedNotification;
+use Tarkontech\SivarCart\Notifications\OrderRefundedNotification;
+use Tarkontech\SivarCart\Notifications\OrderShippedNotification;
+use Tarkontech\SivarCart\Notifications\PaymentFailedNotification;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Tests\Support\WompiPayload;
 
 /**
  * An order that was placed and is waiting for its payment.

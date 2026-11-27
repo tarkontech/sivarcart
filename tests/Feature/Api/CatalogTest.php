@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Category;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Services\MediaService;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Category;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Services\MediaService;
 
 it('lists the products of the catalog', function () {
     $product = Product::factory()->create(['name' => 'ZapatillaRunner']);

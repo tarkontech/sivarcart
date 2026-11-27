@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use SivarcartCore\SivarcartCore\Database\Factories\CouponFactory;
-use SivarcartCore\SivarcartCore\Enums\CouponType;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\CouponFactory;
+use Tarkontech\SivarCart\Enums\CouponType;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * A discount code a shopper can apply at checkout.

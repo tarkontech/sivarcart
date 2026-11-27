@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 /**
  * The account cannot be created because the email is already taken.
  */
-class CustomerAlreadyExists extends SivarcartCoreException
+class CustomerAlreadyExists extends SivarCartException
 {
     /**
      * There is already a buyer with that email address.

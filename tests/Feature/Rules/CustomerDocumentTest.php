@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Validator;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Rules\CustomerDocument;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Rules\CustomerDocument;
 
 it('accepts a DUI with the right check digit', function () {
     expect(CustomerDocument::check(CustomerDocumentType::DUI, '01234567-8'))->toBeNull()

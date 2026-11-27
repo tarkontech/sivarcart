@@ -8,8 +8,8 @@
      * the one that wins, and the brand of the store is the same in the light
      * theme and in the dark one.
      */
-    $variables = \SivarcartCore\SivarcartCore\Admin\AdminTheme::variables();
-    $dark = \SivarcartCore\SivarcartCore\Admin\AdminTheme::darkVariables();
+    $variables = \Tarkontech\SivarCart\Admin\AdminTheme::variables();
+    $dark = \Tarkontech\SivarCart\Admin\AdminTheme::darkVariables();
 @endphp
 @if ($variables !== [])
     <style>

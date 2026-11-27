@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Tests\Support;
+namespace Tarkontech\SivarCart\Tests\Support;
 
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Services\CartService;
+use Tarkontech\SivarCart\Data\CheckoutData;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Services\CartService;
 
 /**
  * A store with a cart that holds one unit of a product that costs 25.50.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The reason a stock movement was recorded.
@@ -24,6 +24,6 @@ enum InventoryMovementType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.inventory_movement_type.'.$this->value);
+        return (string) __('sivarcart::messages.inventory_movement_type.'.$this->value);
     }
 }

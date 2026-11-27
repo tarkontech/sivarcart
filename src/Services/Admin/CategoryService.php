@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services\Admin;
+namespace Tarkontech\SivarCart\Services\Admin;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidCategoryParent;
-use SivarcartCore\SivarcartCore\Models\Category;
-use SivarcartCore\SivarcartCore\Support\Slug;
+use Tarkontech\SivarCart\Exceptions\InvalidCategoryParent;
+use Tarkontech\SivarCart\Models\Category;
+use Tarkontech\SivarCart\Support\Slug;
 
 /**
  * The categories of the catalog, as the staff of the store sees them.

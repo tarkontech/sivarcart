@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The payment state of an order.
@@ -74,6 +74,6 @@ enum PaymentStatus: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.payment_status.'.$this->value);
+        return (string) __('sivarcart::messages.payment_status.'.$this->value);
     }
 }

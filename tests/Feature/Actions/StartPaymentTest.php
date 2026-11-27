@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
-use SivarcartCore\SivarcartCore\Actions\StartPayment;
-use SivarcartCore\SivarcartCore\Enums\OrderHistoryAxis;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
-use SivarcartCore\SivarcartCore\Tests\Support\FakePaymentGateway;
+use Tarkontech\SivarCart\Actions\StartPayment;
+use Tarkontech\SivarCart\Enums\OrderHistoryAxis;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Exceptions\PaymentGatewayFailed;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Payments\PaymentGatewayManager;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Tests\Support\FakePaymentGateway;
 
 /**
  * An order that is waiting for a payment link.
@@ -145,7 +145,7 @@ it('refuses an order without a pending payment', function () use ($orderWaitingF
     $order->payments->first()->update(['status' => 'cancelled']);
 
     expect(fn () => app(StartPayment::class)->execute($order->fresh()))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('creates the payment link with Wompi', function () {

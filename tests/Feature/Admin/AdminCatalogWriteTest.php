@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Enums\ProductStatus;
-use SivarcartCore\SivarcartCore\Enums\ProductType;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Category;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Enums\ProductStatus;
+use Tarkontech\SivarCart\Enums\ProductType;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Category;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\ShippingMethod;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 /**

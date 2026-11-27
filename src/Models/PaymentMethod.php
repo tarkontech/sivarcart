@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use SivarcartCore\SivarcartCore\Database\Factories\PaymentMethodFactory;
-use SivarcartCore\SivarcartCore\Enums\PaymentMethodType;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Database\Factories\PaymentMethodFactory;
+use Tarkontech\SivarCart\Enums\PaymentMethodType;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
 
 /**
  * A way of paying for an order.

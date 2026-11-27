@@ -11,13 +11,13 @@ arch('it will not use dd(), ddd(), env(), or exit()')
     ->each->not->toBeUsed();
 
 arch('the package source declares strict types')
-    ->expect('SivarcartCore\SivarcartCore')
+    ->expect('Tarkontech\SivarCart')
     ->toUseStrictTypes();
 
 arch('the models never read the environment directly')
-    ->expect('SivarcartCore\SivarcartCore\Models')
+    ->expect('Tarkontech\SivarCart\Models')
     ->not->toUse(['env', 'getenv']);
 
 arch('the migrations never read the environment directly')
-    ->expect('SivarcartCore\SivarcartCore')
+    ->expect('Tarkontech\SivarCart')
     ->not->toUse(['env', 'getenv']);

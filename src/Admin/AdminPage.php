@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin;
+namespace Tarkontech\SivarCart\Admin;
 
 /**
  * A page of the administration panel.
@@ -67,6 +67,6 @@ final readonly class AdminPage
             return route($this->route);
         }
 
-        return url((string) config('sivarcart-core.admin.prefix', 'sivarcart/admin').'/'.$this->key);
+        return url((string) config('sivarcart.admin.prefix', 'sivarcart/admin').'/'.$this->key);
     }
 }

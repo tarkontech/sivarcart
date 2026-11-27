@@ -6,14 +6,14 @@ use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Mail\Mailer;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
-use SivarcartCore\SivarcartCore\Mail\AccountPasswordResetMail;
-use SivarcartCore\SivarcartCore\Mail\AccountVerifyEmailMail;
-use SivarcartCore\SivarcartCore\Mail\AccountWelcomeMail;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Notifications\AccountEmailVerificationNotification;
-use SivarcartCore\SivarcartCore\Notifications\AccountPasswordResetNotification;
-use SivarcartCore\SivarcartCore\Notifications\AccountWelcomeNotification;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
+use Tarkontech\SivarCart\Mail\AccountPasswordResetMail;
+use Tarkontech\SivarCart\Mail\AccountVerifyEmailMail;
+use Tarkontech\SivarCart\Mail\AccountWelcomeMail;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Notifications\AccountEmailVerificationNotification;
+use Tarkontech\SivarCart\Notifications\AccountPasswordResetNotification;
+use Tarkontech\SivarCart\Notifications\AccountWelcomeNotification;
+use Tarkontech\SivarCart\Services\CustomerService;
 
 it('welcomes the buyer and asks it to verify the email when the account is created', function () {
     Notification::fake();
@@ -61,7 +61,7 @@ it('writes the reset email with the link of la tienda', function () {
 });
 
 it('writes the reset email with the link of the application when it names one', function () {
-    config()->set('sivarcart-core.buyers.password_reset_route', 'password.reset');
+    config()->set('sivarcart.buyers.password_reset_route', 'password.reset');
 
     $customer = Customer::factory()->create(['email' => 'ana@example.test']);
 
@@ -94,7 +94,7 @@ it('signs the link of the verification', function () {
 });
 
 it('says out loud when the application did not declare the route of the link', function () {
-    config()->set('sivarcart-core.buyers.email_verification_route', 'una-ruta-que-no-existe');
+    config()->set('sivarcart.buyers.email_verification_route', 'una-ruta-que-no-existe');
 
     $customer = Customer::factory()->create(['email' => 'ana@example.test']);
 

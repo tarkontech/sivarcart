@@ -3,23 +3,23 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\AdminAssetController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\AdminPageController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\BrandController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\CategoryController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\LoginController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\OrderController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\OrderRefundController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\OrderStatusController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\PaymentMethodController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\ProductController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\RoleController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\SettingsController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\SetupController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\ShippingMethodController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\StaffController;
-use SivarcartCore\SivarcartCore\Http\Controllers\Admin\StoreMediaController;
-use SivarcartCore\SivarcartCore\Http\Middleware\HandleAdminInertiaRequests;
+use Tarkontech\SivarCart\Http\Controllers\Admin\AdminAssetController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\AdminPageController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\BrandController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\CategoryController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\LoginController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\OrderController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\OrderRefundController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\OrderStatusController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\PaymentMethodController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\ProductController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\RoleController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\SettingsController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\SetupController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\ShippingMethodController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\StaffController;
+use Tarkontech\SivarCart\Http\Controllers\Admin\StoreMediaController;
+use Tarkontech\SivarCart\Http\Middleware\HandleAdminInertiaRequests;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +41,9 @@ use SivarcartCore\SivarcartCore\Http\Middleware\HandleAdminInertiaRequests;
 |
 */
 
-$prefix = (string) config('sivarcart-core.admin.prefix', 'sivarcart/admin');
+$prefix = (string) config('sivarcart.admin.prefix', 'sivarcart/admin');
 
-$web = (array) config('sivarcart-core.admin.middleware', ['web']);
+$web = (array) config('sivarcart.admin.middleware', ['web']);
 
 /*
 | The assets and the sign in screen answer without the staff of the store
@@ -57,11 +57,11 @@ $web = (array) config('sivarcart-core.admin.middleware', ['web']);
 Route::prefix($prefix)->middleware($web)->group(function (): void {
     Route::get('assets/{version}/admin.css', [AdminAssetController::class, 'css'])
         ->where('version', '[A-Za-z0-9]+')
-        ->name('sivarcart-core.admin.assets.css');
+        ->name('sivarcart.admin.assets.css');
 
     Route::get('assets/{version}/admin.js', [AdminAssetController::class, 'js'])
         ->where('version', '[A-Za-z0-9]+')
-        ->name('sivarcart-core.admin.assets.js');
+        ->name('sivarcart.admin.assets.js');
 
     /*
     | The bundle of the panel is split in pieces, one per page, and the browser
@@ -70,29 +70,29 @@ Route::prefix($prefix)->middleware($web)->group(function (): void {
     Route::get('assets/{version}/{chunk}', [AdminAssetController::class, 'chunk'])
         ->where('version', '[A-Za-z0-9]+')
         ->where('chunk', '[A-Za-z0-9_.-]+\.(js|css)')
-        ->name('sivarcart-core.admin.assets.chunk');
+        ->name('sivarcart.admin.assets.chunk');
 
     Route::get('login', [LoginController::class, 'show'])
         ->middleware(HandleAdminInertiaRequests::class)
-        ->name('sivarcart-core.admin.login');
+        ->name('sivarcart.admin.login');
 
     Route::post('login', [LoginController::class, 'store'])
-        ->name('sivarcart-core.admin.login.store');
+        ->name('sivarcart.admin.login.store');
 
     Route::get('setup', [SetupController::class, 'show'])
         ->middleware(HandleAdminInertiaRequests::class)
-        ->name('sivarcart-core.admin.setup');
+        ->name('sivarcart.admin.setup');
 });
 
 Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleAdminInertiaRequests::class]))->group(function (): void {
     Route::get('/', [AdminPageController::class, 'index'])
         ->defaults('page', 'dashboard')
-        ->name('sivarcart-core.admin.index');
+        ->name('sivarcart.admin.index');
 
     Route::get('orders/{order}', [OrderController::class, 'show'])
         ->middleware('store.permission:orders.view')
         ->defaults('page', 'orders')
-        ->name('sivarcart-core.admin.orders.show');
+        ->name('sivarcart.admin.orders.show');
 
     /*
     | The panel writes the state of an order and the settings of the store
@@ -101,7 +101,7 @@ Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleA
     */
     Route::post('orders/{order}/status', [OrderStatusController::class, 'update'])
         ->middleware('store.permission:orders.update')
-        ->name('sivarcart-core.admin.orders.status');
+        ->name('sivarcart.admin.orders.status');
 
     /*
     | A refund moves the axis of the payment of an order and a return says
@@ -110,15 +110,15 @@ Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleA
     */
     Route::post('orders/{order}/refund', [OrderRefundController::class, 'refund'])
         ->middleware('store.permission:orders.update')
-        ->name('sivarcart-core.admin.orders.refund');
+        ->name('sivarcart.admin.orders.refund');
 
     Route::post('orders/{order}/return', [OrderRefundController::class, 'returned'])
         ->middleware('store.permission:orders.update')
-        ->name('sivarcart-core.admin.orders.return');
+        ->name('sivarcart.admin.orders.return');
 
     Route::put('settings', [SettingsController::class, 'update'])
         ->middleware('store.permission:settings.update')
-        ->name('sivarcart-core.admin.settings.update');
+        ->name('sivarcart.admin.settings.update');
 
     /*
     | The logo and the favicon of the store are files, so they travel as
@@ -126,11 +126,11 @@ Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleA
     */
     Route::post('settings/logo', [StoreMediaController::class, 'logo'])
         ->middleware('store.permission:settings.update')
-        ->name('sivarcart-core.admin.settings.logo');
+        ->name('sivarcart.admin.settings.logo');
 
     Route::post('settings/favicon', [StoreMediaController::class, 'favicon'])
         ->middleware('store.permission:settings.update')
-        ->name('sivarcart-core.admin.settings.favicon');
+        ->name('sivarcart.admin.settings.favicon');
 
     /*
     | The catalog: the products and their variants, the categories, the
@@ -140,103 +140,103 @@ Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleA
     */
     Route::get('products/create', [ProductController::class, 'create'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.products.create');
+        ->name('sivarcart.admin.products.create');
 
     Route::post('products', [ProductController::class, 'store'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.products.store');
+        ->name('sivarcart.admin.products.store');
 
     Route::get('products/{product}/edit', [ProductController::class, 'edit'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.products.edit');
+        ->name('sivarcart.admin.products.edit');
 
     Route::put('products/{product}', [ProductController::class, 'update'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.products.update');
+        ->name('sivarcart.admin.products.update');
 
     Route::delete('products/{product}', [ProductController::class, 'destroy'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.products.destroy');
+        ->name('sivarcart.admin.products.destroy');
 
     Route::get('categories/create', [CategoryController::class, 'create'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.categories.create');
+        ->name('sivarcart.admin.categories.create');
 
     Route::post('categories', [CategoryController::class, 'store'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.categories.store');
+        ->name('sivarcart.admin.categories.store');
 
     Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.categories.edit');
+        ->name('sivarcart.admin.categories.edit');
 
     Route::put('categories/{category}', [CategoryController::class, 'update'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.categories.update');
+        ->name('sivarcart.admin.categories.update');
 
     Route::delete('categories/{category}', [CategoryController::class, 'destroy'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.categories.destroy');
+        ->name('sivarcart.admin.categories.destroy');
 
     Route::get('brands/create', [BrandController::class, 'create'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.brands.create');
+        ->name('sivarcart.admin.brands.create');
 
     Route::post('brands', [BrandController::class, 'store'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.brands.store');
+        ->name('sivarcart.admin.brands.store');
 
     Route::get('brands/{brand}/edit', [BrandController::class, 'edit'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.brands.edit');
+        ->name('sivarcart.admin.brands.edit');
 
     Route::put('brands/{brand}', [BrandController::class, 'update'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.brands.update');
+        ->name('sivarcart.admin.brands.update');
 
     Route::delete('brands/{brand}', [BrandController::class, 'destroy'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.brands.destroy');
+        ->name('sivarcart.admin.brands.destroy');
 
     Route::get('shipping-methods/create', [ShippingMethodController::class, 'create'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.shipping-methods.create');
+        ->name('sivarcart.admin.shipping-methods.create');
 
     Route::post('shipping-methods', [ShippingMethodController::class, 'store'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.shipping-methods.store');
+        ->name('sivarcart.admin.shipping-methods.store');
 
     Route::get('shipping-methods/{method}/edit', [ShippingMethodController::class, 'edit'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.shipping-methods.edit');
+        ->name('sivarcart.admin.shipping-methods.edit');
 
     Route::put('shipping-methods/{method}', [ShippingMethodController::class, 'update'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.shipping-methods.update');
+        ->name('sivarcart.admin.shipping-methods.update');
 
     Route::delete('shipping-methods/{method}', [ShippingMethodController::class, 'destroy'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.shipping-methods.destroy');
+        ->name('sivarcart.admin.shipping-methods.destroy');
 
     Route::get('payment-methods/create', [PaymentMethodController::class, 'create'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.payment-methods.create');
+        ->name('sivarcart.admin.payment-methods.create');
 
     Route::post('payment-methods', [PaymentMethodController::class, 'store'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.payment-methods.store');
+        ->name('sivarcart.admin.payment-methods.store');
 
     Route::get('payment-methods/{method}/edit', [PaymentMethodController::class, 'edit'])
         ->middleware('store.permission:catalog.view')
-        ->name('sivarcart-core.admin.payment-methods.edit');
+        ->name('sivarcart.admin.payment-methods.edit');
 
     Route::put('payment-methods/{method}', [PaymentMethodController::class, 'update'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.payment-methods.update');
+        ->name('sivarcart.admin.payment-methods.update');
 
     Route::delete('payment-methods/{method}', [PaymentMethodController::class, 'destroy'])
         ->middleware('store.permission:catalog.update')
-        ->name('sivarcart-core.admin.payment-methods.destroy');
+        ->name('sivarcart.admin.payment-methods.destroy');
 
     /*
     | The staff of the store are the users of the application, so the panel
@@ -244,30 +244,30 @@ Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleA
     */
     Route::post('staff', [StaffController::class, 'store'])
         ->middleware('store.permission:staff.update')
-        ->name('sivarcart-core.admin.staff.store');
+        ->name('sivarcart.admin.staff.store');
 
     Route::put('staff/{staff}', [StaffController::class, 'update'])
         ->middleware('store.permission:staff.update')
-        ->name('sivarcart-core.admin.staff.update');
+        ->name('sivarcart.admin.staff.update');
 
     Route::delete('staff/{staff}', [StaffController::class, 'destroy'])
         ->middleware('store.permission:staff.update')
-        ->name('sivarcart-core.admin.staff.destroy');
+        ->name('sivarcart.admin.staff.destroy');
 
     /*
     | The roles of the store: what every role grants.
     */
     Route::post('roles', [RoleController::class, 'store'])
         ->middleware('store.permission:roles.update')
-        ->name('sivarcart-core.admin.roles.store');
+        ->name('sivarcart.admin.roles.store');
 
     Route::put('roles/{role}', [RoleController::class, 'update'])
         ->middleware('store.permission:roles.update')
-        ->name('sivarcart-core.admin.roles.update');
+        ->name('sivarcart.admin.roles.update');
 
     Route::delete('roles/{role}', [RoleController::class, 'destroy'])
         ->middleware('store.permission:roles.update')
-        ->name('sivarcart-core.admin.roles.destroy');
+        ->name('sivarcart.admin.roles.destroy');
 
     /*
     | The pages of the panel come last, so the routes above win. A page is
@@ -275,5 +275,5 @@ Route::prefix($prefix)->middleware(array_merge($web, ['sivarcart.admin', HandleA
     | host application registers.
     */
     Route::get('{page}', [AdminPageController::class, 'show'])
-        ->name('sivarcart-core.admin.page');
+        ->name('sivarcart.admin.page');
 });

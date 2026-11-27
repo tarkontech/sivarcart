@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin\Pages;
+namespace Tarkontech\SivarCart\Admin\Pages;
 
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Admin\AdminPage;
-use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Services\Admin\ProductService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPage;
+use Tarkontech\SivarCart\Admin\AdminPageProps;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Services\Admin\ProductService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * The data of the catalog of the panel.
@@ -29,7 +29,7 @@ final readonly class ProductsIndexProps implements AdminPageProps
 
         $products = app(ProductService::class)->paginate(
             search: $search,
-            perPage: (int) config('sivarcart-core.admin.per_page', 25),
+            perPage: (int) config('sivarcart.admin.per_page', 25),
         );
 
         return [

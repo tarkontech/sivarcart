@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use SivarcartCore\SivarcartCore\Database\Factories\CartItemFactory;
+use Tarkontech\SivarCart\Database\Factories\CartItemFactory;
 
 /**
  * A line of a shopping cart.

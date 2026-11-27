@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Storefront;
+namespace Tarkontech\SivarCart\Http\Controllers\Storefront;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerAlreadyExists;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Http\Requests\ChangePasswordRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\LoginRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\RegisterRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\SendResetLinkRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\UpdateProfileRequest;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontPresenter;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Exceptions\CustomerAlreadyExists;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Http\Requests\ChangePasswordRequest;
+use Tarkontech\SivarCart\Http\Requests\LoginRequest;
+use Tarkontech\SivarCart\Http\Requests\RegisterRequest;
+use Tarkontech\SivarCart\Http\Requests\SendResetLinkRequest;
+use Tarkontech\SivarCart\Http\Requests\UpdateProfileRequest;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Storefront\StorefrontPresenter;
 
 /**
  * The account of the buyer.
@@ -39,7 +39,7 @@ final class AccountController
     public function login(Request $request): Response|RedirectResponse
     {
         if ($this->customers->user() instanceof Customer) {
-            return redirect()->route('sivarcart-core.storefront.account.show');
+            return redirect()->route('sivarcart.storefront.account.show');
         }
 
         return Inertia::render('Storefront/Account/Login', [
@@ -62,13 +62,13 @@ final class AccountController
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors([
-                    'email' => (string) __('sivarcart-core::messages.api.invalid_credentials'),
+                    'email' => (string) __('sivarcart::messages.api.invalid_credentials'),
                 ]);
         }
 
         $request->session()->regenerate();
 
-        return redirect()->intended($this->redirect($request) ?? route('sivarcart-core.storefront.account.show'));
+        return redirect()->intended($this->redirect($request) ?? route('sivarcart.storefront.account.show'));
     }
 
     /**
@@ -77,7 +77,7 @@ final class AccountController
     public function register(): Response|RedirectResponse
     {
         if ($this->customers->user() instanceof Customer) {
-            return redirect()->route('sivarcart-core.storefront.account.show');
+            return redirect()->route('sivarcart.storefront.account.show');
         }
 
         return Inertia::render('Storefront/Account/Register', [
@@ -96,7 +96,7 @@ final class AccountController
             return back()
                 ->withInput($request->except(['password', 'password_confirmation']))
                 ->withErrors(['email' => $exception->getMessage()]);
-        } catch (SivarcartCoreException $exception) {
+        } catch (SivarCartException $exception) {
             return back()
                 ->withInput($request->except(['password', 'password_confirmation']))
                 ->withErrors(['email' => $exception->getMessage()]);
@@ -109,7 +109,7 @@ final class AccountController
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('sivarcart-core.storefront.account.show'));
+        return redirect()->intended(route('sivarcart.storefront.account.show'));
     }
 
     /**
@@ -121,7 +121,7 @@ final class AccountController
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('sivarcart-core.storefront.home');
+        return redirect()->route('sivarcart.storefront.home');
     }
 
     /**
@@ -172,14 +172,14 @@ final class AccountController
                 $token,
                 (string) $credentials['password'],
             );
-        } catch (SivarcartCoreException $exception) {
+        } catch (SivarCartException $exception) {
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => $exception->getMessage()]);
         }
 
         return redirect()
-            ->route('sivarcart-core.storefront.account.login')
+            ->route('sivarcart.storefront.account.login')
             ->with('flash', ['type' => 'success']);
     }
 
@@ -211,7 +211,7 @@ final class AccountController
 
         try {
             $this->customers->updateProfile($buyer, $request->validated());
-        } catch (SivarcartCoreException $exception) {
+        } catch (SivarCartException $exception) {
             return back()->withErrors(['profile' => $exception->getMessage()]);
         }
 
@@ -227,7 +227,7 @@ final class AccountController
 
         if (! $this->customers->verifyPassword($buyer, (string) $request->validated('current_password'))) {
             return back()->withErrors([
-                'current_password' => (string) __('sivarcart-core::messages.api.wrong_password'),
+                'current_password' => (string) __('sivarcart::messages.api.wrong_password'),
             ]);
         }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Seeders;
+namespace Tarkontech\SivarCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 

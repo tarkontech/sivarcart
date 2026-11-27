@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin\Pages;
+namespace Tarkontech\SivarCart\Admin\Pages;
 
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Admin\AdminPage;
-use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\Admin\OrderService;
+use Tarkontech\SivarCart\Admin\AdminPage;
+use Tarkontech\SivarCart\Admin\AdminPageProps;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\Admin\OrderService;
 
 /**
  * The data of the list of the orders of the panel.
@@ -32,7 +32,7 @@ final readonly class OrdersIndexProps implements AdminPageProps
         $orders = app(OrderService::class)->paginate(
             search: $search,
             status: $status,
-            perPage: (int) config('sivarcart-core.admin.per_page', 25),
+            perPage: (int) config('sivarcart.admin.per_page', 25),
         );
 
         $statuses = [];

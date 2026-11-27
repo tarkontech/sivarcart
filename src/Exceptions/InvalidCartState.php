@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
-use SivarcartCore\SivarcartCore\Models\Cart;
+use Tarkontech\SivarCart\Models\Cart;
 
 /**
  * The cart cannot be used for the operation that was requested.
  */
-class InvalidCartState extends SivarcartCoreException
+class InvalidCartState extends SivarCartException
 {
     /**
      * The cart does not hold any item.

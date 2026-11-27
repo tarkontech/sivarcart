@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Payments;
+namespace Tarkontech\SivarCart\Payments;
 
 use Illuminate\Contracts\Container\Container;
 use Rmirandasv\Wompi\Contracts\WompiClientInterface;
 use Rmirandasv\Wompi\DTOs\Requests\PaymentLinkRequestDTO;
 use Rmirandasv\Wompi\WompiClient;
-use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
-use SivarcartCore\SivarcartCore\Data\PaymentLinkResult;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Payment;
+use Tarkontech\SivarCart\Contracts\PaymentGateway;
+use Tarkontech\SivarCart\Data\PaymentLinkResult;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Payment;
 
 /**
  * Creates the Wompi payment link of an order.
@@ -36,7 +36,7 @@ final class WompiPaymentGateway implements PaymentGateway
     public function createPaymentLink(Order $order, Payment $payment): PaymentLinkResult
     {
         /** @var array<string, mixed> $formaPago */
-        $formaPago = config('sivarcart-core.wompi.payment_link', []);
+        $formaPago = config('sivarcart.wompi.payment_link', []);
 
         $dto = new PaymentLinkRequestDTO(
             monto: (float) $payment->amount,
@@ -107,14 +107,14 @@ final class WompiPaymentGateway implements PaymentGateway
      */
     private function redirectUrl(): string
     {
-        $configured = config('sivarcart-core.wompi.redirect_url');
+        $configured = config('sivarcart.wompi.redirect_url');
 
         if (is_string($configured) && $configured !== '') {
             return $configured;
         }
 
         $base = rtrim((string) config('app.url'), '/');
-        $path = ltrim((string) config('sivarcart-core.wompi.redirect_path', 'payments/wompi/return'), '/');
+        $path = ltrim((string) config('sivarcart.wompi.redirect_path', 'payments/wompi/return'), '/');
 
         return $base.'/'.$path;
     }

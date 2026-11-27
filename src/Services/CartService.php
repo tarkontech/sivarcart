@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Illuminate\Database\Eloquent\Builder;
-use SivarcartCore\SivarcartCore\Exceptions\CouponNotApplicable;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\CartItem;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use Tarkontech\SivarCart\Exceptions\CouponNotApplicable;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\CartItem;
+use Tarkontech\SivarCart\Models\ProductVariant;
 
 /**
  * Builds and keeps the cart of a shopper.
@@ -84,7 +84,7 @@ final class CartService
     public function addItem(Cart $cart, ProductVariant $variant, int $quantity = 1): CartItem
     {
         if ($quantity < 1) {
-            throw new SivarcartCoreException('La cantidad de un producto tiene que ser mayor que cero.');
+            throw new SivarCartException('La cantidad de un producto tiene que ser mayor que cero.');
         }
 
         $item = $cart->items()
@@ -258,7 +258,7 @@ final class CartService
      */
     private function ttlDays(): int
     {
-        return (int) config('sivarcart-core.cart.ttl_days', 30);
+        return (int) config('sivarcart.cart.ttl_days', 30);
     }
 
     /**

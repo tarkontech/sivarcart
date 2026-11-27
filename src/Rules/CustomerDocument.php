@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Rules;
+namespace Tarkontech\SivarCart\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
 
 /**
  * Checks that the identity document of a buyer holds the format of its type.
@@ -106,7 +106,7 @@ final class CustomerDocument implements ValidationRule
      */
     public static function message(CustomerDocumentType $type, string $reason): string
     {
-        return (string) __('sivarcart-core::messages.customer_document.'.$reason, [
+        return (string) __('sivarcart::messages.customer_document.'.$reason, [
             'type' => $type->label(),
         ]);
     }

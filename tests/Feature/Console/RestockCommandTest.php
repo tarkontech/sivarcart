@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\InventoryMovementType;
-use SivarcartCore\SivarcartCore\Models\InventoryMovement;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use Tarkontech\SivarCart\Enums\InventoryMovementType;
+use Tarkontech\SivarCart\Models\InventoryMovement;
+use Tarkontech\SivarCart\Models\ProductVariant;
 
 it('puts the units back into the stock of the variant', function () {
     $variant = ProductVariant::factory()->create(['stock_quantity' => 10]);

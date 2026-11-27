@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http;
+namespace Tarkontech\SivarCart\Http;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerAlreadyExists;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerRequired;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidCartState;
-use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
+use Tarkontech\SivarCart\Exceptions\CustomerAlreadyExists;
+use Tarkontech\SivarCart\Exceptions\CustomerRequired;
+use Tarkontech\SivarCart\Exceptions\InvalidCartState;
+use Tarkontech\SivarCart\Exceptions\PaymentGatewayFailed;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
 
 /**
  * Turns the errors of the domain into the answers of the store API.
@@ -30,9 +30,9 @@ final class ApiExceptionRenderer
      * errors of the domain are answered by the same handler that answers the
      * errors of the framework.
      */
-    public function __invoke(SivarcartCoreException $exception, Request $request): ?JsonResponse
+    public function __invoke(SivarCartException $exception, Request $request): ?JsonResponse
     {
-        if (! $request->routeIs('sivarcart-core.api.*')) {
+        if (! $request->routeIs('sivarcart.api.*')) {
             return null;
         }
 
@@ -45,7 +45,7 @@ final class ApiExceptionRenderer
     /**
      * The status the error answers with.
      */
-    private function status(SivarcartCoreException $exception): int
+    private function status(SivarCartException $exception): int
     {
         return match (true) {
             $exception instanceof CustomerRequired => 401,
@@ -59,7 +59,7 @@ final class ApiExceptionRenderer
     /**
      * The code that tells the error apart, whatever the message says.
      */
-    private function code(SivarcartCoreException $exception): string
+    private function code(SivarCartException $exception): string
     {
         return Str::snake(class_basename($exception));
     }

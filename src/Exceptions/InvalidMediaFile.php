@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 /**
  * The file that was going to be stored is not a file the store accepts.
  */
-class InvalidMediaFile extends SivarcartCoreException
+class InvalidMediaFile extends SivarCartException
 {
     /**
      * The file is not of a kind the store accepts.
      */
     public static function withWrongType(): self
     {
-        return new self((string) __('sivarcart-core::messages.media.invalid_type'));
+        return new self((string) __('sivarcart::messages.media.invalid_type'));
     }
 
     /**
@@ -22,7 +22,7 @@ class InvalidMediaFile extends SivarcartCoreException
      */
     public static function tooBig(int $kilobytes): self
     {
-        return new self((string) __('sivarcart-core::messages.media.too_big', [
+        return new self((string) __('sivarcart::messages.media.too_big', [
             'size' => $kilobytes,
         ]));
     }

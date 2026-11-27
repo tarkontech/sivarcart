@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services\Admin;
+namespace Tarkontech\SivarCart\Services\Admin;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
-use SivarcartCore\SivarcartCore\Support\Slug;
+use Tarkontech\SivarCart\Enums\ShippingMethodType;
+use Tarkontech\SivarCart\Models\ShippingMethod;
+use Tarkontech\SivarCart\Support\Slug;
 
 /**
  * The shipping methods of the store, as the staff of the store sees them.

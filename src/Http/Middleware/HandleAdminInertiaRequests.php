@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Middleware;
+namespace Tarkontech\SivarCart\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -14,11 +14,11 @@ use Inertia\Middleware;
 use Inertia\Response;
 use ReflectionProperty;
 use RuntimeException;
-use SivarcartCore\SivarcartCore\Admin\AdminBundle;
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
-use SivarcartCore\SivarcartCore\Admin\AdminPermissions;
-use SivarcartCore\SivarcartCore\Services\StoreService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminBundle;
+use Tarkontech\SivarCart\Admin\AdminPanel;
+use Tarkontech\SivarCart\Admin\AdminPermissions;
+use Tarkontech\SivarCart\Services\StoreService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * The props the panel shares with every page.
@@ -56,11 +56,11 @@ final class HandleAdminInertiaRequests extends Middleware
      * The root view of the panel.
      *
      * It lives in a namespace of its own, so the views the merchant publishes
-     * in "resources/views/vendor/sivarcart-core" never reach it by accident.
+     * in "resources/views/vendor/sivarcart" never reach it by accident.
      *
      * @var string
      */
-    protected $rootView = 'sivarcart-core-panel::app';
+    protected $rootView = 'sivarcart-panel::app';
 
     /**
      * The version of the assets of the panel.
@@ -100,7 +100,7 @@ final class HandleAdminInertiaRequests extends Middleware
      */
     private function text(): array
     {
-        $text = __('sivarcart-core::admin');
+        $text = __('sivarcart::admin');
 
         return is_array($text) ? $text : [];
     }
@@ -144,7 +144,7 @@ final class HandleAdminInertiaRequests extends Middleware
         }
 
         $message = sprintf(
-            'SivarCart Core: the page [%s] uses the names [%s] that the panel of the administration owns. The panel shares them with every page, so the page takes them away from it. Rename them.',
+            'SivarCart: the page [%s] uses the names [%s] that the panel of the administration owns. The panel shares them with every page, so the page takes them away from it. Rename them.',
             $this->propertyOf($response, 'component') ?? 'unknown',
             implode(', ', $used),
         );
@@ -317,8 +317,8 @@ final class HandleAdminInertiaRequests extends Middleware
         }
 
         return match ($route->getName()) {
-            'sivarcart-core.admin.index' => 'dashboard',
-            'sivarcart-core.admin.orders.show' => 'orders',
+            'sivarcart.admin.index' => 'dashboard',
+            'sivarcart.admin.orders.show' => 'orders',
             default => null,
         };
     }

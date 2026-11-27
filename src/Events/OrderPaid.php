@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Events;
+namespace Tarkontech\SivarCart\Events;
 
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Payment;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Payment;
 
 /**
  * An order was paid.

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Admin;
+namespace Tarkontech\SivarCart\Http\Controllers\Admin;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use SivarcartCore\SivarcartCore\Admin\AdminPresenter;
-use SivarcartCore\SivarcartCore\Enums\PaymentMethodType;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Services\Admin\PaymentMethodService;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Admin\AdminPresenter;
+use Tarkontech\SivarCart\Enums\PaymentMethodType;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Services\Admin\PaymentMethodService;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Writes the payment methods of the store.
@@ -41,11 +41,11 @@ final class PaymentMethodController
 
         $method = app(PaymentMethodService::class)->create($attributes);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.payment_methods.created', [
+        Inertia::flash('notice', __('sivarcart::admin.payment_methods.created', [
             'name' => (string) $method->name,
         ]));
 
-        return redirect()->route('sivarcart-core.admin.payment-methods.edit', [
+        return redirect()->route('sivarcart.admin.payment-methods.edit', [
             'method' => (string) $method->uuid,
         ])->setStatusCode(303);
     }
@@ -58,7 +58,7 @@ final class PaymentMethodController
         $model = app(PaymentMethodService::class)->find($method);
 
         if (! $model instanceof PaymentMethod) {
-            abort(404, __('sivarcart-core::admin.payment_methods.not_found'));
+            abort(404, __('sivarcart::admin.payment_methods.not_found'));
         }
 
         return $this->form($model);
@@ -72,14 +72,14 @@ final class PaymentMethodController
         $model = app(PaymentMethodService::class)->find($method);
 
         if (! $model instanceof PaymentMethod) {
-            abort(404, __('sivarcart-core::admin.payment_methods.not_found'));
+            abort(404, __('sivarcart::admin.payment_methods.not_found'));
         }
 
         $attributes = $request->validate($this->rules($model));
 
         app(PaymentMethodService::class)->update($model, $attributes);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.payment_methods.saved', [
+        Inertia::flash('notice', __('sivarcart::admin.payment_methods.saved', [
             'name' => (string) $model->name,
         ]));
 
@@ -94,16 +94,16 @@ final class PaymentMethodController
         $model = app(PaymentMethodService::class)->find($method);
 
         if (! $model instanceof PaymentMethod) {
-            abort(404, __('sivarcart-core::admin.payment_methods.not_found'));
+            abort(404, __('sivarcart::admin.payment_methods.not_found'));
         }
 
         app(PaymentMethodService::class)->delete($model);
 
-        Inertia::flash('notice', __('sivarcart-core::admin.payment_methods.deleted', [
+        Inertia::flash('notice', __('sivarcart::admin.payment_methods.deleted', [
             'name' => (string) $model->name,
         ]));
 
-        return redirect()->route('sivarcart-core.admin.page', ['page' => 'payment-methods'])
+        return redirect()->route('sivarcart.admin.page', ['page' => 'payment-methods'])
             ->setStatusCode(303);
     }
 

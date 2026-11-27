@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Middleware;
+namespace Tarkontech\SivarCart\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Services\CustomerService;
 
 /**
  * Stops a request of the store that needs a buyer signed in.
@@ -46,11 +46,11 @@ final class EnsureStorefrontBuyer
      */
     private function loginUrl(Request $request): string
     {
-        $url = route('sivarcart-core.storefront.account.login');
+        $url = route('sivarcart.storefront.account.login');
 
         $target = $request->fullUrl();
 
-        if ($target === $url || $target === route('sivarcart-core.storefront.account.login.store')) {
+        if ($target === $url || $target === route('sivarcart.storefront.account.login.store')) {
             return $url;
         }
 

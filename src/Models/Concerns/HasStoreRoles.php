@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models\Concerns;
+namespace Tarkontech\SivarCart\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Models\StoreRole;
 
 /**
  * Gives the user model of the host application the roles of the store.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Tests\Support;
+namespace Tarkontech\SivarCart\Tests\Support;
 
 use Rmirandasv\Wompi\Support\PayloadNormalizer;
 use Rmirandasv\Wompi\Webhooks\WompiWebhook;

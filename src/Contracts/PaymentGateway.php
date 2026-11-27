@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Contracts;
+namespace Tarkontech\SivarCart\Contracts;
 
-use SivarcartCore\SivarcartCore\Data\PaymentLinkResult;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Payment;
+use Tarkontech\SivarCart\Data\PaymentLinkResult;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Payment;
 
 /**
  * Creates the payment of an order on a payment gateway.

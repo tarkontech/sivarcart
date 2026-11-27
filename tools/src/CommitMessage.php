@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Tools;
+namespace Tarkontech\SivarCart\Tools;
 
 /**
  * Validates the commit messages of the repository.

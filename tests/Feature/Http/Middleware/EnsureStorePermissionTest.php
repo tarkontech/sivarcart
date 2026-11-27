@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Tests\Fixtures\PlainUser;
+use Tarkontech\SivarCart\Http\Middleware\EnsureStorePermission;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Tests\Fixtures\PlainUser;
 use Workbench\App\Models\User;
 
 /**

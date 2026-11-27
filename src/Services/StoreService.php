@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
-use SivarcartCore\SivarcartCore\Models\Store;
+use Tarkontech\SivarCart\Models\Store;
 
 /**
  * The store this installation serves.
@@ -40,8 +40,8 @@ final class StoreService
             $store = new Store;
 
             $store->fill([
-                'name' => (string) config('sivarcart-core.store.name', 'SivarCart'),
-                'slug' => (string) config('sivarcart-core.store.slug', 'sivarcart'),
+                'name' => (string) config('sivarcart.store.name', 'SivarCart'),
+                'slug' => (string) config('sivarcart.store.slug', 'sivarcart'),
             ]);
         }
 
@@ -55,7 +55,7 @@ final class StoreService
      */
     public function currency(): string
     {
-        return $this->current()->currency ?? (string) config('sivarcart-core.store.currency', 'USD');
+        return $this->current()->currency ?? (string) config('sivarcart.store.currency', 'USD');
     }
 
     /**
@@ -69,7 +69,7 @@ final class StoreService
             return $store->prices_include_tax;
         }
 
-        return (bool) config('sivarcart-core.store.prices_include_tax', true);
+        return (bool) config('sivarcart.store.prices_include_tax', true);
     }
 
     /**
@@ -83,7 +83,7 @@ final class StoreService
             return (float) $store->default_tax_rate;
         }
 
-        return (float) config('sivarcart-core.store.default_tax_rate', 0.13);
+        return (float) config('sivarcart.store.default_tax_rate', 0.13);
     }
 
     /**
@@ -92,7 +92,7 @@ final class StoreService
     public function orderNumberPrefix(): string
     {
         return $this->current()->order_number_prefix
-            ?? (string) config('sivarcart-core.store.order_number_prefix', 'SIV');
+            ?? (string) config('sivarcart.store.order_number_prefix', 'SIV');
     }
 
     /**
@@ -101,7 +101,7 @@ final class StoreService
     public function paymentNumberPrefix(): string
     {
         return $this->current()->payment_number_prefix
-            ?? (string) config('sivarcart-core.store.payment_number_prefix', 'PAY');
+            ?? (string) config('sivarcart.store.payment_number_prefix', 'PAY');
     }
 
     /**

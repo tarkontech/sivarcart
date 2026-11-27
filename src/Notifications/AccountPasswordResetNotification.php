@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Notifications;
+namespace Tarkontech\SivarCart\Notifications;
 
 use Illuminate\Contracts\Mail\Mailable;
-use SivarcartCore\SivarcartCore\Mail\AccountPasswordResetMail;
-use SivarcartCore\SivarcartCore\Models\Customer;
+use Tarkontech\SivarCart\Mail\AccountPasswordResetMail;
+use Tarkontech\SivarCart\Models\Customer;
 
 /**
  * Sends the buyer the link that resets the password of the account.

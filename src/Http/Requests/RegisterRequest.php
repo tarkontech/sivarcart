@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Requests;
+namespace Tarkontech\SivarCart\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
 
 /**
  * The signup of a buyer.

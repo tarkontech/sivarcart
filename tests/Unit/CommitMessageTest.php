@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Tools\CommitMessage;
+use Tarkontech\SivarCart\Tools\CommitMessage;
 
 it('accepts a conventional commit', function () {
     expect(CommitMessage::validate('feat(orders): agrega el checkout de invitado'))->toBeNull();

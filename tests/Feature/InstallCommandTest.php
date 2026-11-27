@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Models\Tax;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\ShippingMethod;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Models\Tax;
 
 it('installs the package in a single command', function () {
-    $this->artisan('sivarcart-core:install')
+    $this->artisan('sivarcart:install')
         ->assertSuccessful();
 
     expect(File::exists(database_path('migrations').'/2026_01_01_000001_create_sivarcart_departments_table.php'))->toBeTrue();
 });
 
 it('creates the table of the notification settings', function () {
-    $this->artisan('sivarcart-core:install')
+    $this->artisan('sivarcart:install')
         ->assertSuccessful();
 
     expect(Schema::hasTable('sivarcart_notification_settings'))->toBeTrue();
 });
 
 it('seeds the base data of a Salvadoran store', function () {
-    $this->artisan('sivarcart-core:install')->assertSuccessful();
+    $this->artisan('sivarcart:install')->assertSuccessful();
 
     expect(Department::query()->count())->toBe(14);
     expect(Department::query()->where('code', 'SS')->first()->name)->toBe('San Salvador');
@@ -49,8 +49,8 @@ it('seeds the base data of a Salvadoran store', function () {
 });
 
 it('can be run more than once without breaking anything', function () {
-    $this->artisan('sivarcart-core:install')->assertSuccessful();
-    $this->artisan('sivarcart-core:install')->assertSuccessful();
+    $this->artisan('sivarcart:install')->assertSuccessful();
+    $this->artisan('sivarcart:install')->assertSuccessful();
 
     expect(Department::query()->count())->toBe(14);
     expect(Store::query()->count())->toBe(1);
@@ -58,7 +58,7 @@ it('can be run more than once without breaking anything', function () {
 });
 
 it('can skip the base data', function () {
-    $this->artisan('sivarcart-core:install', ['--no-seed' => true])->assertSuccessful();
+    $this->artisan('sivarcart:install', ['--no-seed' => true])->assertSuccessful();
 
     expect(Department::query()->count())->toBe(0);
 });

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The identity document a customer can present.
@@ -23,6 +23,6 @@ enum CustomerDocumentType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.customer_document_type.'.$this->value);
+        return (string) __('sivarcart::messages.customer_document_type.'.$this->value);
     }
 }

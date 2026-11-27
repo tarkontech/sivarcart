@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Storefront;
+namespace Tarkontech\SivarCart\Storefront;
 
 use Illuminate\Support\Facades\Config;
 
@@ -48,8 +48,8 @@ final readonly class StorefrontBundle
      */
     public static function resolve(): self
     {
-        $entry = (string) Config::get('sivarcart-core.storefront.bundle.entry', 'resources/js/sivarcart/storefront.tsx');
-        $directory = (string) Config::get('sivarcart-core.storefront.bundle.directory', 'build');
+        $entry = (string) Config::get('sivarcart.storefront.bundle.entry', 'resources/js/sivarcart/storefront.tsx');
+        $directory = (string) Config::get('sivarcart.storefront.bundle.directory', 'build');
 
         if (self::manifestHas($directory, $entry)) {
             return new self(type: self::TYPE_VITE, entry: $entry, version: self::version());

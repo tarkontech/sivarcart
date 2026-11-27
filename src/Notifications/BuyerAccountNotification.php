@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Notifications;
+namespace Tarkontech\SivarCart\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use SivarcartCore\SivarcartCore\Models\Customer;
+use Tarkontech\SivarCart\Models\Customer;
 
 /**
  * The base of the notifications the account of a buyer receives.

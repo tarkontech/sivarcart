@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * Whether a payment method is collected through a gateway or paid offline.
@@ -20,6 +20,6 @@ enum PaymentMethodType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.payment_method_type.'.$this->value);
+        return (string) __('sivarcart::messages.payment_method_type.'.$this->value);
     }
 }

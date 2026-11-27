@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The outcome of a single gateway transaction.
@@ -22,6 +22,6 @@ enum PaymentTransactionStatus: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.payment_transaction_status.'.$this->value);
+        return (string) __('sivarcart::messages.payment_transaction_status.'.$this->value);
     }
 }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 /**
  * The category cannot be filed under the parent that was asked for.
  */
-class InvalidCategoryParent extends SivarcartCoreException
+class InvalidCategoryParent extends SivarCartException
 {
     /**
      * The parent is the category itself, or one of the categories under it.

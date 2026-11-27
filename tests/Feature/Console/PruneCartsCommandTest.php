@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\CartItem;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\CartItem;
+use Tarkontech\SivarCart\Models\Order;
 
 it('deletes the carts that expired', function () {
     $expired = Cart::factory()->create(['expires_at' => now()->subDay()]);

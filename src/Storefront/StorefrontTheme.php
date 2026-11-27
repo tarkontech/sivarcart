@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Storefront;
+namespace Tarkontech\SivarCart\Storefront;
 
 use Illuminate\Support\Facades\Config;
 
@@ -28,7 +28,7 @@ final class StorefrontTheme
      */
     public static function variables(): array
     {
-        return self::read('sivarcart-core.storefront.theme');
+        return self::read('sivarcart.storefront.theme');
     }
 
     /**
@@ -40,7 +40,7 @@ final class StorefrontTheme
      */
     public static function darkVariables(): array
     {
-        return self::read('sivarcart-core.storefront.theme_dark');
+        return self::read('sivarcart.storefront.theme_dark');
     }
 
     /**

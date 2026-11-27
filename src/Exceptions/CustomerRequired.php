@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
-use SivarcartCore\SivarcartCore\Models\Cart;
+use Tarkontech\SivarCart\Models\Cart;
 
 /**
  * The order needs a buyer and there is none.
@@ -12,7 +12,7 @@ use SivarcartCore\SivarcartCore\Models\Cart;
  * A buyer signs in with the guard of the package before placing an order, so
  * a cart without a buyer is a cart that cannot become an order.
  */
-class CustomerRequired extends SivarcartCoreException
+class CustomerRequired extends SivarCartException
 {
     /**
      * The cart does not belong to any buyer.

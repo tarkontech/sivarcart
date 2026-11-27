@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Data;
+namespace Tarkontech\SivarCart\Data;
 
 /**
  * The totals of a cart or of an order.

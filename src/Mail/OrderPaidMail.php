@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
+use Tarkontech\SivarCart\Enums\OrderNotification;
 
 /**
  * The email the buyer receives when the order is paid.
@@ -24,7 +24,7 @@ final class OrderPaidMail extends OrderMail
      */
     protected function template(): string
     {
-        return 'sivarcart-core::mail.order-paid';
+        return 'sivarcart::mail.order-paid';
     }
 
     /**

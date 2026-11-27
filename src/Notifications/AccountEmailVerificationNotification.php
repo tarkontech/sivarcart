@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Notifications;
+namespace Tarkontech\SivarCart\Notifications;
 
 use Illuminate\Contracts\Mail\Mailable;
-use SivarcartCore\SivarcartCore\Mail\AccountVerifyEmailMail;
+use Tarkontech\SivarCart\Mail\AccountVerifyEmailMail;
 
 /**
  * Asks the buyer to verify the email address of the account.

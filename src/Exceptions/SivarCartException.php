@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
 use RuntimeException;
 
 /**
  * The base of every error the domain of the package raises.
  */
-class SivarcartCoreException extends RuntimeException
+class SivarCartException extends RuntimeException
 {
     //
 }

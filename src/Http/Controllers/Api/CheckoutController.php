@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers\Api;
+namespace Tarkontech\SivarCart\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
-use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
-use SivarcartCore\SivarcartCore\Actions\StartPayment;
-use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
-use SivarcartCore\SivarcartCore\Data\CheckoutData;
-use SivarcartCore\SivarcartCore\Exceptions\PaymentGatewayFailed;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Http\Requests\CheckoutRequest;
-use SivarcartCore\SivarcartCore\Http\Requests\ShippingQuoteRequest;
-use SivarcartCore\SivarcartCore\Http\Resources\OrderResource;
-use SivarcartCore\SivarcartCore\Http\Resources\PaymentMethodResource;
-use SivarcartCore\SivarcartCore\Http\Resources\ShippingMethodResource;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Services\CartService;
-use SivarcartCore\SivarcartCore\Services\DepartmentService;
-use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
-use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
-use SivarcartCore\SivarcartCore\Services\StoreService;
+use Tarkontech\SivarCart\Actions\PlaceOrder;
+use Tarkontech\SivarCart\Actions\StartPayment;
+use Tarkontech\SivarCart\Contracts\ShippingRateCalculator;
+use Tarkontech\SivarCart\Data\CheckoutData;
+use Tarkontech\SivarCart\Exceptions\PaymentGatewayFailed;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Http\Requests\CheckoutRequest;
+use Tarkontech\SivarCart\Http\Requests\ShippingQuoteRequest;
+use Tarkontech\SivarCart\Http\Resources\OrderResource;
+use Tarkontech\SivarCart\Http\Resources\PaymentMethodResource;
+use Tarkontech\SivarCart\Http\Resources\ShippingMethodResource;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Services\CartService;
+use Tarkontech\SivarCart\Services\DepartmentService;
+use Tarkontech\SivarCart\Services\PaymentMethodService;
+use Tarkontech\SivarCart\Services\ShippingMethodService;
+use Tarkontech\SivarCart\Services\StoreService;
 
 /**
  * Takes the order of a shopper.
@@ -87,7 +87,7 @@ final class CheckoutController extends ApiController
         $method = $this->shippingMethods->findByCode($code);
 
         if ($method === null) {
-            throw new SivarcartCoreException(sprintf('El método de envío "%s" no está disponible.', $code));
+            throw new SivarCartException(sprintf('El método de envío "%s" no está disponible.', $code));
         }
 
         $quote = $this->shipping->quote($method, $cart, (array) $request->validated('address'));

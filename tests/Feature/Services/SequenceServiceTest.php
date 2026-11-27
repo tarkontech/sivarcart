@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\DocumentSequenceType;
-use SivarcartCore\SivarcartCore\Models\DocumentSequence;
-use SivarcartCore\SivarcartCore\Services\SequenceService;
+use Tarkontech\SivarCart\Enums\DocumentSequenceType;
+use Tarkontech\SivarCart\Models\DocumentSequence;
+use Tarkontech\SivarCart\Services\SequenceService;
 
 it('numbers the documents consecutively', function () {
     $sequences = app(SequenceService::class);
@@ -33,7 +33,7 @@ it('starts a new counter for every period', function () {
 });
 
 it('pads the number with the configured amount of zeros', function () {
-    config(['sivarcart-core.orders.number_padding' => 3]);
+    config(['sivarcart.orders.number_padding' => 3]);
 
     expect(app(SequenceService::class)->next(DocumentSequenceType::ORDER, 'SIV', '2026'))
         ->toBe('SIV-2026-001');

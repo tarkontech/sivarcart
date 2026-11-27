@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Tests\TestCase;
+use Tarkontech\SivarCart\Tests\TestCase;
 
 /**
  * The store of the shopper, turned off.
@@ -23,13 +23,13 @@ final class StorefrontDisabledTest extends TestCase
     {
         parent::defineEnvironment($app);
 
-        $app['config']->set('sivarcart-core.storefront.enabled', false);
+        $app['config']->set('sivarcart.storefront.enabled', false);
     }
 
     public function test_it_does_not_register_the_routes_of_the_store(): void
     {
-        $this->assertFalse(Route::has('sivarcart-core.storefront.home'));
-        $this->assertFalse(Route::has('sivarcart-core.storefront.cart.show'));
+        $this->assertFalse(Route::has('sivarcart.storefront.home'));
+        $this->assertFalse(Route::has('sivarcart.storefront.cart.show'));
     }
 
     public function test_it_does_not_answer_the_pages_of_the_store(): void
@@ -39,7 +39,7 @@ final class StorefrontDisabledTest extends TestCase
 
     public function test_it_keeps_the_api_of_the_store(): void
     {
-        $this->assertTrue(Route::has('sivarcart-core.api.products.index'));
+        $this->assertTrue(Route::has('sivarcart.api.products.index'));
 
         $this->getJson('/api/sivarcart/products')->assertOk();
     }

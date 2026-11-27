@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use SivarcartCore\SivarcartCore\Database\Factories\OrderItemFactory;
+use Tarkontech\SivarCart\Database\Factories\OrderItemFactory;
 
 /**
  * A line of an order.

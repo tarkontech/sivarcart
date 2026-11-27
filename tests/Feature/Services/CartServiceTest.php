@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\CouponType;
-use SivarcartCore\SivarcartCore\Exceptions\CouponNotApplicable;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Services\CartService;
+use Tarkontech\SivarCart\Enums\CouponType;
+use Tarkontech\SivarCart\Exceptions\CouponNotApplicable;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Services\CartService;
 
 it('creates the cart of a customer and reuses it', function () {
     $customer = Customer::factory()->create();
@@ -50,7 +50,7 @@ it('gives the new cart an expiration date', function () {
 });
 
 it('reads how long a cart lives from the configuration', function () {
-    config()->set('sivarcart-core.cart.ttl_days', 7);
+    config()->set('sivarcart.cart.ttl_days', 7);
 
     $this->travelTo(now()->addDay());
 
@@ -140,7 +140,7 @@ it('refuses an item with no units', function () {
     $cart = Cart::factory()->create();
 
     expect(fn () => app(CartService::class)->addItem($cart, $variant, 0))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('recalculates the totals of the cart from its items', function () {

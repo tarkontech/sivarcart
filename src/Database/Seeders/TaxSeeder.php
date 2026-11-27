@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Seeders;
+namespace Tarkontech\SivarCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use SivarcartCore\SivarcartCore\Models\Tax;
+use Tarkontech\SivarCart\Models\Tax;
 
 /**
  * Seeds the tax categories a Salvadoran store usually needs.

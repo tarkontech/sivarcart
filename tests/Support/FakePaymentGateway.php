@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Tests\Support;
+namespace Tarkontech\SivarCart\Tests\Support;
 
 use RuntimeException;
-use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
-use SivarcartCore\SivarcartCore\Data\PaymentLinkResult;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Payment;
+use Tarkontech\SivarCart\Contracts\PaymentGateway;
+use Tarkontech\SivarCart\Data\PaymentLinkResult;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Payment;
 
 /**
  * A payment gateway that never talks to the internet.

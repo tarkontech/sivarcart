@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Console\Commands;
+namespace Tarkontech\SivarCart\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use SivarcartCore\SivarcartCore\Models\InventoryMovement;
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
-use SivarcartCore\SivarcartCore\Services\InventoryService;
+use Tarkontech\SivarCart\Models\InventoryMovement;
+use Tarkontech\SivarCart\Models\ProductVariant;
+use Tarkontech\SivarCart\Services\InventoryService;
 
 /**
  * Puts units back into the stock of a variant.

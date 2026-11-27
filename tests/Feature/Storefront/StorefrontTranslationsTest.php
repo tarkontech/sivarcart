@@ -21,17 +21,17 @@ it('serves the same texts for es_SV and for es', function () {
 it('speaks the language of the application', function () {
     app()->setLocale('es');
 
-    expect(trans('sivarcart-core::storefront.cart.title'))->toBe('Carrito');
+    expect(trans('sivarcart::storefront.cart.title'))->toBe('Carrito');
 });
 
 it('speaks the language of the store when the application uses es_SV', function () {
     app()->setLocale('es_SV');
 
-    expect(trans('sivarcart-core::storefront.cart.title'))->toBe('Carrito');
+    expect(trans('sivarcart::storefront.cart.title'))->toBe('Carrito');
 });
 
 it('has the texts that the pages of the store ask for', function () {
-    $text = trans('sivarcart-core::storefront');
+    $text = trans('sivarcart::storefront');
 
     expect($text)->toBeArray();
 

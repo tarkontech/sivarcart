@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Console\Commands;
+namespace Tarkontech\SivarCart\Console\Commands;
 
 use Illuminate\Console\Command;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\CartItem;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\CartItem;
 
 /**
  * Removes the carts that ran out of time and their items.

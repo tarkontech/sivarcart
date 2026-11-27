@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Support;
+namespace Tarkontech\SivarCart\Support;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
@@ -23,7 +23,7 @@ final class BuyerRoutes
     /**
      * The screen of la tienda que cambia la contraseña.
      */
-    public const string STOREFRONT_PASSWORD_RESET = 'sivarcart-core.storefront.account.password.reset';
+    public const string STOREFRONT_PASSWORD_RESET = 'sivarcart.storefront.account.password.reset';
 
     /**
      * The screen of la aplicación que cambia la contraseña.
@@ -35,7 +35,7 @@ final class BuyerRoutes
      */
     public static function passwordReset(): string
     {
-        $route = Config::get('sivarcart-core.buyers.password_reset_route');
+        $route = Config::get('sivarcart.buyers.password_reset_route');
 
         if (is_string($route) && trim($route) !== '') {
             return trim($route);
@@ -53,6 +53,6 @@ final class BuyerRoutes
      */
     private static function storefrontIsOn(): bool
     {
-        return (bool) Config::get('sivarcart-core.storefront.enabled', true);
+        return (bool) Config::get('sivarcart.storefront.enabled', true);
     }
 }

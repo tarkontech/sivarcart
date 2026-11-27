@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Resources;
+namespace Tarkontech\SivarCart\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use SivarcartCore\SivarcartCore\Models\PaymentMethod;
+use Tarkontech\SivarCart\Models\PaymentMethod;
 
 /**
  * A way of paying, as the store API shows it.

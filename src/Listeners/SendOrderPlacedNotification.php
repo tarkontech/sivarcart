@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Listeners;
+namespace Tarkontech\SivarCart\Listeners;
 
 use Illuminate\Notifications\Notification;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Events\OrderPlaced;
-use SivarcartCore\SivarcartCore\Notifications\OrderPlacedNotification;
-use SivarcartCore\SivarcartCore\Services\NotificationService;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Events\OrderPlaced;
+use Tarkontech\SivarCart\Notifications\OrderPlacedNotification;
+use Tarkontech\SivarCart\Services\NotificationService;
 
 /**
  * Writes to the buyer when the order is placed.

@@ -15,7 +15,7 @@ import type { StorefrontSharedProps } from '@storefront/types'
 const pages = import.meta.glob('./pages/**/*.tsx')
 
 /**
- * The store of SivarCart Core.
+ * The store of SivarCart.
  *
  * The store mounts in its own element, so an application that already has an
  * Inertia of its own keeps it untouched.
@@ -40,7 +40,7 @@ export function createStorefrontApp(): Promise<void> {
 
             if (!page) {
                 throw new Error(
-                    `The page [${name}] is not in the bundle of the store of SivarCart Core.`,
+                    `The page [${name}] is not in the bundle of the store of SivarCart.`,
                 )
             }
 
@@ -49,7 +49,7 @@ export function createStorefrontApp(): Promise<void> {
 
         setup({ el, App, props }) {
             if (!el) {
-                throw new Error('The store of SivarCart Core did not find its element.')
+                throw new Error('The store of SivarCart did not find its element.')
             }
 
             createRoot(el).render(<App {...props} />)

@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\File;
 /**
  * The directory the mailables are published to.
  */
-$published = fn (): string => resource_path('views/vendor/sivarcart-core/mail');
+$published = fn (): string => resource_path('views/vendor/sivarcart/mail');
 
 it('publishes the mailables so the merchant can rewrite them', function () use ($published) {
-    $this->artisan('sivarcart-core:publish-mailables')->assertSuccessful();
+    $this->artisan('sivarcart:publish-mailables')->assertSuccessful();
 
     expect(File::exists($published().'/order-placed.blade.php'))->toBeTrue()
         ->and(File::exists($published().'/order-paid.blade.php'))->toBeTrue()
@@ -22,21 +22,21 @@ it('publishes the mailables so the merchant can rewrite them', function () use (
 });
 
 it('does not overwrite a mailable the merchant already rewrote', function () use ($published) {
-    $this->artisan('sivarcart-core:publish-mailables')->assertSuccessful();
+    $this->artisan('sivarcart:publish-mailables')->assertSuccessful();
 
     File::put($published().'/order-placed.blade.php', 'El correo del comerciante.');
 
-    $this->artisan('sivarcart-core:publish-mailables')->assertSuccessful();
+    $this->artisan('sivarcart:publish-mailables')->assertSuccessful();
 
     expect(File::get($published().'/order-placed.blade.php'))->toBe('El correo del comerciante.');
 });
 
 it('overwrites the mailables when the merchant asks for it', function () use ($published) {
-    $this->artisan('sivarcart-core:publish-mailables')->assertSuccessful();
+    $this->artisan('sivarcart:publish-mailables')->assertSuccessful();
 
     File::put($published().'/order-placed.blade.php', 'El correo del comerciante.');
 
-    $this->artisan('sivarcart-core:publish-mailables', ['--force' => true])->assertSuccessful();
+    $this->artisan('sivarcart:publish-mailables', ['--force' => true])->assertSuccessful();
 
     expect(File::get($published().'/order-placed.blade.php'))->toContain('x-mail::message');
 });

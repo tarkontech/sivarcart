@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Seeders;
+namespace Tarkontech\SivarCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use SivarcartCore\SivarcartCore\Enums\ShippingMethodType;
-use SivarcartCore\SivarcartCore\Models\ShippingMethod;
+use Tarkontech\SivarCart\Enums\ShippingMethodType;
+use Tarkontech\SivarCart\Models\ShippingMethod;
 
 /**
  * Seeds the shipping methods a Salvadoran store usually offers.

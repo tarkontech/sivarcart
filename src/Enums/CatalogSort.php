@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The way the catalog is sorted.
@@ -25,6 +25,6 @@ enum CatalogSort: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.catalog_sort.'.$this->value);
+        return (string) __('sivarcart::messages.catalog_sort.'.$this->value);
     }
 }

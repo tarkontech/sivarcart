@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Collection;
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Admin\AdminPermissions;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
+use Tarkontech\SivarCart\Admin\AdminPermissions;
+use Tarkontech\SivarCart\Models\StoreRole;
 use Workbench\App\Models\User;
 
 /**

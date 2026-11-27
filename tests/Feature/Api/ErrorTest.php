@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 use Workbench\App\Models\User;
 
 it('answers with JSON even when the client does not ask for it', function () {
@@ -72,7 +72,7 @@ it('answers with a 404 when the resource does not exist', function () {
 
 it('leaves the answers of the application alone', function () {
     Route::get('/ruta-de-la-aplicacion', function (): void {
-        throw new SivarcartCoreException('Un error del dominio.');
+        throw new SivarCartException('Un error del dominio.');
     });
 
     $this->get('/ruta-de-la-aplicacion')->assertStatus(500);

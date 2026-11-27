@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Controllers;
+namespace Tarkontech\SivarCart\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Rmirandasv\Wompi\Webhooks\WompiWebhook;
 use Rmirandasv\Wompi\Webhooks\WompiWebhookHandler;
-use SivarcartCore\SivarcartCore\Actions\HandleWompiPayment;
+use Tarkontech\SivarCart\Actions\HandleWompiPayment;
 
 /**
  * Receives the webhook Wompi sends when a payment is made.

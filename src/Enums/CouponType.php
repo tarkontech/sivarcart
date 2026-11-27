@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The kind of discount a coupon applies.
@@ -21,6 +21,6 @@ enum CouponType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.coupon_type.'.$this->value);
+        return (string) __('sivarcart::messages.coupon_type.'.$this->value);
     }
 }

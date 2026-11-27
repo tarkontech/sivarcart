@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Models\Category;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\Store;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Models\Category;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\Store;
 
 it('shows the home of the store', function () {
     Store::factory()->create();

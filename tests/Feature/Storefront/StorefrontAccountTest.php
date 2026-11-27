@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Notifications\AccountPasswordResetNotification;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Notifications\AccountPasswordResetNotification;
 
 it('shows the screen of entry', function () {
     $this->get('/tienda/cuenta/entrar')
@@ -27,7 +27,7 @@ it('signs a buyer in', function () {
     $this->post('/tienda/cuenta/entrar', [
         'email' => $customer->email,
         'password' => 'una-clave-larga',
-    ])->assertRedirect(route('sivarcart-core.storefront.account.show'));
+    ])->assertRedirect(route('sivarcart.storefront.account.show'));
 
     expect(auth()->guard('sivarcart')->check())->toBeTrue();
 });
@@ -68,7 +68,7 @@ it('does not send the buyer to another site after signing in', function () {
         'email' => $customer->email,
         'password' => 'una-clave-larga',
         'redirect' => 'https://otro-sitio.example.com',
-    ])->assertRedirect(route('sivarcart-core.storefront.account.show'));
+    ])->assertRedirect(route('sivarcart.storefront.account.show'));
 });
 
 it('does not send the buyer to another site through a protocol-relative link', function () {
@@ -80,7 +80,7 @@ it('does not send the buyer to another site through a protocol-relative link', f
         'email' => $customer->email,
         'password' => 'una-clave-larga',
         'redirect' => '//otro-sitio.example.com',
-    ])->assertRedirect(route('sivarcart-core.storefront.account.show'));
+    ])->assertRedirect(route('sivarcart.storefront.account.show'));
 });
 
 it('shows the screen of the signup', function () {
@@ -101,7 +101,7 @@ it('creates the account of a buyer and signs it in', function () {
         'email' => 'ana@example.com',
         'password' => 'una-clave-larga',
         'password_confirmation' => 'una-clave-larga',
-    ])->assertRedirect(route('sivarcart-core.storefront.account.show'));
+    ])->assertRedirect(route('sivarcart.storefront.account.show'));
 
     expect(Customer::query()->where('email', 'ana@example.com')->exists())->toBeTrue()
         ->and(auth()->guard('sivarcart')->check())->toBeTrue();
@@ -124,7 +124,7 @@ it('signs a buyer out', function () {
     shopper();
 
     $this->post('/tienda/cuenta/salir')
-        ->assertRedirect(route('sivarcart-core.storefront.home'));
+        ->assertRedirect(route('sivarcart.storefront.home'));
 
     expect(auth()->guard('sivarcart')->check())->toBeFalse();
 });
@@ -179,7 +179,7 @@ it('changes the password of a buyer with the token of the reset', function () {
         'email' => $customer->email,
         'password' => 'una-clave-nueva',
         'password_confirmation' => 'una-clave-nueva',
-    ])->assertRedirect(route('sivarcart-core.storefront.account.login'));
+    ])->assertRedirect(route('sivarcart.storefront.account.login'));
 
     expect(Hash::check('una-clave-nueva', $customer->fresh()->password))->toBeTrue();
 });

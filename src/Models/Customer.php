@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
@@ -15,12 +15,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
-use SivarcartCore\SivarcartCore\Database\Factories\CustomerFactory;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Models\Concerns\HasUuidColumn;
-use SivarcartCore\SivarcartCore\Notifications\AccountEmailVerificationNotification;
-use SivarcartCore\SivarcartCore\Notifications\AccountPasswordResetNotification;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Database\Factories\CustomerFactory;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Models\Concerns\HasUuidColumn;
+use Tarkontech\SivarCart\Notifications\AccountEmailVerificationNotification;
+use Tarkontech\SivarCart\Notifications\AccountPasswordResetNotification;
+use Tarkontech\SivarCart\Support\Auth;
 use Throwable;
 
 /**
@@ -150,7 +150,7 @@ class Customer extends Model implements AuthenticatableContract, CanResetPasswor
         try {
             $this->notify($notification);
         } catch (Throwable $exception) {
-            Log::error('SivarCart Core could not send the notification to the buyer of the account.', [
+            Log::error('SivarCart could not send the notification to the buyer of the account.', [
                 'notification' => $notification::class,
                 'customer' => $this->uuid,
                 'exception' => $exception->getMessage(),

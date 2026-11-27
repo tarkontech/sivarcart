@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Enums\InventoryMovementType;
-use SivarcartCore\SivarcartCore\Exceptions\InsufficientStock;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Services\InventoryService;
+use Tarkontech\SivarCart\Enums\InventoryMovementType;
+use Tarkontech\SivarCart\Exceptions\InsufficientStock;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Services\InventoryService;
 
 it('reserves the units of an order', function () {
     $variant = Product::factory()->create()->defaultVariant();
@@ -137,7 +137,7 @@ it('refuses a movement of no units', function () {
     $variant = Product::factory()->create()->defaultVariant();
 
     expect(fn () => app(InventoryService::class)->reserve($variant, 0))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('writes every movement in the ledger of the variant', function () {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Middleware;
+namespace Tarkontech\SivarCart\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Stops a request the staff of the store is not allowed to make.

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Illuminate\Database\Eloquent\Collection;
-use SivarcartCore\SivarcartCore\Models\Department;
+use Tarkontech\SivarCart\Models\Department;
 
 /**
  * Reads the departments of the country of the store.

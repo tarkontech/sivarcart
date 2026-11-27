@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Admin\AdminBundle;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Tests\Fixtures\PlainUser;
+use Tarkontech\SivarCart\Admin\AdminBundle;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Tests\Fixtures\PlainUser;
 use Workbench\App\Models\User;
 
 it('registers the routes of the panel', function () {
-    expect(Route::has('sivarcart-core.admin.index'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.page'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.orders.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.orders.status'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.settings.update'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.login'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.setup'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.assets.css'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.assets.js'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.admin.assets.chunk'))->toBeTrue();
+    expect(Route::has('sivarcart.admin.index'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.page'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.orders.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.orders.status'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.settings.update'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.login'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.setup'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.assets.css'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.assets.js'))->toBeTrue()
+        ->and(Route::has('sivarcart.admin.assets.chunk'))->toBeTrue();
 });
 
 it('mounts the panel under the configured prefix', function () {
-    $route = Route::getRoutes()->getByName('sivarcart-core.admin.page');
+    $route = Route::getRoutes()->getByName('sivarcart.admin.page');
 
     expect($route)->not->toBeNull()
         ->and($route->uri())->toBe('sivarcart/admin/{page}')
@@ -32,7 +32,7 @@ it('mounts the panel under the configured prefix', function () {
 
 it('gives the panel the middleware of the package', function () {
     $middleware = Route::getRoutes()
-        ->getByName('sivarcart-core.admin.page')
+        ->getByName('sivarcart.admin.page')
         ->gatherMiddleware();
 
     expect($middleware)->toContain('sivarcart.admin')
@@ -41,7 +41,7 @@ it('gives the panel the middleware of the package', function () {
 
 it('protects the orders of the panel with the permission of the store', function () {
     $middleware = Route::getRoutes()
-        ->getByName('sivarcart-core.admin.orders.show')
+        ->getByName('sivarcart.admin.orders.show')
         ->gatherMiddleware();
 
     expect($middleware)->toContain('store.permission:orders.view');
@@ -49,11 +49,11 @@ it('protects the orders of the panel with the permission of the store', function
 
 it('protects the writing of the panel with the permission of the store', function () {
     $status = Route::getRoutes()
-        ->getByName('sivarcart-core.admin.orders.status')
+        ->getByName('sivarcart.admin.orders.status')
         ->gatherMiddleware();
 
     $settings = Route::getRoutes()
-        ->getByName('sivarcart-core.admin.settings.update')
+        ->getByName('sivarcart.admin.settings.update')
         ->gatherMiddleware();
 
     expect($status)->toContain('store.permission:orders.update')
@@ -62,7 +62,7 @@ it('protects the writing of the panel with the permission of the store', functio
 
 it('sends the staff that are not signed in to the sign in screen', function () {
     $this->get('/sivarcart/admin/dashboard')
-        ->assertRedirect(route('sivarcart-core.admin.login'));
+        ->assertRedirect(route('sivarcart.admin.login'));
 });
 
 it('shows the sign in screen of the panel', function () {
@@ -77,7 +77,7 @@ it('signs the staff of the store in with the guard of the application', function
     $this->post('/sivarcart/admin/login', [
         'email' => $user->email,
         'password' => 'una-clave-larga',
-    ])->assertRedirect(route('sivarcart-core.admin.index'));
+    ])->assertRedirect(route('sivarcart.admin.index'));
 
     expect(auth()->guard('web')->check())->toBeTrue();
 });
@@ -97,7 +97,7 @@ it('sends a user whose model does not carry the trait of the roles to the setup 
     $this->actingAs(new PlainUser);
 
     $this->get('/sivarcart/admin/dashboard')
-        ->assertRedirect(route('sivarcart-core.admin.setup'));
+        ->assertRedirect(route('sivarcart.admin.setup'));
 });
 
 it('shows the setup screen of the panel', function () {

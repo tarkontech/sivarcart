@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Tests\Fixtures;
+namespace Tarkontech\SivarCart\Tests\Fixtures;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 

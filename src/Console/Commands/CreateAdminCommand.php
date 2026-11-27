@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Console\Commands;
+namespace Tarkontech\SivarCart\Console\Commands;
 
 use Illuminate\Console\Command;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * Creates a member of the staff of the store and gives it a role.
@@ -25,7 +25,7 @@ class CreateAdminCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'sivarcart-core:create-admin
+    protected $signature = 'sivarcart:create-admin
         {--name= : The name of the member of the staff}
         {--email= : The email of the member of the staff}
         {--password= : The password of the member of the staff}
@@ -49,7 +49,7 @@ class CreateAdminCommand extends Command
             $this->components->error(sprintf(
                 'The model [%s] of the application does not carry the trait of the roles of the store. Add [%s] to it and try again.',
                 $model::class,
-                'SivarcartCore\SivarcartCore\Models\Concerns\HasStoreRoles',
+                'Tarkontech\SivarCart\Models\Concerns\HasStoreRoles',
             ));
 
             return self::FAILURE;

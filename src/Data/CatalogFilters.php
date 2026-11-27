@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Data;
+namespace Tarkontech\SivarCart\Data;
 
-use SivarcartCore\SivarcartCore\Enums\CatalogSort;
+use Tarkontech\SivarCart\Enums\CatalogSort;
 
 /**
  * The way the shopper reads the catalog.

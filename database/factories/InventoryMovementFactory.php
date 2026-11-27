@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use SivarcartCore\SivarcartCore\Enums\InventoryMovementType;
-use SivarcartCore\SivarcartCore\Models\InventoryMovement;
+use Tarkontech\SivarCart\Enums\InventoryMovementType;
+use Tarkontech\SivarCart\Models\InventoryMovement;
 
 /**
  * @extends Factory<InventoryMovement>

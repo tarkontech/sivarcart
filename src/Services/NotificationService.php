@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
 use Closure;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Models\NotificationSetting;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Models\NotificationSetting;
+use Tarkontech\SivarCart\Models\Order;
 use Throwable;
 
 /**
@@ -30,7 +30,7 @@ final class NotificationService
      */
     public function enabled(OrderNotification $notification): bool
     {
-        if (! (bool) config('sivarcart-core.notifications.enabled', true)) {
+        if (! (bool) config('sivarcart.notifications.enabled', true)) {
             return false;
         }
 
@@ -90,7 +90,7 @@ final class NotificationService
         try {
             NotificationFacade::route('mail', $recipient)->notify($build($recipient));
         } catch (Throwable $exception) {
-            Log::error('SivarCart Core could not send the notification to the buyer of the order.', [
+            Log::error('SivarCart could not send the notification to the buyer of the order.', [
                 'notification' => $notification->value,
                 'order_number' => $order->order_number,
                 'exception' => $exception->getMessage(),

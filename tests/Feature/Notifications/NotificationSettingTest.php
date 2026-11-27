@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Illuminate\Database\QueryException;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
-use SivarcartCore\SivarcartCore\Actions\PlaceOrder;
-use SivarcartCore\SivarcartCore\Actions\ShipOrder;
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Models\NotificationSetting;
-use SivarcartCore\SivarcartCore\Notifications\OrderPlacedNotification;
-use SivarcartCore\SivarcartCore\Notifications\OrderShippedNotification;
-use SivarcartCore\SivarcartCore\Tests\Support\CheckoutScenario;
+use Tarkontech\SivarCart\Actions\PlaceOrder;
+use Tarkontech\SivarCart\Actions\ShipOrder;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Models\NotificationSetting;
+use Tarkontech\SivarCart\Notifications\OrderPlacedNotification;
+use Tarkontech\SivarCart\Notifications\OrderShippedNotification;
+use Tarkontech\SivarCart\Tests\Support\CheckoutScenario;
 
 it('sends the notification when the store has no row saved', function () {
     Notification::fake();
@@ -56,7 +56,7 @@ it('sends the notification the merchant turned on', function () {
 it('sends nothing when the package is turned off', function () {
     Notification::fake();
 
-    config()->set('sivarcart-core.notifications.enabled', false);
+    config()->set('sivarcart.notifications.enabled', false);
 
     NotificationSetting::factory()->create([
         'notification' => OrderNotification::ORDER_PLACED,

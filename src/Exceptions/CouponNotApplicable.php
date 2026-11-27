@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
-use SivarcartCore\SivarcartCore\Models\Coupon;
+use Tarkontech\SivarCart\Models\Coupon;
 
 /**
  * The coupon cannot be applied to the order.
  */
-class CouponNotApplicable extends SivarcartCoreException
+class CouponNotApplicable extends SivarCartException
 {
     /**
      * No coupon is registered with that code.

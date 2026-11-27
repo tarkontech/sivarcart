@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Admin\Pages;
+namespace Tarkontech\SivarCart\Admin\Pages;
 
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Admin\AdminPage;
-use SivarcartCore\SivarcartCore\Admin\AdminPageProps;
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
-use SivarcartCore\SivarcartCore\Admin\AdminWidget;
-use SivarcartCore\SivarcartCore\Services\Admin\StatsService;
+use Tarkontech\SivarCart\Admin\AdminPage;
+use Tarkontech\SivarCart\Admin\AdminPageProps;
+use Tarkontech\SivarCart\Admin\AdminPanel;
+use Tarkontech\SivarCart\Admin\AdminWidget;
+use Tarkontech\SivarCart\Services\Admin\StatsService;
 
 /**
  * The data of the dashboard of the panel.

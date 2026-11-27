@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The kind of shipping method offered by the store.
@@ -21,6 +21,6 @@ enum ShippingMethodType: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.shipping_method_type.'.$this->value);
+        return (string) __('sivarcart::messages.shipping_method_type.'.$this->value);
     }
 }

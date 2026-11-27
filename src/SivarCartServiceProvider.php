@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore;
+namespace Tarkontech\SivarCart;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -16,81 +16,81 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
-use SivarcartCore\SivarcartCore\Admin\AdminPanel;
-use SivarcartCore\SivarcartCore\Admin\Pages\BrandsIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\CategoriesIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\CustomersIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\DashboardProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\OrdersIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\PaymentMethodsIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\ProductsIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\RolesIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\SettingsIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\ShippingMethodsIndexProps;
-use SivarcartCore\SivarcartCore\Admin\Pages\StaffIndexProps;
-use SivarcartCore\SivarcartCore\Console\Commands\CreateAdminCommand;
-use SivarcartCore\SivarcartCore\Console\Commands\PruneCartsCommand;
-use SivarcartCore\SivarcartCore\Console\Commands\RestockCommand;
-use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCoreInstallCommand;
-use SivarcartCore\SivarcartCore\Console\Commands\SivarcartCorePublishMailablesCommand;
-use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
-use SivarcartCore\SivarcartCore\Contracts\ShippingRateCalculator;
-use SivarcartCore\SivarcartCore\Events\OrderCancelled;
-use SivarcartCore\SivarcartCore\Events\OrderDelivered;
-use SivarcartCore\SivarcartCore\Events\OrderPaid;
-use SivarcartCore\SivarcartCore\Events\OrderPlaced;
-use SivarcartCore\SivarcartCore\Events\OrderRefunded;
-use SivarcartCore\SivarcartCore\Events\OrderShipped;
-use SivarcartCore\SivarcartCore\Events\PaymentFailed;
-use SivarcartCore\SivarcartCore\Http\ApiExceptionRenderer;
-use SivarcartCore\SivarcartCore\Http\Middleware\EnsureBuyer;
-use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStoreAdmin;
-use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorefrontBuyer;
-use SivarcartCore\SivarcartCore\Http\Middleware\EnsureStorePermission;
-use SivarcartCore\SivarcartCore\Http\Middleware\StorefrontApi;
-use SivarcartCore\SivarcartCore\Listeners\SendOrderCancelledNotification;
-use SivarcartCore\SivarcartCore\Listeners\SendOrderDeliveredNotification;
-use SivarcartCore\SivarcartCore\Listeners\SendOrderPaidNotification;
-use SivarcartCore\SivarcartCore\Listeners\SendOrderPlacedNotification;
-use SivarcartCore\SivarcartCore\Listeners\SendOrderRefundedNotification;
-use SivarcartCore\SivarcartCore\Listeners\SendOrderShippedNotification;
-use SivarcartCore\SivarcartCore\Listeners\SendPaymentFailedNotification;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\ProductImage;
-use SivarcartCore\SivarcartCore\Payments\PaymentGatewayManager;
-use SivarcartCore\SivarcartCore\Services\Admin\CustomerService as AdminCustomerService;
-use SivarcartCore\SivarcartCore\Services\Admin\OrderService as AdminOrderService;
-use SivarcartCore\SivarcartCore\Services\Admin\ProductService as AdminProductService;
-use SivarcartCore\SivarcartCore\Services\Admin\StatsService;
-use SivarcartCore\SivarcartCore\Services\CartService;
-use SivarcartCore\SivarcartCore\Services\CatalogService;
-use SivarcartCore\SivarcartCore\Services\CouponService;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Services\DepartmentService;
-use SivarcartCore\SivarcartCore\Services\InventoryService;
-use SivarcartCore\SivarcartCore\Services\MediaService;
-use SivarcartCore\SivarcartCore\Services\NotificationService;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Services\PaymentMethodService;
-use SivarcartCore\SivarcartCore\Services\PaymentService;
-use SivarcartCore\SivarcartCore\Services\PricingService;
-use SivarcartCore\SivarcartCore\Services\SequenceService;
-use SivarcartCore\SivarcartCore\Services\ShippingMethodRateCalculator;
-use SivarcartCore\SivarcartCore\Services\ShippingMethodService;
-use SivarcartCore\SivarcartCore\Services\StoreService;
-use SivarcartCore\SivarcartCore\Support\Auth;
-use SivarcartCore\SivarcartCore\Support\Media;
+use Tarkontech\SivarCart\Admin\AdminPanel;
+use Tarkontech\SivarCart\Admin\Pages\BrandsIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\CategoriesIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\CustomersIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\DashboardProps;
+use Tarkontech\SivarCart\Admin\Pages\OrdersIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\PaymentMethodsIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\ProductsIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\RolesIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\SettingsIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\ShippingMethodsIndexProps;
+use Tarkontech\SivarCart\Admin\Pages\StaffIndexProps;
+use Tarkontech\SivarCart\Console\Commands\CreateAdminCommand;
+use Tarkontech\SivarCart\Console\Commands\PruneCartsCommand;
+use Tarkontech\SivarCart\Console\Commands\RestockCommand;
+use Tarkontech\SivarCart\Console\Commands\SivarCartInstallCommand;
+use Tarkontech\SivarCart\Console\Commands\SivarCartPublishMailablesCommand;
+use Tarkontech\SivarCart\Contracts\PaymentGateway;
+use Tarkontech\SivarCart\Contracts\ShippingRateCalculator;
+use Tarkontech\SivarCart\Events\OrderCancelled;
+use Tarkontech\SivarCart\Events\OrderDelivered;
+use Tarkontech\SivarCart\Events\OrderPaid;
+use Tarkontech\SivarCart\Events\OrderPlaced;
+use Tarkontech\SivarCart\Events\OrderRefunded;
+use Tarkontech\SivarCart\Events\OrderShipped;
+use Tarkontech\SivarCart\Events\PaymentFailed;
+use Tarkontech\SivarCart\Http\ApiExceptionRenderer;
+use Tarkontech\SivarCart\Http\Middleware\EnsureBuyer;
+use Tarkontech\SivarCart\Http\Middleware\EnsureStoreAdmin;
+use Tarkontech\SivarCart\Http\Middleware\EnsureStorefrontBuyer;
+use Tarkontech\SivarCart\Http\Middleware\EnsureStorePermission;
+use Tarkontech\SivarCart\Http\Middleware\StorefrontApi;
+use Tarkontech\SivarCart\Listeners\SendOrderCancelledNotification;
+use Tarkontech\SivarCart\Listeners\SendOrderDeliveredNotification;
+use Tarkontech\SivarCart\Listeners\SendOrderPaidNotification;
+use Tarkontech\SivarCart\Listeners\SendOrderPlacedNotification;
+use Tarkontech\SivarCart\Listeners\SendOrderRefundedNotification;
+use Tarkontech\SivarCart\Listeners\SendOrderShippedNotification;
+use Tarkontech\SivarCart\Listeners\SendPaymentFailedNotification;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\ProductImage;
+use Tarkontech\SivarCart\Payments\PaymentGatewayManager;
+use Tarkontech\SivarCart\Services\Admin\CustomerService as AdminCustomerService;
+use Tarkontech\SivarCart\Services\Admin\OrderService as AdminOrderService;
+use Tarkontech\SivarCart\Services\Admin\ProductService as AdminProductService;
+use Tarkontech\SivarCart\Services\Admin\StatsService;
+use Tarkontech\SivarCart\Services\CartService;
+use Tarkontech\SivarCart\Services\CatalogService;
+use Tarkontech\SivarCart\Services\CouponService;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Services\DepartmentService;
+use Tarkontech\SivarCart\Services\InventoryService;
+use Tarkontech\SivarCart\Services\MediaService;
+use Tarkontech\SivarCart\Services\NotificationService;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Services\PaymentMethodService;
+use Tarkontech\SivarCart\Services\PaymentService;
+use Tarkontech\SivarCart\Services\PricingService;
+use Tarkontech\SivarCart\Services\SequenceService;
+use Tarkontech\SivarCart\Services\ShippingMethodRateCalculator;
+use Tarkontech\SivarCart\Services\ShippingMethodService;
+use Tarkontech\SivarCart\Services\StoreService;
+use Tarkontech\SivarCart\Support\Auth;
+use Tarkontech\SivarCart\Support\Media;
 
-class SivarcartCoreServiceProvider extends ServiceProvider
+class SivarCartServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/sivarcart-core.php', 'sivarcart-core');
+        $this->mergeConfigFrom(__DIR__.'/../config/sivarcart.php', 'sivarcart');
 
-        $this->app->singleton(SivarcartCore::class);
+        $this->app->singleton(SivarCart::class);
 
         $this->registerBuyersAuthentication();
         $this->registerMediaLibrary();
@@ -132,8 +132,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
      */
     private function registerBuyersAuthentication(): void
     {
-        $guard = (string) config('sivarcart-core.buyers.guard', 'sivarcart');
-        $provider = (string) config('sivarcart-core.buyers.provider', 'sivarcart');
+        $guard = (string) config('sivarcart.buyers.guard', 'sivarcart');
+        $provider = (string) config('sivarcart.buyers.provider', 'sivarcart');
 
         Config::set('auth.providers.'.$provider, [
             'driver' => 'eloquent',
@@ -148,10 +148,10 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         Config::set('auth.passwords.'.$provider, [
             'provider' => $provider,
             'table' => (string) config(
-                'sivarcart-core.buyers.password_reset_table',
+                'sivarcart.buyers.password_reset_table',
                 'sivarcart_password_reset_tokens',
             ),
-            'expire' => (int) config('sivarcart-core.buyers.password_expire_minutes', 60),
+            'expire' => (int) config('sivarcart.buyers.password_expire_minutes', 60),
         ]);
     }
 
@@ -225,25 +225,25 @@ class SivarcartCoreServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../routes/sivarcart-core.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/sivarcart.php');
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'sivarcart-core');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'sivarcart');
 
         /*
         | The root view of the panel lives in a namespace of its own, and not in
         | the namespace of the views of the package. The views of the package
         | are published and the merchant can put its own in
-        | "resources/views/vendor/sivarcart-core", and the root view of an
+        | "resources/views/vendor/sivarcart", and the root view of an
         | Inertia application is not something to overwrite by accident: a
         | wrong file there breaks the mounting of the panel in silence.
         */
-        $this->loadViewsFrom(__DIR__.'/../resources/views/panel', 'sivarcart-core-panel');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/panel', 'sivarcart-panel');
 
         /*
         | The root view of the store lives in a namespace of its own, for the
         | same reason that the one of the panel does.
         */
-        $this->loadViewsFrom(__DIR__.'/../resources/views/storefront', 'sivarcart-core-storefront');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/storefront', 'sivarcart-storefront');
 
         /*
         | The pages of the panel live in the package, so Inertia has to know
@@ -259,7 +259,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js/storefront/pages',
         ]);
 
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'sivarcart-core');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'sivarcart');
 
         $this->registerNotificationListeners();
 
@@ -276,12 +276,12 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../config/sivarcart-core.php' => config_path('sivarcart-core.php'),
-        ], ['sivarcart-core', 'sivarcart-core-config']);
+            __DIR__.'/../config/sivarcart.php' => config_path('sivarcart.php'),
+        ], ['sivarcart', 'sivarcart-config']);
 
         $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/sivarcart-core'),
-        ], ['sivarcart-core', 'sivarcart-core-views']);
+            __DIR__.'/../resources/views' => resource_path('views/vendor/sivarcart'),
+        ], ['sivarcart', 'sivarcart-views']);
 
         /*
         | The root view of the panel is published on its own tag, and not with
@@ -290,8 +290,8 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         | asks for it explicitly.
         */
         $this->publishes([
-            __DIR__.'/../resources/views/panel' => resource_path('views/vendor/sivarcart-core-panel'),
-        ], ['sivarcart-core', 'sivarcart-core-panel-view']);
+            __DIR__.'/../resources/views/panel' => resource_path('views/vendor/sivarcart-panel'),
+        ], ['sivarcart', 'sivarcart-panel-view']);
 
         /*
         | The source of the panel is published for the merchant that wants to
@@ -300,7 +300,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         */
         $this->publishes([
             __DIR__.'/../resources/js/admin' => resource_path('js/sivarcart'),
-        ], ['sivarcart-core', 'sivarcart-core-admin-source']);
+        ], ['sivarcart', 'sivarcart-admin-source']);
 
         /*
         | The source of the store is published for the merchant that wants to
@@ -309,7 +309,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         */
         $this->publishes([
             __DIR__.'/../resources/js/storefront' => resource_path('js/sivarcart/storefront'),
-        ], ['sivarcart-core', 'sivarcart-core-storefront-source']);
+        ], ['sivarcart', 'sivarcart-storefront-source']);
         /*
         | The root view of the store is published on its own tag, and not with
         | las vistas del paquete: es la vista que monta la tienda, así que el
@@ -317,28 +317,28 @@ class SivarcartCoreServiceProvider extends ServiceProvider
         | lo pide de forma explícita.
         */
         $this->publishes([
-            __DIR__.'/../resources/views/storefront' => resource_path('views/vendor/sivarcart-core-storefront'),
-        ], ['sivarcart-core', 'sivarcart-core-storefront-view']);
+            __DIR__.'/../resources/views/storefront' => resource_path('views/vendor/sivarcart-storefront'),
+        ], ['sivarcart', 'sivarcart-storefront-view']);
 
         $this->publishes([
-            __DIR__.'/../resources/views/mail' => resource_path('views/vendor/sivarcart-core/mail'),
-        ], ['sivarcart-core', 'sivarcart-core-mailables']);
+            __DIR__.'/../resources/views/mail' => resource_path('views/vendor/sivarcart/mail'),
+        ], ['sivarcart', 'sivarcart-mailables']);
 
         $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/sivarcart-core'),
-        ], ['sivarcart-core', 'sivarcart-core-lang']);
+            __DIR__.'/../lang' => $this->app->langPath('vendor/sivarcart'),
+        ], ['sivarcart', 'sivarcart-lang']);
 
         $this->publishes([
-            __DIR__.'/../public' => public_path('vendor/sivarcart-core'),
-        ], ['sivarcart-core', 'sivarcart-core-assets']);
+            __DIR__.'/../public' => public_path('vendor/sivarcart'),
+        ], ['sivarcart', 'sivarcart-assets']);
 
         $this->publishes([
             __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], ['sivarcart-core', 'sivarcart-core-migrations']);
+        ], ['sivarcart', 'sivarcart-migrations']);
 
         $this->commands([
-            SivarcartCoreInstallCommand::class,
-            SivarcartCorePublishMailablesCommand::class,
+            SivarCartInstallCommand::class,
+            SivarCartPublishMailablesCommand::class,
             CreateAdminCommand::class,
             PruneCartsCommand::class,
             RestockCommand::class,
@@ -416,7 +416,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $this->registerApiExceptionRenderer();
 
-        if (! (bool) config('sivarcart-core.api.enabled', true)) {
+        if (! (bool) config('sivarcart.api.enabled', true)) {
             return;
         }
 
@@ -440,7 +440,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
      */
     private function registerAdminPanel(): void
     {
-        if (! (bool) config('sivarcart-core.admin.enabled', true)) {
+        if (! (bool) config('sivarcart.admin.enabled', true)) {
             return;
         }
 
@@ -462,7 +462,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
      */
     private function registerAdminPages(): void
     {
-        if (! (bool) config('sivarcart-core.admin.enabled', true)) {
+        if (! (bool) config('sivarcart.admin.enabled', true)) {
             return;
         }
 
@@ -470,7 +470,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'dashboard',
-            label: 'sivarcart-core::admin.dashboard.title',
+            label: 'sivarcart::admin.dashboard.title',
             component: 'Admin/Dashboard',
             props: new DashboardProps,
             order: 10,
@@ -478,7 +478,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'orders',
-            label: 'sivarcart-core::admin.orders.title',
+            label: 'sivarcart::admin.orders.title',
             component: 'Admin/Orders/Index',
             props: new OrdersIndexProps,
             permission: 'orders.view',
@@ -487,7 +487,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'products',
-            label: 'sivarcart-core::admin.products.title',
+            label: 'sivarcart::admin.products.title',
             component: 'Admin/Products/Index',
             props: new ProductsIndexProps,
             permission: 'catalog.view',
@@ -496,7 +496,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'categories',
-            label: 'sivarcart-core::admin.categories.title',
+            label: 'sivarcart::admin.categories.title',
             component: 'Admin/Categories/Index',
             props: new CategoriesIndexProps,
             permission: 'catalog.view',
@@ -505,7 +505,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'brands',
-            label: 'sivarcart-core::admin.brands.title',
+            label: 'sivarcart::admin.brands.title',
             component: 'Admin/Brands/Index',
             props: new BrandsIndexProps,
             permission: 'catalog.view',
@@ -514,7 +514,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'shipping-methods',
-            label: 'sivarcart-core::admin.shipping_methods.title',
+            label: 'sivarcart::admin.shipping_methods.title',
             component: 'Admin/ShippingMethods/Index',
             props: new ShippingMethodsIndexProps,
             permission: 'catalog.view',
@@ -523,7 +523,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'payment-methods',
-            label: 'sivarcart-core::admin.payment_methods.title',
+            label: 'sivarcart::admin.payment_methods.title',
             component: 'Admin/PaymentMethods/Index',
             props: new PaymentMethodsIndexProps,
             permission: 'catalog.view',
@@ -532,7 +532,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'customers',
-            label: 'sivarcart-core::admin.customers.title',
+            label: 'sivarcart::admin.customers.title',
             component: 'Admin/Customers/Index',
             props: new CustomersIndexProps,
             permission: 'customers.view',
@@ -541,7 +541,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'settings',
-            label: 'sivarcart-core::admin.settings.title',
+            label: 'sivarcart::admin.settings.title',
             component: 'Admin/Settings/Index',
             props: new SettingsIndexProps,
             permission: 'settings.view',
@@ -550,7 +550,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'roles',
-            label: 'sivarcart-core::admin.roles.title',
+            label: 'sivarcart::admin.roles.title',
             component: 'Admin/Roles/Index',
             props: new RolesIndexProps,
             permission: 'roles.view',
@@ -559,7 +559,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
 
         $panel->page(
             key: 'staff',
-            label: 'sivarcart-core::admin.staff.title',
+            label: 'sivarcart::admin.staff.title',
             component: 'Admin/Staff/Index',
             props: new StaffIndexProps,
             permission: 'staff.view',
@@ -586,7 +586,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
      */
     private function registerStorefront(): void
     {
-        if (! (bool) config('sivarcart-core.storefront.enabled', true)) {
+        if (! (bool) config('sivarcart.storefront.enabled', true)) {
             return;
         }
 
@@ -609,7 +609,7 @@ class SivarcartCoreServiceProvider extends ServiceProvider
                 ? 'buyer:'.$buyer->getKey()
                 : 'ip:'.$request->ip();
 
-            return Limit::perMinute((int) config('sivarcart-core.api.rate_limit', 60))->by($key);
+            return Limit::perMinute((int) config('sivarcart.api.rate_limit', 60))->by($key);
         });
     }
 

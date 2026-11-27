@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Database\Factories;
+namespace Tarkontech\SivarCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use SivarcartCore\SivarcartCore\Enums\CouponType;
-use SivarcartCore\SivarcartCore\Models\Coupon;
+use Tarkontech\SivarCart\Enums\CouponType;
+use Tarkontech\SivarCart\Models\Coupon;
 
 /**
  * @extends Factory<Coupon>

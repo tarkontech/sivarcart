@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
-use SivarcartCore\SivarcartCore\Enums\OrderNotification;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Enums\OrderNotification;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * The email the buyer receives when the order is refunded.
@@ -43,7 +43,7 @@ final class OrderRefundedMail extends OrderMail
      */
     protected function template(): string
     {
-        return 'sivarcart-core::mail.order-refunded';
+        return 'sivarcart::mail.order-refunded';
     }
 
     /**

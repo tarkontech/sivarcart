@@ -1,6 +1,0 @@
-import{a as e,n as t,t as n}from"./admin.js";import{n as r,t as i}from"./card-D-7HOk2G.js";import{t as a}from"./AuthLayout-B1o_kYNL.js";var o=n();function s({model:n}){let{text:s}=e().props,c=n.split(`\\`).pop()??n;return(0,o.jsxs)(a,{children:[(0,o.jsx)(t,{title:s.setup.title}),(0,o.jsx)(i,{children:(0,o.jsxs)(r,{className:`flex flex-col gap-4 text-sm`,children:[(0,o.jsx)(`p`,{className:`text-muted-foreground`,children:s.setup.body}),(0,o.jsx)(`pre`,{className:`overflow-x-auto rounded-md bg-muted p-3 text-xs`,children:(0,o.jsx)(`code`,{children:n})}),(0,o.jsx)(`p`,{className:`text-muted-foreground`,children:s.setup.trait}),(0,o.jsx)(`pre`,{className:`overflow-x-auto rounded-md bg-muted p-3 text-xs`,children:(0,o.jsx)(`code`,{children:`use SivarcartCore\\SivarcartCore\\Models\\Concerns\\HasStoreRoles;
-
-class ${c} extends Authenticatable
-{
-    use HasStoreRoles;
-}`})}),(0,o.jsx)(`p`,{className:`text-muted-foreground`,children:s.setup.roles}),(0,o.jsx)(`pre`,{className:`overflow-x-auto rounded-md bg-muted p-3 text-xs`,children:(0,o.jsx)(`code`,{children:`php artisan db:seed --class="SivarcartCore\\SivarcartCore\\Database\\Seeders\\StoreRoleSeeder"`})})]})})]})}export{s as default};

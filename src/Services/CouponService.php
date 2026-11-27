@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services;
+namespace Tarkontech\SivarCart\Services;
 
-use SivarcartCore\SivarcartCore\Enums\CouponType;
-use SivarcartCore\SivarcartCore\Exceptions\CouponNotApplicable;
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Enums\CouponType;
+use Tarkontech\SivarCart\Exceptions\CouponNotApplicable;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * Validates the discount codes and calculates what they are worth.

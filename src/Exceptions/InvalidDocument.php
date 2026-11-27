@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
 
 /**
  * The identity document of the buyer does not hold the format of its type.
  */
-class InvalidDocument extends SivarcartCoreException
+class InvalidDocument extends SivarCartException
 {
     /**
      * The document does not hold the format of its type.
@@ -18,7 +18,7 @@ class InvalidDocument extends SivarcartCoreException
      */
     public static function with(CustomerDocumentType $type, string $reason): self
     {
-        return new self((string) __('sivarcart-core::messages.customer_document.'.$reason, [
+        return new self((string) __('sivarcart::messages.customer_document.'.$reason, [
             'type' => $type->label(),
         ]));
     }

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Mail;
+namespace Tarkontech\SivarCart\Mail;
 
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Support\BuyerRoutes;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Support\BuyerRoutes;
 
 /**
  * The email the buyer receives to reset the password of the account.
@@ -32,7 +32,7 @@ final class AccountPasswordResetMail extends BuyerAccountMail
      */
     protected function template(): string
     {
-        return 'sivarcart-core::mail.account-password-reset';
+        return 'sivarcart::mail.account-password-reset';
     }
 
     /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services\Admin;
+namespace Tarkontech\SivarCart\Services\Admin;
 
-use SivarcartCore\SivarcartCore\Admin\AdminPermissions;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Support\Slug;
+use Tarkontech\SivarCart\Admin\AdminPermissions;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Support\Slug;
 
 /**
  * The roles of the staff of the store, as the panel sees them.

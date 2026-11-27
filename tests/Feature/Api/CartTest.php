@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\Product;
-use SivarcartCore\SivarcartCore\Models\Store;
-use SivarcartCore\SivarcartCore\Services\CartService;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\Product;
+use Tarkontech\SivarCart\Models\Store;
+use Tarkontech\SivarCart\Services\CartService;
 
 /**
  * A buyer with a session and a store to buy in.

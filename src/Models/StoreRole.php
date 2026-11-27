@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models;
+namespace Tarkontech\SivarCart\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use SivarcartCore\SivarcartCore\Database\Factories\StoreRoleFactory;
-use SivarcartCore\SivarcartCore\Support\Auth;
+use Tarkontech\SivarCart\Database\Factories\StoreRoleFactory;
+use Tarkontech\SivarCart\Support\Auth;
 
 /**
  * A role of the store staff and the permissions it grants.

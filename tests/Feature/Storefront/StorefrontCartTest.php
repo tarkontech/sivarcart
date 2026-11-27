@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Models\Cart;
-use SivarcartCore\SivarcartCore\Models\Coupon;
-use SivarcartCore\SivarcartCore\Models\Product;
+use Tarkontech\SivarCart\Models\Cart;
+use Tarkontech\SivarCart\Models\Coupon;
+use Tarkontech\SivarCart\Models\Product;
 
 it('shows the cart of the shopper', function () {
     shopper();

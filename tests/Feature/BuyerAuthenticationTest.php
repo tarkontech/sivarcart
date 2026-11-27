@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Auth;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
-use SivarcartCore\SivarcartCore\Support\Auth as StoreAuth;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Services\CustomerService;
+use Tarkontech\SivarCart\Support\Auth as StoreAuth;
 use Workbench\App\Models\User;
 
 it('registers the guard and the provider of the buyers', function () {
@@ -26,8 +26,8 @@ it('registers the broker of the passwords of the buyers', function () {
 });
 
 it('reads the name of the guard from the configuration of the package', function () {
-    expect((string) config('sivarcart-core.buyers.guard'))->toBe('sivarcart')
-        ->and((string) config('sivarcart-core.buyers.provider'))->toBe('sivarcart');
+    expect((string) config('sivarcart.buyers.guard'))->toBe('sivarcart')
+        ->and((string) config('sivarcart.buyers.provider'))->toBe('sivarcart');
 });
 
 it('signs a buyer in with the guard of the package', function () {

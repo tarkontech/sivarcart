@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Actions;
+namespace Tarkontech\SivarCart\Actions;
 
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rmirandasv\Wompi\Webhooks\WompiWebhook;
-use SivarcartCore\SivarcartCore\Enums\PaymentStatus;
-use SivarcartCore\SivarcartCore\Events\OrderPaid;
-use SivarcartCore\SivarcartCore\Events\PaymentFailed;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\Payment;
-use SivarcartCore\SivarcartCore\Models\PaymentTransaction;
-use SivarcartCore\SivarcartCore\Services\OrderService;
-use SivarcartCore\SivarcartCore\Services\PaymentService;
+use Tarkontech\SivarCart\Enums\PaymentStatus;
+use Tarkontech\SivarCart\Events\OrderPaid;
+use Tarkontech\SivarCart\Events\PaymentFailed;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\Payment;
+use Tarkontech\SivarCart\Models\PaymentTransaction;
+use Tarkontech\SivarCart\Services\OrderService;
+use Tarkontech\SivarCart\Services\PaymentService;
 
 /**
  * Applies the payment Wompi reported.

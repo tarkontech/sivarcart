@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Services\Admin;
+namespace Tarkontech\SivarCart\Services\Admin;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SivarcartCore\SivarcartCore\Models\Brand;
-use SivarcartCore\SivarcartCore\Support\Slug;
+use Tarkontech\SivarCart\Models\Brand;
+use Tarkontech\SivarCart\Support\Slug;
 
 /**
  * The brands of the catalog, as the staff of the store sees them.

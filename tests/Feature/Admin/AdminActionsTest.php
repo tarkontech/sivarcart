@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Database\Seeders\StoreRoleSeeder;
-use SivarcartCore\SivarcartCore\Enums\OrderStatus;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Models\StoreRole;
-use SivarcartCore\SivarcartCore\Services\StoreService;
+use Tarkontech\SivarCart\Database\Seeders\StoreRoleSeeder;
+use Tarkontech\SivarCart\Enums\OrderStatus;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Models\StoreRole;
+use Tarkontech\SivarCart\Services\StoreService;
 use Workbench\App\Models\User;
 
 /**
@@ -123,7 +123,7 @@ it('tells the staff of the store that the settings were saved', function () {
     $this->get('/sivarcart/admin/settings')
         ->assertInertia(fn ($page) => $page
             ->component('Admin/Settings/Index')
-            ->hasFlash('notice', __('sivarcart-core::admin.settings.saved')),
+            ->hasFlash('notice', __('sivarcart::admin.settings.saved')),
         );
 });
 
@@ -139,7 +139,7 @@ it('tells the staff of the store that the order moved', function () {
     $this->get('/sivarcart/admin/orders/'.$order->uuid)
         ->assertInertia(fn ($page) => $page
             ->component('Admin/Orders/Show')
-            ->hasFlash('notice', __('sivarcart-core::admin.orders.moved', [
+            ->hasFlash('notice', __('sivarcart::admin.orders.moved', [
                 'status' => OrderStatus::PROCESSING->label(),
             ])),
         );

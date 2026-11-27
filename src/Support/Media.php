@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Support;
+namespace Tarkontech\SivarCart\Support;
 
 use Illuminate\Support\Facades\Config;
 
@@ -21,7 +21,7 @@ final class Media
      */
     public static function disk(): string
     {
-        $disk = Config::get('sivarcart-core.media.disk', 'public');
+        $disk = Config::get('sivarcart.media.disk', 'public');
 
         if (! is_string($disk) || $disk === '') {
             return 'public';
@@ -35,7 +35,7 @@ final class Media
      */
     public static function maxSize(): int
     {
-        $size = Config::get('sivarcart-core.media.max_size', 10240);
+        $size = Config::get('sivarcart.media.max_size', 10240);
 
         if (! is_int($size) || $size < 1) {
             return 10240;
@@ -51,7 +51,7 @@ final class Media
      */
     public static function allowedMimes(): array
     {
-        $mimes = Config::get('sivarcart-core.media.mimes', []);
+        $mimes = Config::get('sivarcart.media.mimes', []);
 
         if (! is_array($mimes)) {
             return [];
@@ -75,7 +75,7 @@ final class Media
      */
     public static function thumbnailSizes(): array
     {
-        $thumbnails = Config::get('sivarcart-core.media.thumbnails', []);
+        $thumbnails = Config::get('sivarcart.media.thumbnails', []);
 
         if (! is_array($thumbnails)) {
             return [];
@@ -118,6 +118,6 @@ final class Media
      */
     public static function queuesConversions(): bool
     {
-        return (bool) Config::get('sivarcart-core.media.queue_conversions', false);
+        return (bool) Config::get('sivarcart.media.queue_conversions', false);
     }
 }

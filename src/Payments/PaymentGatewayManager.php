@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Payments;
+namespace Tarkontech\SivarCart\Payments;
 
 use Illuminate\Support\Manager;
-use SivarcartCore\SivarcartCore\Contracts\PaymentGateway;
+use Tarkontech\SivarCart\Contracts\PaymentGateway;
 
 /**
  * Resolves the payment gateway that handles a payment method.
@@ -20,7 +20,7 @@ class PaymentGatewayManager extends Manager
      */
     public function getDefaultDriver(): string
     {
-        return (string) config('sivarcart-core.wompi.driver', 'wompi');
+        return (string) config('sivarcart.wompi.driver', 'wompi');
     }
 
     /**

@@ -1,7 +1,7 @@
 laravel: '@testbench'
 
 providers:
-  - SivarcartCore\SivarcartCore\SivarcartCoreServiceProvider
+  - Tarkontech\SivarCart\SivarCartServiceProvider
   - Rmirandasv\Wompi\WompiServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
@@ -43,7 +43,7 @@ workbench:
     - create-sqlite-db
     - db-wipe
     - vendor-publish:
-        --tag: sivarcart-core-migrations
+        --tag: sivarcart-migrations
     - migrate-fresh
   assets:
     - laravel-assets

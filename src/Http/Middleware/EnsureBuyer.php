@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Http\Middleware;
+namespace Tarkontech\SivarCart\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerRequired;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
+use Tarkontech\SivarCart\Exceptions\CustomerRequired;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Services\CustomerService;
 
 /**
  * Stops a request of a buyer that is not signed in.

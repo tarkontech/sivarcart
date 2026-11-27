@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use SivarcartCore\SivarcartCore\Tools\CommitMessage;
+use Tarkontech\SivarCart\Tools\CommitMessage;
 
 require __DIR__.'/../../vendor/autoload.php';
 

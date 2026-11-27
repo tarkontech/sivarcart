@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
-use SivarcartCore\SivarcartCore\Enums\CustomerDocumentType;
-use SivarcartCore\SivarcartCore\Exceptions\CustomerAlreadyExists;
-use SivarcartCore\SivarcartCore\Exceptions\InvalidDocument;
-use SivarcartCore\SivarcartCore\Exceptions\SivarcartCoreException;
-use SivarcartCore\SivarcartCore\Models\Customer;
-use SivarcartCore\SivarcartCore\Models\CustomerAddress;
-use SivarcartCore\SivarcartCore\Models\Department;
-use SivarcartCore\SivarcartCore\Models\Order;
-use SivarcartCore\SivarcartCore\Notifications\AccountEmailVerificationNotification;
-use SivarcartCore\SivarcartCore\Notifications\AccountPasswordResetNotification;
-use SivarcartCore\SivarcartCore\Notifications\AccountWelcomeNotification;
-use SivarcartCore\SivarcartCore\Services\CustomerService;
+use Tarkontech\SivarCart\Enums\CustomerDocumentType;
+use Tarkontech\SivarCart\Exceptions\CustomerAlreadyExists;
+use Tarkontech\SivarCart\Exceptions\InvalidDocument;
+use Tarkontech\SivarCart\Exceptions\SivarCartException;
+use Tarkontech\SivarCart\Models\Customer;
+use Tarkontech\SivarCart\Models\CustomerAddress;
+use Tarkontech\SivarCart\Models\Department;
+use Tarkontech\SivarCart\Models\Order;
+use Tarkontech\SivarCart\Notifications\AccountEmailVerificationNotification;
+use Tarkontech\SivarCart\Notifications\AccountPasswordResetNotification;
+use Tarkontech\SivarCart\Notifications\AccountWelcomeNotification;
+use Tarkontech\SivarCart\Services\CustomerService;
 
 it('creates the account of a buyer', function () {
     $customer = app(CustomerService::class)->register([
@@ -65,7 +65,7 @@ it('refuses an account without an email', function () {
     expect(fn () => app(CustomerService::class)->register([
         'first_name' => 'Ana',
         'password' => 'secreto123',
-    ]))->toThrow(SivarcartCoreException::class);
+    ]))->toThrow(SivarCartException::class);
 });
 
 it('refuses an account with a document that does not hold the format', function () {
@@ -151,7 +151,7 @@ it('refuses a link of verification that belongs to nobody', function () {
     $customer = Customer::factory()->create(['email_verified_at' => null]);
 
     expect(fn () => app(CustomerService::class)->verifyEmailFromLink((int) $customer->getKey(), 'otra-cosa'))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 
     expect($customer->fresh()->email_verified_at)->toBeNull();
 });
@@ -319,7 +319,7 @@ it('refuses a token of reset that does not exist', function () {
     ]);
 
     expect(fn () => app(CustomerService::class)->resetPassword('ana@example.test', 'inventado', 'otracosa'))
-        ->toThrow(SivarcartCoreException::class);
+        ->toThrow(SivarCartException::class);
 });
 
 it('welcomes the buyer and asks it to verify the email', function () {

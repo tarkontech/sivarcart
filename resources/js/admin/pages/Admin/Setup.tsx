@@ -32,7 +32,7 @@ export default function Setup({ model }: { model: string; signedIn: boolean }) {
                     <p className="text-muted-foreground">{text.setup.trait}</p>
 
                     <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
-                        <code>{`use SivarcartCore\\SivarcartCore\\Models\\Concerns\\HasStoreRoles;
+                        <code>{`use Tarkontech\\SivarCart\\Models\\Concerns\\HasStoreRoles;
 
 class ${name} extends Authenticatable
 {
@@ -43,7 +43,7 @@ class ${name} extends Authenticatable
                     <p className="text-muted-foreground">{text.setup.roles}</p>
 
                     <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
-                        <code>php artisan db:seed --class="SivarcartCore\SivarcartCore\Database\Seeders\StoreRoleSeeder"</code>
+                        <code>php artisan db:seed --class="Tarkontech\SivarCart\Database\Seeders\StoreRoleSeeder"</code>
                     </pre>
                 </CardContent>
             </Card>

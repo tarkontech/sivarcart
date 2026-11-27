@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Exceptions;
+namespace Tarkontech\SivarCart\Exceptions;
 
-use SivarcartCore\SivarcartCore\Models\ProductVariant;
+use Tarkontech\SivarCart\Models\ProductVariant;
 
 /**
  * The store does not have enough units to honour a request.
  */
-class InsufficientStock extends SivarcartCoreException
+class InsufficientStock extends SivarCartException
 {
     /**
      * The variant does not have enough units available.

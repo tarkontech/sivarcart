@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
-use SivarcartCore\SivarcartCore\Http\Middleware\HandleStorefrontInertiaRequests;
-use SivarcartCore\SivarcartCore\Storefront\StorefrontBundle;
+use Tarkontech\SivarCart\Http\Middleware\HandleStorefrontInertiaRequests;
+use Tarkontech\SivarCart\Storefront\StorefrontBundle;
 
 it('registers the routes of the store', function () {
-    expect(Route::has('sivarcart-core.storefront.home'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.products.index'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.products.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.cart.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.cart.items.store'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.checkout.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.checkout.store'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.orders.index'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.orders.show'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.account.login'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.account.register'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.account.password.reset'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.assets.css'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.assets.js'))->toBeTrue()
-        ->and(Route::has('sivarcart-core.storefront.assets.chunk'))->toBeTrue();
+    expect(Route::has('sivarcart.storefront.home'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.products.index'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.products.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.cart.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.cart.items.store'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.checkout.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.checkout.store'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.orders.index'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.orders.show'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.account.login'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.account.register'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.account.password.reset'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.assets.css'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.assets.js'))->toBeTrue()
+        ->and(Route::has('sivarcart.storefront.assets.chunk'))->toBeTrue();
 });
 
 it('mounts the store under the configured prefix', function () {
-    $route = Route::getRoutes()->getByName('sivarcart-core.storefront.products.index');
+    $route = Route::getRoutes()->getByName('sivarcart.storefront.products.index');
 
     expect($route)->not->toBeNull()
         ->and($route->uri())->toBe('tienda/productos')
@@ -35,7 +35,7 @@ it('mounts the store under the configured prefix', function () {
 
 it('gives the store the middleware of the package', function () {
     $middleware = Route::getRoutes()
-        ->getByName('sivarcart-core.storefront.products.index')
+        ->getByName('sivarcart.storefront.products.index')
         ->gatherMiddleware();
 
     expect($middleware)->toContain('web')
@@ -44,7 +44,7 @@ it('gives the store the middleware of the package', function () {
 
 it('asks for a buyer signed in in the pages of the cart', function () {
     $middleware = Route::getRoutes()
-        ->getByName('sivarcart-core.storefront.cart.show')
+        ->getByName('sivarcart.storefront.cart.show')
         ->gatherMiddleware();
 
     expect($middleware)->toContain('sivarcart.storefront.buyer');
@@ -52,12 +52,12 @@ it('asks for a buyer signed in in the pages of the cart', function () {
 
 it('sends the shopper that is not signed in to the screen of entry', function () {
     $this->get('/tienda/carrito')
-        ->assertRedirect(route('sivarcart-core.storefront.account.login').'?redirect='.rawurlencode(url('/tienda/carrito')));
+        ->assertRedirect(route('sivarcart.storefront.account.login').'?redirect='.rawurlencode(url('/tienda/carrito')));
 });
 
 it('remembers where the shopper was going', function () {
     $this->get('/tienda/carrito')
-        ->assertRedirect(route('sivarcart-core.storefront.account.login').'?redirect='.rawurlencode(url('/tienda/carrito')));
+        ->assertRedirect(route('sivarcart.storefront.account.login').'?redirect='.rawurlencode(url('/tienda/carrito')));
 });
 
 it('shows the home of the store', function () {

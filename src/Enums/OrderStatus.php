@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Enums;
+namespace Tarkontech\SivarCart\Enums;
 
 /**
  * The lifecycle of an order.
@@ -66,6 +66,6 @@ enum OrderStatus: string
      */
     public function label(): string
     {
-        return (string) __('sivarcart-core::messages.order_status.'.$this->value);
+        return (string) __('sivarcart::messages.order_status.'.$this->value);
     }
 }

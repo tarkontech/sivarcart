@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use SivarcartCore\SivarcartCore\Tests\TestCase;
+use Tarkontech\SivarCart\Tests\TestCase;
 
 /**
  * The API of the store, mounted under another prefix.
@@ -20,7 +20,7 @@ final class RoutesPrefixTest extends TestCase
     {
         parent::defineEnvironment($app);
 
-        $app['config']->set('sivarcart-core.api', [
+        $app['config']->set('sivarcart.api', [
             'enabled' => true,
             'prefix' => 'api/tienda',
             'middleware' => ['api'],
@@ -30,7 +30,7 @@ final class RoutesPrefixTest extends TestCase
 
     public function test_it_mounts_the_api_under_the_prefix_of_the_configuration(): void
     {
-        $route = Route::getRoutes()->getByName('sivarcart-core.api.products.index');
+        $route = Route::getRoutes()->getByName('sivarcart.api.products.index');
 
         $this->assertNotNull($route);
         $this->assertSame('api/tienda/products', $route->uri());

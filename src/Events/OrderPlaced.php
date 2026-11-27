@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Events;
+namespace Tarkontech\SivarCart\Events;
 
-use SivarcartCore\SivarcartCore\Models\Order;
+use Tarkontech\SivarCart\Models\Order;
 
 /**
  * An order was placed by a shopper.

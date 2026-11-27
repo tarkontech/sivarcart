@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SivarcartCore\SivarcartCore\Models\Concerns;
+namespace Tarkontech\SivarCart\Models\Concerns;
 
-use SivarcartCore\SivarcartCore\Support\Media;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\Conversions\Conversion;
 use Spatie\MediaLibrary\Conversions\Manipulations;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaModel;
+use Tarkontech\SivarCart\Support\Media;
 
 /**
  * The thumbnails of the media of the store.
